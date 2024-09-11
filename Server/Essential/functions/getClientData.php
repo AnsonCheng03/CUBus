@@ -13,25 +13,26 @@ if ($conn->connect_error) {
 }
 
 // Function to get last modification date of a table
-function getTableModificationDate($conn, $table)
+function getTableDate($conn, $table)
 {
-    $stmt = $conn->prepare("SELECT UPDATE_TIME FROM information_schema.tables WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?");
+    $stmt = $conn->prepare("SELECT UPDATE_TIME, CREATE_TIME FROM information_schema.tables WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?");
     $dbName = getenv('DB_NAME');
     $stmt->bind_param("ss", $dbName, $table);
     $stmt->execute();
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
-    return $row['UPDATE_TIME'];
+    return $row['UPDATE_TIME'] ?? $row['CREATE_TIME'] ?? null;
 }
 
 // Tables to check
 $tables = ['Route', 'translateroute', 'translatewebsite', 'translatebuilding', 'translateattribute', 'station', 'notice', 'gps', 'website'];
+$translationTables = ['translateroute', 'translatewebsite', 'translatebuilding', 'translateattribute'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     // Handle initial GET request
     $modificationDates = array();
     foreach ($tables as $table) {
-        $modificationDates[$table] = getTableModificationDate($conn, $table);
+        $modificationDates[$table] = getTableDate($conn, $table);
     }
 
     header('Content-Type: application/json');
@@ -49,15 +50,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     } else {
         // Compare dates and determine which tables need updating
         foreach ($tables as $table) {
-            $serverDate = getTableModificationDate($conn, $table);
-            if (!isset($clientDates[$table]) || $clientDates[$table] < $serverDate) {
+            $serverDate = getTableDate($conn, $table);
+            if ($serverDate !== null && (!isset($clientDates[$table]) || $clientDates[$table] < $serverDate)) {
                 $outdatedTables[] = $table;
             }
         }
+
+        // Special handling for translation tables
+        if (count(array_intersect($translationTables, $outdatedTables)) > 0) {
+            $outdatedTables = array_merge($outdatedTables, $translationTables);
+        }
+        $outdatedTables = array_unique($outdatedTables);
     }
 
     // Fetch data for outdated tables
-    if (in_array('Route', haystack: $outdatedTables)) {
+    if (in_array('Route', $outdatedTables)) {
         $bus = array();
         $stmt = $conn->prepare("SELECT * FROM Route");
         $stmt->execute();
@@ -75,9 +82,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $output['bus'] = $bus;
     }
 
-    if (count(array_intersect(['translateroute', 'translatewebsite', 'translatebuilding', 'translateattribute'], $outdatedTables)) > 0) {
+    if (count(array_intersect($translationTables, $outdatedTables)) > 0) {
         $translation = array();
-        $translationTables = array_intersect(['translateroute', 'translatewebsite', 'translatebuilding', 'translateattribute'], $outdatedTables);
         foreach ($translationTables as $table) {
             $stmt = $conn->prepare("SELECT * FROM $table");
             $stmt->execute();
@@ -158,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     // Add modification dates to the output
     $output['modificationDates'] = array();
     foreach ($tables as $table) {
-        $output['modificationDates'][$table] = getTableModificationDate($conn, $table);
+        $output['modificationDates'][$table] = getTableDate($conn, $table);
     }
 
     // Set the content type to JSON

@@ -12,9 +12,18 @@ interface DownloadFilesProps {
   i18next: any;
 }
 
-interface Translations {
-  en: { [key: string]: string };
-  zh: { [key: string]: string };
+interface ServerResponse {
+  bus?: any;
+  translation?: {
+    en: { [key: string]: string };
+    zh: { [key: string]: string };
+  };
+  station?: any;
+  notice?: any;
+  GPS?: any;
+  WebsiteLinks?: any;
+  modificationDates?: ModificationDates;
+  [key: string]: any; // Add this line to allow indexing with a string
 }
 
 interface ModificationDates {
@@ -26,87 +35,136 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
   i18next,
 }) => {
   const [downloadHint, setDownloadHint] = useState<string>("Loading");
-  const [lastModifiedDates, setLastModifiedDates] =
-    useState<ModificationDates | null>(null);
 
   useEffect(() => {
-    const fetchDatabaseLastUpdated = async () => {
+    const compareModificationDates = (
+      localDates: ModificationDates | null,
+      serverDates: ModificationDates
+    ): boolean => {
+      if (!localDates) return true;
+
+      for (const table in serverDates) {
+        if (
+          serverDates[table] &&
+          (!localDates[table] || localDates[table] < serverDates[table])
+        ) {
+          return true;
+        }
+      }
+      return false;
+    };
+
+    const fetchDatabaseLastUpdated = async (
+      currentDates: ModificationDates | null
+    ) => {
       try {
         setDownloadHint("Checking for updates");
         const response = await axios.get<ModificationDates>(
           "http://localhost:8000/Essential/functions/getClientData.php"
         );
-        setLastModifiedDates(response.data);
-        await fetchData();
+        const serverDates = response.data;
+
+        // Fetch and process all data, regardless of update status
+        await fetchData(currentDates, serverDates);
+
+        setDownloadHint("Data processing completed");
+        setDownloadedState(true);
       } catch (error) {
         setDownloadHint("Error checking for updates");
+        console.error(error);
       }
     };
 
-    const fetchData = async () => {
+    const fetchData = async (
+      currentDates: ModificationDates | null,
+      serverDates: ModificationDates
+    ) => {
       try {
-        setDownloadHint("Downloading data");
-        const response = await axios.post(
+        setDownloadHint("Processing data");
+
+        const response = await axios.post<ServerResponse>(
           "http://localhost:8000/Essential/functions/getClientData.php",
-          lastModifiedDates
+          currentDates
         );
 
-        // Process the received data
-        if (response.data.translation) {
-          i18next.addResourceBundle(
-            "en",
-            "global",
-            response.data.translation.en
-          );
-          i18next.addResourceBundle(
-            "zh",
-            "global",
-            response.data.translation.zh
-          );
-        }
+        // Process all data, whether it's newly downloaded or existing
+        let translateHandled = false;
+        for (let table in serverDates) {
+          if (
+            table === "translateroute" ||
+            table === "translatewebsite" ||
+            table === "translatebuilding" ||
+            table === "translateattribute"
+          ) {
+            table = "translation";
+            if (translateHandled) {
+              continue;
+            } else {
+              translateHandled = true;
+            }
+          }
 
-        // Process other data as needed
-        if (response.data.bus) {
-          // Handle bus data
-        }
-        if (response.data.station) {
-          // Handle station data
-        }
-        if (response.data.notice) {
-          // Handle notice data
-        }
-        if (response.data.GPS) {
-          // Handle GPS data
-        }
-        if (response.data.WebsiteLinks) {
-          // Handle WebsiteLinks data
+          let tableData;
+          if (response.data[table]) {
+            // Data was downloaded
+            tableData = response.data[table];
+            await store.set(`data-${table}`, JSON.stringify(tableData));
+          } else {
+            // Data wasn't downloaded, fetch from local storage
+            // tableData = await store.get(`data-${table}`);
+            tableData = JSON.parse(await store.get(`data-${table}`));
+            console.log(
+              `Data for table ${table} fetched from local storage`,
+              tableData
+            );
+          }
+
+          // Process and store the data
+          if (tableData) {
+            await processTableData(table, tableData);
+          }
         }
 
         // Update local storage with new modification dates
         if (response.data.modificationDates) {
-          setLastModifiedDates(response.data.modificationDates);
           await store.set(
             "lastModifiedDates",
             JSON.stringify(response.data.modificationDates)
           );
-          console.log("storedDates", response.data);
         }
 
-        setDownloadHint("Data downloaded and processed");
-        setDownloadedState(true);
+        setDownloadHint("Data processed and stored");
       } catch (error) {
-        setDownloadHint("Error fetching data");
-        console.log(error);
+        setDownloadHint("Error processing data");
+        console.error(error);
+      }
+    };
+
+    const processTableData = async (table: string, data: any) => {
+      switch (table) {
+        case "translation":
+          i18next.addResourceBundle("en", "global", data.en);
+          i18next.addResourceBundle("zh", "global", data.zh);
+          break;
+        case "bus":
+        case "station":
+        case "notice":
+        case "GPS":
+        case "WebsiteLinks":
+          console.log(`Table ${table} not yet implemented`);
+          break;
+        default:
+          console.log(`Unknown table: ${table}`);
       }
     };
 
     const initializeData = async () => {
+      let currentDates: ModificationDates | null = null;
       const storedDates = await store.get("lastModifiedDates");
-      console.log("storedDates", storedDates);
       if (storedDates) {
-        setLastModifiedDates(JSON.parse(storedDates));
+        currentDates = JSON.parse(storedDates);
       }
-      await fetchDatabaseLastUpdated();
+      await fetchDatabaseLastUpdated(currentDates);
     };
 
     initializeData();
