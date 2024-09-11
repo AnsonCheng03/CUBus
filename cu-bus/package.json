@@ -47,6 +47,7 @@
     "terser": "^5.4.0",
     "typescript": "^5.1.6",
     "vite": "~5.2.0",
+    "vite-plugin-pwa": "^0.20.5",
     "vitest": "^0.34.6"
   },
   "description": "An Ionic project"
