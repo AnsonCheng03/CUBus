@@ -1,4 +1,0 @@
-User-agent: *
-Disallow: /beta/
-Disallow: /offline.html
-Sitemap: https://cu-bus.online/Essential/sitemap.xml
