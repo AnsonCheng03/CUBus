@@ -10,7 +10,9 @@
     "test.e2e": "cypress run",
     "test.unit": "vitest",
     "lint": "eslint",
-    "dev:mobile": "ionic capacitor open"
+    "gen": "ionic generate",
+    "dev:mobile": "ionic capacitor sync && ionic capacitor open",
+    "dev:iOS": "ionic capacitor sync && open ios/App/App.xcworkspace"
   },
   "dependencies": {
     "@capacitor/android": "6.1.2",

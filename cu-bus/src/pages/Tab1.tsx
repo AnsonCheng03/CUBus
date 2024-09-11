@@ -1,22 +1,37 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
-import './Tab1.css';
+import {
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  IonRefresher,
+  IonRefresherContent,
+} from "@ionic/react";
+import ExploreContainer from "../components/ExploreContainer";
+import "./Tab1.css";
 
 const Tab1: React.FC = () => {
+  function handleRefresh(event: any) {
+    setTimeout(() => {
+      // Any calls to load data go here
+      event.target.complete();
+    }, 2000);
+  }
+
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Tab 1</IonTitle>
+          <IonTitle>Pull to Refresh</IonTitle>
         </IonToolbar>
       </IonHeader>
-      <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Tab 1</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-        <ExploreContainer name="Tab 1 page" />
+
+      <IonContent className="ion-padding">
+        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+          <IonRefresherContent></IonRefresherContent>
+        </IonRefresher>
+
+        <p>Pull this content down to trigger the refresh.</p>
       </IonContent>
     </IonPage>
   );
