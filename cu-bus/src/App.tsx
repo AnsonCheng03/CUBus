@@ -8,6 +8,8 @@ import {
   IonTabBar,
   IonTabButton,
   IonTabs,
+  IonTitle,
+  IonToolbar,
   setupIonicReact,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
@@ -17,6 +19,11 @@ import {
   informationOutline,
   settingsOutline,
 } from "ionicons/icons";
+import i18next from "i18next";
+import { I18nextProvider } from "react-i18next";
+import HttpBackend from "i18next-http-backend";
+import LanguageDetector from "i18next-browser-languagedetector";
+import { useTranslation, initReactI18next } from "react-i18next";
 
 import Tab1 from "./pages/Tab1";
 import DownloadFiles from "./pages/DownloadFiles";
@@ -54,44 +61,76 @@ import { useState } from "react";
 
 setupIonicReact();
 
+i18next
+  .use(HttpBackend)
+  .use(LanguageDetector)
+  .use(initReactI18next) // passes i18n down to react-i18next
+  .init({
+    fallbackLng: "zh",
+    saveMissing: true, // send not translated keys to endpoint
+    interpolation: {
+      escapeValue: false,
+    },
+    resources: {
+      en: {
+        global: {},
+      },
+      zh: {
+        global: {},
+      },
+    },
+  });
+
 const App: React.FC = () => {
+  const [t, i18n] = useTranslation("global");
   const [isDownloaded, setDownloadedState] = useState(false);
+
   return (
-    <IonApp>
-      {isDownloaded ? (
-        <IonReactRouter>
-          <IonTabs>
-            <IonRouterOutlet>
-              <Route exact path="/tab1" component={Tab1} />
-              <Route exact path="/tab2" component={Tab1} />
-              <Route exact path="/tab3" component={Tab1} />
-              <Route exact path="/tab4" component={Tab1} />
-              <Route component={Tab1} />
-            </IonRouterOutlet>
-            <IonTabBar slot="bottom">
-              <IonTabButton tab="tab1" href="/tab1">
-                <IonIcon aria-hidden="true" icon={homeOutline} />
-                <IonLabel>Tab 1</IonLabel>
-              </IonTabButton>
-              <IonTabButton tab="tab2" href="/tab2">
-                <IonIcon aria-hidden="true" icon={searchOutline} />
-                <IonLabel>Tab 2</IonLabel>
-              </IonTabButton>
-              <IonTabButton tab="tab3" href="/tab3">
-                <IonIcon aria-hidden="true" icon={informationOutline} />
-                <IonLabel>Tab 3</IonLabel>
-              </IonTabButton>
-              <IonTabButton tab="tab4" href="/tab4">
-                <IonIcon aria-hidden="true" icon={settingsOutline} />
-                <IonLabel>Tab 4</IonLabel>
-              </IonTabButton>
-            </IonTabBar>
-          </IonTabs>
-        </IonReactRouter>
-      ) : (
-        <DownloadFiles setDownloadedState={setDownloadedState} />
-      )}
-    </IonApp>
+    <I18nextProvider i18n={i18next}>
+      <IonApp>
+        {isDownloaded ? (
+          <IonReactRouter>
+            <IonTabs>
+              <IonRouterOutlet>
+                <Route exact path="/tab1" component={Tab1} />
+                <Route exact path="/tab2" component={Tab1} />
+                <Route exact path="/tab3" component={Tab1} />
+                <Route exact path="/tab4" component={Tab1} />
+                <Route component={Tab1} />
+              </IonRouterOutlet>
+              <IonHeader>
+                <IonToolbar>
+                  <IonTitle>{t("WEB-Title")}</IonTitle>
+                </IonToolbar>
+              </IonHeader>
+              <IonTabBar slot="bottom">
+                <IonTabButton tab="tab1" href="/tab1">
+                  <IonIcon aria-hidden="true" icon={homeOutline} />
+                  <IonLabel>{t("NAV-Home")}</IonLabel>
+                </IonTabButton>
+                <IonTabButton tab="tab2" href="/tab2">
+                  <IonIcon aria-hidden="true" icon={searchOutline} />
+                  <IonLabel>{t("NAV-StationSearch")}</IonLabel>
+                </IonTabButton>
+                <IonTabButton tab="tab3" href="/tab3">
+                  <IonIcon aria-hidden="true" icon={informationOutline} />
+                  <IonLabel>{t("NAV-Info")}</IonLabel>
+                </IonTabButton>
+                <IonTabButton tab="tab4" href="/tab4">
+                  <IonIcon aria-hidden="true" icon={settingsOutline} />
+                  <IonLabel>{t("NAV-Settings")}</IonLabel>
+                </IonTabButton>
+              </IonTabBar>
+            </IonTabs>
+          </IonReactRouter>
+        ) : (
+          <DownloadFiles
+            setDownloadedState={setDownloadedState}
+            i18next={i18next}
+          />
+        )}
+      </IonApp>
+    </I18nextProvider>
   );
 };
 
