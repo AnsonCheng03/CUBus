@@ -2,6 +2,9 @@
 
 include_once(__DIR__ . '/loadenv.php');
 
+// CORS to allow requests from any origin
+header("Access-Control-Allow-Origin: *");
+
 
 if (!isset($initdataitems))
     $initdataitems = array(
