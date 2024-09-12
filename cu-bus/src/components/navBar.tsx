@@ -19,7 +19,11 @@ const NavBar: React.FC = () => {
       <div className="navFunctions">
         <ul>
           <li>
-            <IonItem routerLink="/realtime" routerDirection="none">
+            <IonItem
+              routerLink="/realtime"
+              routerDirection="none"
+              detail={false}
+            >
               <div className="navLink">
                 <IonIcon icon={homeOutline} />
                 <p className="navtext">{t("NAV-Home")}</p>
@@ -27,7 +31,7 @@ const NavBar: React.FC = () => {
             </IonItem>
           </li>
           <li>
-            <IonItem routerLink="/route" routerDirection="none">
+            <IonItem routerLink="/route" routerDirection="none" detail={false}>
               <div className="navLink">
                 <IonIcon icon={searchOutline} />
                 <p className="navtext">{t("NAV-StationSearch")}</p>
@@ -35,7 +39,7 @@ const NavBar: React.FC = () => {
             </IonItem>
           </li>
           <li>
-            <IonItem routerLink="/info" routerDirection="none">
+            <IonItem routerLink="/info" routerDirection="none" detail={false}>
               <div className="navLink">
                 <IonIcon icon={informationOutline} />
                 <p className="navtext">{t("NAV-Info")}</p>
@@ -43,7 +47,11 @@ const NavBar: React.FC = () => {
             </IonItem>
           </li>
           <li>
-            <IonItem routerLink="/settings" routerDirection="none">
+            <IonItem
+              routerLink="/settings"
+              routerDirection="none"
+              detail={false}
+            >
               <div className="navLink">
                 <IonIcon icon={settingsOutline} />
                 <p className="navtext">{t("NAV-Settings")}</p>

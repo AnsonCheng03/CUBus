@@ -21,6 +21,14 @@ nav h1 {
   white-space: nowrap;
 }
 
+nav .navFunctions {
+  max-height: 75px;
+  overflow: hidden;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+
 nav ul {
   list-style-type: none;
   padding: 0;
@@ -29,11 +37,19 @@ nav ul {
   justify-content: right;
   align-items: center;
   gap: 5%;
+  width: 100%;
 }
 
 nav ion-item {
   --background: transparent;
   --border-color: transparent;
+  /* --inner-padding-end: env(--ion-safe-area-left);
+  --inner-padding-start: 0;
+  --ion-safe-area-left: 0; */
+  --background-activated: transparent;
+  --background-focused: transparent;
+  --background-hover: transparent;
+  --ripple-color: transparent;
 }
 nav .navLink,
 nav .navLink {
@@ -68,6 +84,10 @@ nav ion-item a .item-inner {
   flex-direction: column;
 }
 
+ion-content {
+  --padding-top: 75px;
+}
+
 @media screen and (max-width: 768px) {
   nav {
     display: block;
@@ -87,5 +107,14 @@ nav ion-item a .item-inner {
 
   main {
     margin: 0 0 75px 0;
+  }
+
+  nav .navFunctions {
+    justify-content: center;
+  }
+
+  ion-content {
+    --padding-top: 0;
+    --padding-bottom: 75px;
   }
 }
