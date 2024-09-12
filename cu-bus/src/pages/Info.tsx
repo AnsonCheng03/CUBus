@@ -123,7 +123,6 @@ const Info: React.FC<{ appData: any }> = ({ appData }) => {
             </div>
           </div>
         </div>
-        ;
       </div>
     </IonPage>
   );

@@ -8,6 +8,8 @@ nav {
   left: 0;
   width: 100%;
   z-index: 9999;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: 0;
 }
 
 nav h1 {
@@ -23,6 +25,7 @@ nav h1 {
 
 nav .navFunctions {
   max-height: 75px;
+
   overflow: hidden;
   display: flex;
   justify-content: end;
@@ -96,6 +99,10 @@ nav ion-icon {
   scale: 1.2;
 }
 
+.ion-page {
+  overflow: scroll;
+}
+
 @media screen and (max-width: 768px) {
   nav {
     display: block;
@@ -103,7 +110,10 @@ nav ion-icon {
     top: auto;
     bottom: 0;
     width: 100%;
+    padding-top: 0;
+    padding-bottom: env(safe-area-inset-bottom);
   }
+
   nav h1 {
     display: none;
   }
@@ -113,21 +123,14 @@ nav ion-icon {
     justify-content: space-around;
   }
 
-  main {
-    margin: 0 0 75px 0;
-  }
-
   nav .navFunctions {
     justify-content: center;
   }
 
-  /* ion-content {
-    --padding-top: 0;
-    --padding-bottom: 75px;
-  } */
-
   ion-router-outlet {
-    top: 0;
-    bottom: 75px;
+    top: constant(safe-area-inset-top);
+    top: env(safe-area-inset-top);
+    bottom: calc(75px + env(safe-area-inset-bottom));
+    bottom: calc(75px + constant(safe-area-inset-bottom));
   }
 }

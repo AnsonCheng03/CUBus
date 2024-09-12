@@ -7,6 +7,8 @@ body {
   overscroll-behavior: none;
   font-family: Noto Sans TC, 微軟正黑體, 新細明體, sans-serif;
   margin: 0;
+  background-color: #fff;
+  color: black;
 }
 
 select::-ms-expand {
