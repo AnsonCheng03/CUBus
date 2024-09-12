@@ -1,21 +1,5 @@
-import { Redirect, Route } from "react-router-dom";
-import {
-  IonAccordionGroup,
-  IonApp,
-  IonGrid,
-  IonHeader,
-  IonIcon,
-  IonItem,
-  IonLabel,
-  IonRouterOutlet,
-  IonTabBar,
-  IonTabButton,
-  IonTabs,
-  IonTabsContext,
-  IonTitle,
-  IonToolbar,
-  setupIonicReact,
-} from "@ionic/react";
+import { Route, RouteComponentProps } from "react-router-dom";
+import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 
 import i18next from "i18next";
@@ -28,7 +12,10 @@ import preset_zh from "./translations/zh_preset.json";
 
 import NavBar from "./components/navBar";
 
-import Tab1 from "./pages/Tab1";
+import Realtime from "./pages/Realtime";
+import RouteSearch from "./pages/RouteSearch";
+import Info from "./pages/Info";
+import Settings from "./pages/Settings";
 import DownloadFiles from "./pages/DownloadFiles";
 
 /* Core CSS required for Ionic components to work properly */
@@ -78,9 +65,10 @@ i18next
     },
   });
 
-const App: React.FC = () => {
+const App: React.FC<RouteComponentProps> = () => {
   const [t, i18n] = useTranslation("global");
   const [isDownloaded, setDownloadedState] = useState(false);
+  const [appData, setAppData] = useState<any>({});
 
   return (
     <I18nextProvider i18n={i18next}>
@@ -88,11 +76,13 @@ const App: React.FC = () => {
         {isDownloaded ? (
           <IonReactRouter>
             <IonRouterOutlet>
-              <Route exact path="/realtime" component={Tab1} />
-              <Route exact path="/route" component={Tab1} />
-              <Route exact path="/info" component={Tab1} />
-              <Route exact path="/settings" component={Tab1} />
-              <Route component={Tab1} />
+              <Route exact path="/realtime" component={Realtime} />
+              <Route exact path="/route" component={RouteSearch} />
+              <Route exact path="/info" component={Info}>
+                <Info appData={appData} />
+              </Route>
+              <Route exact path="/settings" component={Settings} />
+              <Route component={Realtime} />
             </IonRouterOutlet>
             <NavBar />
           </IonReactRouter>
@@ -100,6 +90,8 @@ const App: React.FC = () => {
           <DownloadFiles
             setDownloadedState={setDownloadedState}
             i18next={i18next}
+            setAppData={setAppData}
+            appData={appData}
           />
         )}
       </IonApp>

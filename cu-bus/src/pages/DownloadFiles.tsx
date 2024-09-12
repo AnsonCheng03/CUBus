@@ -3,15 +3,19 @@ import { IonPage } from "@ionic/react";
 import axios from "axios";
 import "./DownloadFiles.css";
 
-import { Storage } from "@ionic/storage";
 import { useTranslation } from "react-i18next";
-const store = new Storage();
 
 import icon from "../assets/bus.jpg";
+
+import { Storage } from "@ionic/storage";
+const store = new Storage();
+store.create(); // Initialize the storage
 
 interface DownloadFilesProps {
   setDownloadedState: (isDownloaded: boolean) => void;
   i18next: any;
+  appData: any;
+  setAppData: any;
 }
 
 interface ServerResponse {
@@ -35,6 +39,8 @@ interface ModificationDates {
 const DownloadFiles: React.FC<DownloadFilesProps> = ({
   setDownloadedState,
   i18next,
+  appData,
+  setAppData,
 }) => {
   const { t } = useTranslation("preset");
 
@@ -77,7 +83,10 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
         setDownloadedState(true);
       } catch (error) {
         setDownloadHint(t("DownloadFiles-Error"));
-        console.error(error);
+        store.clear();
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       }
     };
 
@@ -138,6 +147,10 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
       } catch (error) {
         setDownloadHint(t("StoreFile-Error"));
         console.error(error);
+        store.clear();
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       }
     };
 
@@ -147,12 +160,26 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
           i18next.addResourceBundle("en", "global", data.en);
           i18next.addResourceBundle("zh", "global", data.zh);
           break;
-        case "bus":
+        case "website":
+          setAppData((prev: any) => {
+            return { ...prev, ["WebsiteLinks"]: data };
+          });
+          break;
+        case "Route":
+          setAppData((prev: any) => {
+            return { ...prev, ["bus"]: data };
+          });
+          break;
+        case "gps":
+          setAppData((prev: any) => {
+            return { ...prev, ["GPS"]: data };
+          });
+          break;
         case "station":
         case "notice":
-        case "GPS":
-        case "WebsiteLinks":
-          console.log(`Table ${table} not yet implemented`);
+          setAppData((prev: any) => {
+            return { ...prev, [table]: data };
+          });
           break;
         default:
           console.log(`Unknown table: ${table}`);

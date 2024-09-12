@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 $bus[$busno]["stations"]["time"][] = floatval($station[2] ?? "0");
             }
         }
-        $output['bus'] = $bus;
+        $output['Route'] = $bus;
     }
 
     if (count(array_intersect($translationTables, $outdatedTables)) > 0) {
@@ -145,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             $GPS[$row['Location']]["Lat"] = $row['Lat'];
             $GPS[$row['Location']]["Lng"] = $row['Lng'];
         }
-        $output['GPS'] = $GPS;
+        $output['gps'] = $GPS;
     }
 
     if (in_array('website', $outdatedTables)) {
@@ -158,7 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 $WebsiteLinks[] = [[$row['英文'], $row['中文']], $row['URL']];
             }
         }
-        $output['WebsiteLinks'] = $WebsiteLinks;
+        $output['website'] = $WebsiteLinks;
     }
 
     // Add modification dates to the output

@@ -84,8 +84,16 @@ nav ion-item a .item-inner {
   flex-direction: column;
 }
 
-ion-content {
+/* ion-content {
   --padding-top: 75px;
+} */
+
+ion-router-outlet {
+  top: 75px;
+}
+
+nav ion-icon {
+  scale: 1.2;
 }
 
 @media screen and (max-width: 768px) {
@@ -113,8 +121,13 @@ ion-content {
     justify-content: center;
   }
 
-  ion-content {
+  /* ion-content {
     --padding-top: 0;
     --padding-bottom: 75px;
+  } */
+
+  ion-router-outlet {
+    top: 0;
+    bottom: 75px;
   }
 }
