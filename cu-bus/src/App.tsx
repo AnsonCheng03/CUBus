@@ -1,13 +1,17 @@
 import { Redirect, Route } from "react-router-dom";
 import {
+  IonAccordionGroup,
   IonApp,
+  IonGrid,
   IonHeader,
   IonIcon,
+  IonItem,
   IonLabel,
   IonRouterOutlet,
   IonTabBar,
   IonTabButton,
   IonTabs,
+  IonTabsContext,
   IonTitle,
   IonToolbar,
   setupIonicReact,
@@ -24,6 +28,8 @@ import { I18nextProvider } from "react-i18next";
 import HttpBackend from "i18next-http-backend";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { useTranslation, initReactI18next } from "react-i18next";
+
+import NavBar from "./components/navBar";
 
 import Tab1 from "./pages/Tab1";
 import DownloadFiles from "./pages/DownloadFiles";
@@ -44,19 +50,11 @@ import "@ionic/react/css/text-transformation.css";
 import "@ionic/react/css/flex-utils.css";
 import "@ionic/react/css/display.css";
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
-
-/* import '@ionic/react/css/palettes/dark.always.css'; */
-/* import '@ionic/react/css/palettes/dark.class.css'; */
-import "@ionic/react/css/palettes/dark.system.css";
-
 /* Theme variables */
 import "./theme/variables.css";
+
+import "./main.css";
+
 import { useState } from "react";
 
 setupIonicReact();
@@ -90,38 +88,14 @@ const App: React.FC = () => {
       <IonApp>
         {isDownloaded ? (
           <IonReactRouter>
-            <IonTabs>
-              <IonRouterOutlet>
-                <Route exact path="/tab1" component={Tab1} />
-                <Route exact path="/tab2" component={Tab1} />
-                <Route exact path="/tab3" component={Tab1} />
-                <Route exact path="/tab4" component={Tab1} />
-                <Route component={Tab1} />
-              </IonRouterOutlet>
-              <IonHeader>
-                <IonToolbar>
-                  <IonTitle>{t("WEB-Title")}</IonTitle>
-                </IonToolbar>
-              </IonHeader>
-              <IonTabBar slot="bottom">
-                <IonTabButton tab="tab1" href="/tab1">
-                  <IonIcon aria-hidden="true" icon={homeOutline} />
-                  <IonLabel>{t("NAV-Home")}</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab="tab2" href="/tab2">
-                  <IonIcon aria-hidden="true" icon={searchOutline} />
-                  <IonLabel>{t("NAV-StationSearch")}</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab="tab3" href="/tab3">
-                  <IonIcon aria-hidden="true" icon={informationOutline} />
-                  <IonLabel>{t("NAV-Info")}</IonLabel>
-                </IonTabButton>
-                <IonTabButton tab="tab4" href="/tab4">
-                  <IonIcon aria-hidden="true" icon={settingsOutline} />
-                  <IonLabel>{t("NAV-Settings")}</IonLabel>
-                </IonTabButton>
-              </IonTabBar>
-            </IonTabs>
+            <IonRouterOutlet>
+              <Route exact path="/tab1" component={Tab1} />
+              <Route exact path="/tab2" component={Tab1} />
+              <Route exact path="/tab3" component={Tab1} />
+              <Route exact path="/tab4" component={Tab1} />
+              <Route component={Tab1} />
+            </IonRouterOutlet>
+            <NavBar />
           </IonReactRouter>
         ) : (
           <DownloadFiles

@@ -1,0 +1,47 @@
+ion-toolbar {
+  display: none;
+}
+
+html,
+body {
+  overscroll-behavior: none;
+  font-family: Noto Sans TC, 微軟正黑體, 新細明體, sans-serif;
+  margin: 0;
+}
+
+select::-ms-expand {
+  display: none;
+}
+
+h1 {
+  margin: 100px auto auto auto;
+  font-size: 40px;
+  font-weight: bold;
+  letter-spacing: -1px;
+  text-align: center;
+}
+
+h2 {
+  font-size: 14px;
+  text-align: center;
+  font-weight: normal;
+}
+
+h3 {
+  font-size: 20px;
+  display: inline;
+}
+
+h4 {
+  font-size: 18px;
+  text-align: center;
+  font-weight: bold;
+}
+
+a:link,
+a:visited,
+a:hover,
+a:active {
+  background-color: transparent;
+  text-decoration: none;
+}

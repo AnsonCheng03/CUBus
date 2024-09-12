@@ -153,43 +153,7 @@ if ($notice) {
 
 <nav>
   <h1><?php echo $translation["WEB-Title"][$lang] ?></h1>
-  <div class="navFunctions">
-    <ul>
-      <li>
-        <a onclick="append_query('mode','realtime');" class="<?php echo $currentpage == 'realtime' ? 'active' : ''; ?>">
-          <i class="fa-solid fa-house"></i>
-          <p class="navtext">
-            <?php echo $translation["NAV-Home"][$lang] ?>
-          </p>
-        </a>
-      </li>
-      <li>
-        <a onclick="append_query('mode','route');"
-          class="<?php echo $currentpage == 'routeselection' ? 'active' : ''; ?>">
-          <i class="fa-solid fa-magnifying-glass"></i>
-          <p class="navtext">
-            <?php echo $translation["NAV-StationSearch"][$lang] ?>
-          </p>
-        </a>
-      </li>
-      <li>
-        <a onclick="append_query('mode','info');" class="<?php echo $currentpage == 'info' ? 'active' : ''; ?>">
-          <i class="fa-solid fa-info"></i>
-          <p class="navtext">
-            <?php echo $translation["NAV-Info"][$lang] ?>
-          </p>
-        </a>
-      </li>
-      <li>
-        <a onclick="append_query('mode','settings');" class="<?php echo $currentpage == 'settings' ? 'active' : ''; ?>">
-          <i class="fa-solid fa-gear"></i>
-          <p class="navtext">
-            <?php echo $translation["NAV-Settings"][$lang] ?>
-          </p>
-        </a>
-      </li>
-    </ul>
-  </div>
+
 </nav>
 <main>
 

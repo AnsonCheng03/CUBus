@@ -5,7 +5,6 @@ import "./DownloadFiles.css";
 
 import { Storage } from "@ionic/storage";
 const store = new Storage();
-await store.create();
 
 interface DownloadFilesProps {
   setDownloadedState: (isDownloaded: boolean) => void;
@@ -113,10 +112,6 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
             // Data wasn't downloaded, fetch from local storage
             // tableData = await store.get(`data-${table}`);
             tableData = JSON.parse(await store.get(`data-${table}`));
-            console.log(
-              `Data for table ${table} fetched from local storage`,
-              tableData
-            );
           }
 
           // Process and store the data
@@ -159,6 +154,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
     };
 
     const initializeData = async () => {
+      await store.create();
       let currentDates: ModificationDates | null = null;
       const storedDates = await store.get("lastModifiedDates");
       if (storedDates) {
