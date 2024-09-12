@@ -4,7 +4,10 @@ import axios from "axios";
 import "./DownloadFiles.css";
 
 import { Storage } from "@ionic/storage";
+import { useTranslation } from "react-i18next";
 const store = new Storage();
+
+import icon from "../assets/bus.jpg";
 
 interface DownloadFilesProps {
   setDownloadedState: (isDownloaded: boolean) => void;
@@ -33,7 +36,11 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
   setDownloadedState,
   i18next,
 }) => {
-  const [downloadHint, setDownloadHint] = useState<string>("Loading");
+  const { t } = useTranslation("preset");
+
+  const [downloadHint, setDownloadHint] = useState<string>(
+    t("DownloadFiles-Initializing")
+  );
 
   useEffect(() => {
     const compareModificationDates = (
@@ -57,7 +64,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
       currentDates: ModificationDates | null
     ) => {
       try {
-        setDownloadHint("Checking for updates");
+        setDownloadHint(t("DownloadFiles-Downloading"));
         const response = await axios.get<ModificationDates>(
           "http://localhost:8000/Essential/functions/getClientData.php"
         );
@@ -66,10 +73,10 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
         // Fetch and process all data, regardless of update status
         await fetchData(currentDates, serverDates);
 
-        setDownloadHint("Data processing completed");
+        setDownloadHint(t("DownloadFiles-Complete"));
         setDownloadedState(true);
       } catch (error) {
-        setDownloadHint("Error checking for updates");
+        setDownloadHint(t("DownloadFiles-Error"));
         console.error(error);
       }
     };
@@ -79,7 +86,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
       serverDates: ModificationDates
     ) => {
       try {
-        setDownloadHint("Processing data");
+        setDownloadHint(t("DownloadFiles-Processing"));
 
         const response = await axios.post<ServerResponse>(
           "http://localhost:8000/Essential/functions/getClientData.php",
@@ -110,7 +117,6 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
             await store.set(`data-${table}`, JSON.stringify(tableData));
           } else {
             // Data wasn't downloaded, fetch from local storage
-            // tableData = await store.get(`data-${table}`);
             tableData = JSON.parse(await store.get(`data-${table}`));
           }
 
@@ -128,9 +134,9 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
           );
         }
 
-        setDownloadHint("Data processed and stored");
+        setDownloadHint(t("StoreFile-Complete"));
       } catch (error) {
-        setDownloadHint("Error processing data");
+        setDownloadHint(t("StoreFile-Error"));
         console.error(error);
       }
     };
@@ -168,7 +174,8 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
 
   return (
     <IonPage>
-      <div className="container">
+      <div className="downloadFilesContainer">
+        <img src={icon} alt="icon" />
         <h1>{downloadHint}</h1>
       </div>
     </IonPage>

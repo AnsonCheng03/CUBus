@@ -17,17 +17,14 @@ import {
   setupIonicReact,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
-import {
-  homeOutline,
-  searchOutline,
-  informationOutline,
-  settingsOutline,
-} from "ionicons/icons";
+
 import i18next from "i18next";
 import { I18nextProvider } from "react-i18next";
 import HttpBackend from "i18next-http-backend";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { useTranslation, initReactI18next } from "react-i18next";
+import preset_en from "./translations/en_preset.json";
+import preset_zh from "./translations/zh_preset.json";
 
 import NavBar from "./components/navBar";
 
@@ -72,9 +69,11 @@ i18next
     resources: {
       en: {
         global: {},
+        preset: preset_en,
       },
       zh: {
         global: {},
+        preset: preset_zh,
       },
     },
   });
@@ -89,10 +88,10 @@ const App: React.FC = () => {
         {isDownloaded ? (
           <IonReactRouter>
             <IonRouterOutlet>
-              <Route exact path="/tab1" component={Tab1} />
-              <Route exact path="/tab2" component={Tab1} />
-              <Route exact path="/tab3" component={Tab1} />
-              <Route exact path="/tab4" component={Tab1} />
+              <Route exact path="/realtime" component={Tab1} />
+              <Route exact path="/route" component={Tab1} />
+              <Route exact path="/info" component={Tab1} />
+              <Route exact path="/settings" component={Tab1} />
               <Route component={Tab1} />
             </IonRouterOutlet>
             <NavBar />

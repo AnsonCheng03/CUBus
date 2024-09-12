@@ -1,0 +1,9 @@
+{
+  "DownloadFiles-Error": "Error checking for updates",
+  "DownloadFiles-Complete": "Data processing completed",
+  "DownloadFiles-Downloading": "Checking for updates",
+  "DownloadFiles-Initializing": "Initializing",
+  "DownloadFiles-Processing": "Processing data",
+  "StoreFile-Complete": "Data processed and stored",
+  "StoreFile-Error": "Error processing data"
+}

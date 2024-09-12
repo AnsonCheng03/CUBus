@@ -1,0 +1,35 @@
+.downloadFilesContainer {
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* background-color: #fefae0; */
+}
+
+.downloadFilesContainer h1 {
+  margin: 10px auto;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.downloadFilesContainer img {
+  width: min(40vw, 40vh);
+  height: min(40vw, 40vh);
+  margin: 20px auto;
+  animation: jump 1s infinite;
+}
+
+@keyframes jump {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
