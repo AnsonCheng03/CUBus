@@ -7,6 +7,14 @@ import { useTranslation } from "react-i18next";
 
 import icon from "../assets/bus.jpg";
 
+import gps from "../initDatas/gps.json";
+import Route from "../initDatas/Route.json";
+import station from "../initDatas/station.json";
+import notice from "../initDatas/notice.json";
+import website from "../initDatas/website.json";
+import translation from "../initDatas/translation.json";
+import lastModifiedDates from "../initDatas/lastModifiedDates.json";
+
 import { Storage } from "@ionic/storage";
 const store = new Storage();
 store.create(); // Initialize the storage
@@ -81,26 +89,49 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
 
         setDownloadHint(t("DownloadFiles-Complete"));
         setDownloadedState(true);
-      } catch (error) {
-        setDownloadHint(t("DownloadFiles-Error"));
-        store.clear();
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+      } catch (error: any) {
+        // check error type if its network error or server error
+        if (error.message === "Network Error") {
+          // use fallback data
+          const serverDates = lastModifiedDates;
+          await fetchData(currentDates, serverDates, true);
+          setDownloadHint(t("DownloadFiles-Complete"));
+          setDownloadedState(true);
+        } else {
+          setDownloadHint(t("DownloadFiles-Error"));
+          store.clear();
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        }
       }
     };
 
     const fetchData = async (
       currentDates: ModificationDates | null,
-      serverDates: ModificationDates
+      serverDates: ModificationDates,
+      networkError: boolean = false
     ) => {
       try {
         setDownloadHint(t("DownloadFiles-Processing"));
 
-        const response = await axios.post<ServerResponse>(
-          "http://localhost:8000/Essential/functions/getClientData.php",
-          currentDates
-        );
+        const response =
+          networkError === true
+            ? {
+                data: {
+                  gps,
+                  Route,
+                  station,
+                  notice,
+                  website,
+                  translation,
+                  lastModifiedDates,
+                },
+              }
+            : await axios.post<ServerResponse>(
+                "http://localhost:8000/Essential/functions/getClientData.php",
+                currentDates
+              );
 
         // Process all data, whether it's newly downloaded or existing
         let translateHandled = false;
@@ -120,9 +151,9 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
           }
 
           let tableData;
-          if (response.data[table]) {
+          if ((response.data as ServerResponse)[table]) {
             // Data was downloaded
-            tableData = response.data[table];
+            tableData = (response.data as ServerResponse)[table];
             await store.set(`data-${table}`, JSON.stringify(tableData));
           } else {
             // Data wasn't downloaded, fetch from local storage
@@ -131,12 +162,12 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
 
           // Process and store the data
           if (tableData) {
-            await processTableData(table, tableData);
+            await processTableData(table, tableData, networkError);
           }
         }
 
         // Update local storage with new modification dates
-        if (response.data.modificationDates) {
+        if ("modificationDates" in response.data) {
           await store.set(
             "lastModifiedDates",
             JSON.stringify(response.data.modificationDates)
@@ -154,7 +185,11 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
       }
     };
 
-    const processTableData = async (table: string, data: any) => {
+    const processTableData = async (
+      table: string,
+      data: any,
+      networkError: boolean
+    ) => {
       switch (table) {
         case "translation":
           i18next.addResourceBundle("en", "global", data.en);
@@ -175,8 +210,21 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
             return { ...prev, ["GPS"]: data };
           });
           break;
-        case "station":
         case "notice":
+          if (networkError) {
+            data.push({
+              content: [
+                "網絡錯誤，請檢查網絡連接。",
+                "Network error, please check your network connection.",
+              ],
+              pref: { type: "Alert" },
+            });
+          }
+          setAppData((prev: any) => {
+            return { ...prev, [table]: data };
+          });
+          break;
+        case "station":
           setAppData((prev: any) => {
             return { ...prev, [table]: data };
           });
@@ -189,6 +237,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
     const initializeData = async () => {
       await store.create();
       let currentDates: ModificationDates | null = null;
+
       const storedDates = await store.get("lastModifiedDates");
       if (storedDates) {
         currentDates = JSON.parse(storedDates);
