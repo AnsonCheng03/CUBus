@@ -8,8 +8,13 @@ nav {
   left: 0;
   width: 100%;
   z-index: 9999;
+  margin: 0;
   padding-top: env(safe-area-inset-top);
   padding-bottom: 0;
+}
+
+ion-router-outlet {
+  top: calc(75px + env(safe-area-inset-top));
 }
 
 nav h1 {
@@ -85,14 +90,6 @@ nav .navtext {
 nav ion-item a .item-inner {
   display: flex;
   flex-direction: column;
-}
-
-/* ion-content {
-  --padding-top: 75px;
-} */
-
-ion-router-outlet {
-  top: 75px;
 }
 
 nav ion-icon {

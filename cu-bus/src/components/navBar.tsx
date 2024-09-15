@@ -1,7 +1,7 @@
 import "./navBar.css";
 
 import { IonIcon, IonItem } from "@ionic/react";
-import React from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   homeOutline,
@@ -9,9 +9,16 @@ import {
   informationOutline,
   settingsOutline,
 } from "ionicons/icons";
+import { useLocation } from "react-router-dom";
 
 const NavBar: React.FC = () => {
   const { t } = useTranslation("global");
+
+  const location = useLocation();
+
+  useEffect(() => {
+    console.log("Current URL:", location.pathname);
+  }, [location]);
 
   return (
     <nav>
@@ -24,7 +31,11 @@ const NavBar: React.FC = () => {
               routerDirection="none"
               detail={false}
             >
-              <div className="navLink">
+              <div
+                className={`navLink ${
+                  location.pathname === "/realtime" ? "active" : ""
+                }`}
+              >
                 <IonIcon icon={homeOutline} />
                 <p className="navtext">{t("NAV-Home")}</p>
               </div>
@@ -32,7 +43,11 @@ const NavBar: React.FC = () => {
           </li>
           <li>
             <IonItem routerLink="/route" routerDirection="none" detail={false}>
-              <div className="navLink">
+              <div
+                className={`navLink ${
+                  location.pathname === "/route" ? "active" : ""
+                }`}
+              >
                 <IonIcon icon={searchOutline} />
                 <p className="navtext">{t("NAV-StationSearch")}</p>
               </div>
@@ -40,7 +55,11 @@ const NavBar: React.FC = () => {
           </li>
           <li>
             <IonItem routerLink="/info" routerDirection="none" detail={false}>
-              <div className="navLink">
+              <div
+                className={`navLink ${
+                  location.pathname === "/info" ? "active" : ""
+                }`}
+              >
                 <IonIcon icon={informationOutline} />
                 <p className="navtext">{t("NAV-Info")}</p>
               </div>
@@ -52,7 +71,11 @@ const NavBar: React.FC = () => {
               routerDirection="none"
               detail={false}
             >
-              <div className="navLink">
+              <div
+                className={`navLink ${
+                  location.pathname === "/settings" ? "active" : ""
+                }`}
+              >
                 <IonIcon icon={settingsOutline} />
                 <p className="navtext">{t("NAV-Settings")}</p>
               </div>

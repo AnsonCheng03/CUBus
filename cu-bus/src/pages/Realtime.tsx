@@ -14,21 +14,16 @@ const Tab1: React.FC = () => {
   function handleRefresh(event: any) {
     setTimeout(() => {
       // Any calls to load data go here
+      console.log("Refreshed");
       event.target.complete();
     }, 2000);
   }
 
   return (
     <IonPage>
-      <IonHeader>
-        <IonToolbar>
-          <IonTitle>Pull to Refresh</IonTitle>
-        </IonToolbar>
-      </IonHeader>
-
       <IonContent className="ion-padding">
         <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-          <IonRefresherContent></IonRefresherContent>
+          <IonRefresherContent>abc</IonRefresherContent>
         </IonRefresher>
 
         <p>Pull this content down to trigger the refresh.</p>
