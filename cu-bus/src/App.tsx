@@ -11,6 +11,7 @@ import preset_en from "./translations/en_preset.json";
 import preset_zh from "./translations/zh_preset.json";
 
 import NavBar from "./components/navBar";
+import PWAPrompt from "./components/mobilePWAPrompt";
 
 import Realtime from "./pages/Realtime";
 import RouteSearch from "./pages/RouteSearch";
@@ -41,7 +42,20 @@ import "./main.css";
 
 import { useState } from "react";
 
-setupIonicReact();
+setupIonicReact({
+  platform: {
+    /** The default `desktop` function returns false for devices with a touchscreen.
+     * This is not always wanted, so this function tests the User Agent instead.
+     **/
+    desktop: (win) => {
+      const isMobile =
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          win.navigator.userAgent
+        );
+      return !isMobile;
+    },
+  },
+});
 
 i18next
   .use(HttpBackend)
@@ -85,6 +99,7 @@ const App: React.FC<RouteComponentProps> = () => {
               <Route component={Realtime} />
             </IonRouterOutlet>
             <NavBar />
+            <PWAPrompt />
           </IonReactRouter>
         ) : (
           <DownloadFiles

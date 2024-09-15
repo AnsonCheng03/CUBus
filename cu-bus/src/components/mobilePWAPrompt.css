@@ -1,0 +1,108 @@
+/* Home Screen Prompt*/
+#HomeScreenPrompt {
+  z-index: 9999;
+  background-color: #fefae0;
+  color: #d4a373;
+  bottom: 0;
+
+  left: 0;
+  margin: 0 8px 10px;
+  overflow: hidden;
+  position: fixed;
+  width: calc(100% - 16px);
+  border-radius: 15px;
+}
+
+@media screen and (max-width: 768px) {
+  #HomeScreenPrompt {
+    bottom: 80px;
+  }
+}
+
+#HomeScreenPrompt .desc {
+  display: flex;
+  justify-content: space-between;
+  padding: 13px 30px 0px 30px;
+}
+
+#HomeScreenPrompt .desc button {
+  color: #d4a373;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+#HomeScreenPrompt .dsecimg {
+  margin: 0 16px;
+  padding: 0px 16px 16px 16px;
+}
+
+#HomeScreenPrompt .dsecimg div {
+  align-items: center;
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  justify-content: center;
+  align-items: center;
+}
+
+#HomeScreenPrompt .dsecimg div svg,
+#HomeScreenPrompt .dsecimg2 div svg {
+  height: 30px;
+  width: 25px;
+}
+
+#HomeScreenPrompt .dsecimg2 {
+  align-items: center;
+  display: flex;
+  flex-flow: row nowrap;
+}
+
+#AndroidHomeScreenPrompt {
+  z-index: 9999;
+  background-color: #ffeaa7;
+  color: #d4a373;
+  bottom: 0;
+  left: 0;
+  margin: 0 8px 10px;
+  padding: 20px 0;
+  overflow: hidden;
+  position: fixed;
+  width: calc(100% - 16px);
+  border-radius: 15px;
+}
+
+#AndroidHomeScreenPrompt .desc {
+  margin-top: 13px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#AndroidHomeScreenPrompt .desc p {
+  display: inline-block;
+  margin: 0 20px;
+  text-align: center;
+}
+
+#AndroidHomeScreenPrompt .Addtohomebtn {
+  color: #fff;
+  border: none;
+  padding: 10px 10px;
+  width: 70%;
+  margin: 15px 5% 10px 5%;
+  background: #fff;
+  cursor: pointer;
+}
+
+#AndroidHomeScreenPrompt .Canceltohomebtn {
+  color: #ccd5ae;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+#AndroidHomeScreenPrompt a,
+#HomeScreenPrompt a {
+  color: #d4a373;
+}
