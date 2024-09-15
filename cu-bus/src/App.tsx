@@ -12,6 +12,7 @@ import preset_zh from "./translations/zh_preset.json";
 
 import NavBar from "./components/navBar";
 import PWAPrompt from "./components/mobilePWAPrompt";
+import Alert from "./components/alertBox";
 
 import Realtime from "./pages/Realtime";
 import RouteSearch from "./pages/RouteSearch";
@@ -88,19 +89,22 @@ const App: React.FC<RouteComponentProps> = () => {
     <I18nextProvider i18n={i18next}>
       <IonApp>
         {isDownloaded ? (
-          <IonReactRouter>
-            <IonRouterOutlet>
-              <Route exact path="/realtime" component={Realtime} />
-              <Route exact path="/route" component={RouteSearch} />
-              <Route exact path="/info" component={Info}>
-                <Info appData={appData} />
-              </Route>
-              <Route exact path="/settings" component={Settings} />
-              <Route component={Realtime} />
-            </IonRouterOutlet>
-            <NavBar />
-            <PWAPrompt />
-          </IonReactRouter>
+          <>
+            <IonReactRouter>
+              {/* <Alert notice={appData.notice} /> */}
+              <IonRouterOutlet>
+                <Route exact path="/realtime" component={Realtime} />
+                <Route exact path="/route" component={RouteSearch} />
+                <Route exact path="/info" component={Info}>
+                  <Info appData={appData} />
+                </Route>
+                <Route exact path="/settings" component={Settings} />
+                <Route component={Realtime} />
+              </IonRouterOutlet>
+              <NavBar />
+              <PWAPrompt />
+            </IonReactRouter>
+          </>
         ) : (
           <DownloadFiles
             setDownloadedState={setDownloadedState}

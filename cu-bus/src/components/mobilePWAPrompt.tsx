@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { getPlatforms } from "@ionic/react";
 import appIcon from "../assets/bus.ico";
 
-const NavBar: React.FC = () => {
+const MobilePWAPrompt: React.FC = () => {
   if (
     getPlatforms().includes("mobile") &&
     !getPlatforms().includes("mobileweb")
@@ -130,4 +130,4 @@ const NavBar: React.FC = () => {
   );
 };
 
-export default NavBar;
+export default MobilePWAPrompt;

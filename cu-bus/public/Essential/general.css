@@ -8,40 +8,6 @@ https://huemint.com/website-3/#palette=fdfefe-FEFAE0-001062-1d40b9-f4532c-fdf815
 #CCD5AE
 */
 
-.alert-box {
-  padding: 20px 5vw;
-  border-radius: 5px;
-  color: rgb(97, 26, 21);
-  box-shadow: none;
-  width: 90vw;
-  -webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* IE 10 and IE 11 */
-  user-select: none; /* Standard syntax */
-}
-
-.alert-box table {
-  width: 100%;
-}
-
-.alert-box table td:first-child {
-  width: 100px;
-  text-align: center;
-  margin: 10px auto;
-}
-
-.alert-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: fit-content;
-  background-color: #ecd9dd;
-}
-
-.alert-wrapper {
-  width: 100vw;
-  overflow: hidden;
-}
-
 #detail-route-container {
   position: fixed;
   bottom: 0;
