@@ -9,8 +9,9 @@ import {
 } from "@ionic/react";
 import ExploreContainer from "../components/ExploreContainer";
 import "./RouteSearch.css";
+import "./routeComp.css";
 
-const Tab1: React.FC = () => {
+const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
   function handleRefresh(event: any) {
     setTimeout(() => {
       // Any calls to load data go here
@@ -37,4 +38,4 @@ const Tab1: React.FC = () => {
   );
 };
 
-export default Tab1;
+export default RouteSearch;

@@ -93,8 +93,12 @@ const App: React.FC<RouteComponentProps> = () => {
             <IonReactRouter>
               {/* <Alert notice={appData.notice} /> */}
               <IonRouterOutlet>
-                <Route exact path="/realtime" component={Realtime} />
-                <Route exact path="/route" component={RouteSearch} />
+                <Route exact path="/realtime">
+                  <Realtime appData={appData} />
+                </Route>
+                <Route exact path="/route">
+                  <RouteSearch appData={appData} />
+                </Route>
                 <Route exact path="/info" component={Info}>
                   <Info appData={appData} />
                 </Route>

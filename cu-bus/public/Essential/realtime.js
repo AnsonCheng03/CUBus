@@ -2,45 +2,6 @@
 
 var submitted = 0;
 
-function getLocation(item) {
-  globalThis.item = item;
-  document.getElementById("details-box").style.display = "flex";
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(showPosition, Positionfailed, {
-      timeout: 500,
-    });
-  } else {
-    window.alert(Translation["GPS-notsupp"]);
-    document.getElementById("details-box").style.display = "none";
-  }
-}
-
-function Positionfailed(position) {
-  window.alert(Translation["GPS-error"]);
-  document.getElementById("details-box").style.display = "none";
-}
-
-function showPosition(position) {
-  for (var i = 0; i < GPSdata.length; i++) {
-    GPSdata[i]["distance"] = distanceBetweenTwoPlace(
-      position.coords.latitude,
-      position.coords.longitude,
-      GPSdata[i].lat,
-      GPSdata[i].lng,
-      "K"
-    );
-  }
-  GPSdata.sort(function (a, b) {
-    return parseFloat(a.distance) - parseFloat(b.distance);
-  });
-  if (GPSdata[0]["distance"] > 0.5) {
-    document.getElementById("details-box").style.display = "none";
-    window.alert(Translation["nearst_error"]);
-  } else {
-    printneareststation();
-  }
-}
-
 function changevaluebyGPS(loccode) {
   document.querySelector(".select-box").value = loccode;
   sessionStorage.setItem("realtime-Dest", loccode);
@@ -50,62 +11,6 @@ function changevaluebyGPS(loccode) {
     "realtime/index.php"
   );
   document.getElementById("details-box").style.display = "none";
-}
-
-function printneareststation() {
-  var htmlcode;
-  document.getElementById("GPSresult").innerHTML = "";
-  for (var i = 0; i < 3; i++) {
-    htmlcode = "";
-    htmlcode =
-      htmlcode +
-      '<div class="gpsOptions" onclick="changevaluebyGPS(\'' +
-      GPSdata[i]["code"] +
-      "');\"><div class=GpsText'>" +
-      GPSdata[i]["location"];
-    if (GPSdata[i]["attr"]) {
-      htmlcode = htmlcode + "(" + GPSdata[i]["attr"] + ")";
-    }
-    GPSdata[i]["distance"].toFixed(3) * 1000 > 1000
-      ? (GPSdatamodi = "> 9999")
-      : (GPSdatamodi = GPSdata[i]["distance"].toFixed(3) * 1000);
-    htmlcode =
-      htmlcode +
-      "</div><div class='gpsMeter'>" +
-      GPSdatamodi +
-      " m</div></div>";
-    document.getElementById("GPSresult").innerHTML =
-      document.getElementById("GPSresult").innerHTML + htmlcode;
-  }
-}
-
-function distanceBetweenTwoPlace(
-  firstLat,
-  firstLon,
-  secondLat,
-  secondLon,
-  unit
-) {
-  var firstRadlat = (Math.PI * firstLat) / 180;
-  var secondRadlat = (Math.PI * secondLat) / 180;
-  var theta = firstLon - secondLon;
-  var radtheta = (Math.PI * theta) / 180;
-  var distance =
-    Math.sin(firstRadlat) * Math.sin(secondRadlat) +
-    Math.cos(firstRadlat) * Math.cos(secondRadlat) * Math.cos(radtheta);
-  if (distance > 1) {
-    distance = 1;
-  }
-  distance = Math.acos(distance);
-  distance = (distance * 180) / Math.PI;
-  distance = distance * 60 * 1.1515;
-  if (unit == "K") {
-    distance = distance * 1.609344;
-  }
-  if (unit == "N") {
-    distance = distance * 0.8684;
-  }
-  return distance;
 }
 
 function refreshform(form, replacecontent, target = "/") {

@@ -1,0 +1,285 @@
+/* GPS location */
+
+.image-wrapper {
+  width: 23px;
+  padding: 5px;
+  border: 1px solid #d4a373;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: auto;
+}
+
+/* Others */
+.map-submit-btn {
+  display: inline-block;
+  background: none;
+  border: none;
+  color: white;
+}
+
+#GPSresult a {
+  text-decoration: none;
+}
+
+/* Form */
+
+.stopselector {
+  text-align: center;
+  padding: 20px 5%;
+  background-color: #fff;
+  display: grid;
+  grid-template-columns: auto 1fr 50px;
+  gap: 5%;
+  border-bottom: 1px solid #ccd5ae;
+  margin: 0;
+  justify-content: center;
+  align-items: center;
+}
+
+@media screen and (max-width: 768px) {
+  .stopselector {
+    position: sticky;
+    top: 0;
+  }
+}
+
+.stopselector span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* border: 1px solid rgb(118, 118, 118); */
+  background-color: #d4a373;
+  color: #fff;
+  border-radius: 5px;
+  padding: 2px 0;
+  padding: 4px 10px;
+  white-space: nowrap;
+}
+
+.select-box {
+  font-size: 14px;
+  padding: 7px 12px 7px 12px;
+  -webkit-appearance: none;
+  text-align: center;
+  text-align: -moz-center;
+  text-align: -webkit-center;
+  text-align-last: center;
+  border-radius: 5px;
+  color: #000;
+  width: 100%;
+  border: 1px solid #d4a373;
+  background-color: transparent;
+}
+
+/* Result */
+
+.bussect {
+  width: 80%;
+  margin: 50px auto;
+  padding: 1px;
+  border-radius: 10px;
+  box-shadow: 0 3px 5px rgba(154, 160, 185, 0.05),
+    0 15px 40px rgba(166, 173, 201, 0.2);
+  background-color: #fff;
+}
+
+.bussect .busname {
+  text-align: left;
+  margin: 5px 15px;
+  border-left: 3px solid #62529c;
+  padding: 5px 5px 5px 15px;
+  border-radius: 2px;
+}
+
+.bustype {
+  border-top: 1px solid #ddd;
+  padding: 10px;
+}
+
+.businfo {
+  display: inline-block;
+  width: 60%;
+}
+
+.arrtime {
+  width: 40%;
+  text-align: right;
+  float: right;
+}
+
+.arrived {
+  opacity: 0.5;
+}
+
+.userreport {
+  background-color: #ffff9f;
+  border-top: 1px solid #ddd;
+  padding: 10px;
+  font-weight: bolder;
+}
+
+.userreport .arrtime {
+  float: right;
+}
+
+.busname button {
+  float: right;
+  outline: none;
+  border: none;
+  background-color: #62529c;
+  color: #fff;
+  border-radius: 10px;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+/* Website Suggestions */
+.websitesugg {
+  width: 80%;
+  margin: 50px auto;
+  padding: 1px;
+  border-radius: 10px;
+  box-shadow: 0 3px 5px rgba(154, 160, 185, 0.05),
+    0 15px 40px rgba(166, 173, 201, 0.2);
+  background-color: #fff;
+}
+
+.websitesugg .headingt {
+  text-align: left;
+  margin: 5px 15px;
+  border-left: 3px solid #2196f3;
+  padding: 5px 5px 5px 15px;
+  border-radius: 2px;
+}
+
+.websitesugg .websites {
+  display: block;
+  border-top: 1px solid #ddd;
+  padding: 10px;
+  text-decoration: none;
+  color: #000;
+}
+
+.networkerror {
+  position: fixed;
+  top: 7.5vh;
+  left: 10vw;
+  right: 10vw;
+  padding: 1vh 0;
+  max-width: 80vw;
+  color: #fff;
+  text-align: center;
+  border-radius: 5px;
+  z-index: 9999;
+  opacity: 1;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  transition: all 1s ease-in-out;
+}
+
+.networkerror p {
+  padding: 0;
+}
+
+.networkerror .heading {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.bus-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.bus-row {
+  display: grid;
+  grid-template-columns: 30px 1fr 80px;
+  align-items: center;
+  padding: 10px 7%;
+  border-bottom: 1px solid #ccd5ae;
+  gap: 7%;
+  cursor: pointer;
+  min-height: 50px;
+}
+
+.bus-info .bus-name {
+  font-size: 1.2rem;
+}
+
+.bus-info .direction {
+  font-size: 0.75rem;
+}
+
+.arrival-info {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  background-color: #e9edc9;
+  border-radius: 50px;
+  padding: 3px 20px;
+}
+
+.arrival-time {
+  text-align: right;
+  font-size: 1.5rem;
+}
+
+.down-arrow {
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.3s;
+  transform: rotate(-90deg);
+}
+
+.down-arrow.active {
+  transform: rotate(0deg);
+}
+
+.bus-arrival {
+  background-color: #e9edc9;
+  border: none;
+  cursor: pointer;
+  border-radius: 50px;
+  padding: 3px 15px;
+  font-size: 0.75rem;
+}
+
+.next-station-display {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  flex-direction: column;
+  gap: 0 10px;
+}
+
+.next-station {
+  font-size: 1.2rem;
+}
+
+.next-station-display p {
+  margin: 0;
+}
+
+.next-station-text {
+  display: flex;
+  align-items: end;
+  font-size: 0.75rem;
+}
+
+.next-station-display .warning {
+  color: red;
+  display: block;
+  font-size: 0.7rem;
+}
+
+.no-bus {
+  height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.no-bus i {
+  font-size: 10rem;
+  margin-bottom: 20px;
+  color: #bbb;
+}

@@ -2,7 +2,7 @@ import { IonPage } from "@ionic/react";
 import "./Settings.css";
 import { useTranslation } from "react-i18next";
 
-const Settings: React.FC<{ appData: any }> = ({ appData }) => {
+const Settings: React.FC<{}> = () => {
   const [t, i18n] = useTranslation("global");
 
   function expand(element: HTMLElement) {

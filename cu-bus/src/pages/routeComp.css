@@ -1,0 +1,48 @@
+#details-box {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(50, 50, 50, 0.77);
+  z-index: 999999;
+  border-radius: 5px;
+  overflow: hidden;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
+
+.details-box {
+  border-radius: 5px;
+  overflow: hidden;
+  background: #fff;
+  width: 50%;
+}
+
+.gpsOptions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 5%;
+  cursor: pointer;
+  border-bottom: 1px solid #ddd;
+}
+
+.showdetails {
+  text-align: left;
+  padding: 20px 5%;
+  background-color: #d4a373;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #d4a373;
+}
+
+#details-box-heading {
+  display: inline;
+  color: #fff;
+  margin: 0;
+}

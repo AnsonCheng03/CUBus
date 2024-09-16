@@ -1008,6 +1008,11 @@
   dependencies:
     tslib "^2.1.0"
 
+"@capacitor/geolocation@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.npmjs.org/@capacitor/geolocation/-/geolocation-6.0.1.tgz"
+  integrity sha512-QOkIrSzG6E0vD2MF3gZmtuILQiuVro4LGPjqrUjCzhX10zl/4lx6bq4T+hj2YLUmMUnCiV1hWTOJHcpdVRMz7w==
+
 "@capacitor/haptics@^6.0.1":
   version "6.0.1"
   resolved "https://registry.npmjs.org/@capacitor/haptics/-/haptics-6.0.1.tgz"
@@ -1651,6 +1656,13 @@
   version "18.3.0"
   resolved "https://registry.npmjs.org/@types/react-dom/-/react-dom-18.3.0.tgz"
   integrity sha512-EhwApuTmMBmXuFOikhQLIBUn6uFg81SwLMOAUgodJF14SOBOCMdU04gDoYi0WOJJHD144TL32z4yDqCW3dnkQg==
+  dependencies:
+    "@types/react" "*"
+
+"@types/react-helmet@^6.1.11":
+  version "6.1.11"
+  resolved "https://registry.npmjs.org/@types/react-helmet/-/react-helmet-6.1.11.tgz"
+  integrity sha512-0QcdGLddTERotCXo3VFlUSWO3ztraw8nZ6e3zJSgG7apwV5xt+pJUS8ewPBqT4NYB1optGLprNQzFleIY84u/g==
   dependencies:
     "@types/react" "*"
 
