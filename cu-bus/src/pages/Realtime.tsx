@@ -1,3 +1,4 @@
+// TODO: auto reload, startup load on gps
 import { IonPage, IonIcon } from "@ionic/react";
 import { navigateCircleOutline } from "ionicons/icons";
 import { useTranslation } from "react-i18next";
@@ -48,6 +49,8 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
     const busSchedule = appData["timetable.json"];
     const busServices = appData["Status.json"];
 
+    console.log("busServices", busServices);
+
     const searchStation = stationName ?? realtimeDest;
 
     if (log) {
@@ -64,8 +67,7 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
         : [];
 
     let filteredBus = {};
-    if (currentBusServices["ERROR"]) {
-      // alert("alert", $translation["fetch-error"][$lang]);
+    if (busServiceKeys.length === 0) {
       filteredBus = filterBusesBySchedule(bus);
     } else {
       filteredBus = filterBusesBySchedule(bus);

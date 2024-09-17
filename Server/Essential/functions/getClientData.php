@@ -176,9 +176,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $output['website'] = $WebsiteLinks;
     }
 
-    if (in_array('Status.json', $outdatedTables)) {
-        $output['Status.json'] = json_decode(file_get_contents(__DIR__ . "/../../Data/Status.json"), true);
-    }
+    // if (in_array('Status.json', $outdatedTables)) {
+    $output['Status.json'] = json_decode(file_get_contents(__DIR__ . "/../../Data/Status.json"), true);
+    // }
 
     if (in_array('timetable.json', $outdatedTables)) {
         $output['timetable.json'] = json_decode(file_get_contents(__DIR__ . "/../../Data/timetable.json"), true);

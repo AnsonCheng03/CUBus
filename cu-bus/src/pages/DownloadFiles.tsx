@@ -13,6 +13,7 @@ import station from "../initDatas/station.json";
 import notice from "../initDatas/notice.json";
 import website from "../initDatas/website.json";
 import translation from "../initDatas/translation.json";
+import timetable from "../initDatas/timetable.json";
 import lastModifiedDates from "../initDatas/lastModifiedDates.json";
 
 import { Storage } from "@ionic/storage";
@@ -94,7 +95,11 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
         if (error.message === "Network Error") {
           // use fallback data
           console.log("Network Error, using fallback data");
-          const serverDates = lastModifiedDates;
+          // const serverDates = lastModifiedDates;
+          const localStoredDates = JSON.parse(
+            await store.get("lastModifiedDates")
+          );
+          const serverDates = localStoredDates ?? lastModifiedDates;
           await fetchData(currentDates, serverDates, true);
           setDownloadHint(t("DownloadFiles-Complete"));
           setDownloadedState(true);
@@ -121,12 +126,6 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
           networkError === true
             ? {
                 data: {
-                  gps,
-                  Route,
-                  station,
-                  notice,
-                  website,
-                  translation,
                   lastModifiedDates,
                 },
               }
@@ -156,10 +155,42 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
           if ((response.data as ServerResponse)[table]) {
             // Data was downloaded
             tableData = (response.data as ServerResponse)[table];
-            await store.set(`data-${table}`, JSON.stringify(tableData));
+            if (table !== "Status.json")
+              await store.set(`data-${table}`, JSON.stringify(tableData));
           } else {
             // Data wasn't downloaded, fetch from local storage
-            tableData = JSON.parse(await store.get(`data-${table}`));
+            // check if data is in storage
+            tableData = await JSON.parse(await store.get(`data-${table}`));
+            if (networkError && !tableData) {
+              switch (table) {
+                case "translation":
+                  tableData = translation;
+                  break;
+                case "website":
+                  tableData = website;
+                  break;
+                case "Route":
+                  tableData = Route;
+                  break;
+                case "gps":
+                  tableData = gps;
+                  break;
+                case "notice":
+                  tableData = notice;
+                  break;
+                case "station":
+                  tableData = station;
+                  break;
+                case "Status.json":
+                  tableData = {};
+                  break;
+                case "timetable.json":
+                  tableData = timetable;
+                  break;
+                default:
+                  console.log(`Unknown table: ${table}`);
+              }
+            }
           }
 
           // Process and store the data
@@ -234,7 +265,10 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
         case "Status.json":
         case "timetable.json":
           setAppData((prev: any) => {
-            return { ...prev, [table]: data };
+            return {
+              ...prev,
+              [table]: data,
+            };
           });
           break;
         default:

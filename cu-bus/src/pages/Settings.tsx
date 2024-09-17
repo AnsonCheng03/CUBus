@@ -2,6 +2,10 @@ import { IonPage } from "@ionic/react";
 import "./Settings.css";
 import { useTranslation } from "react-i18next";
 
+import { Storage } from "@ionic/storage";
+const store = new Storage();
+store.create(); // Initialize the storage
+
 const Settings: React.FC<{}> = () => {
   const [t, i18n] = useTranslation("global");
 
@@ -24,6 +28,17 @@ const Settings: React.FC<{}> = () => {
           }
         >
           <div>{i18n.language === "zh" ? "Change Language" : "轉換語言"}</div>
+        </div>
+
+        <div
+          className="option"
+          onClick={async () => {
+            await store.create();
+            await store.clear();
+            window.location.reload();
+          }}
+        >
+          <div>{t("Delete-Storage")}</div>
         </div>
 
         <div
