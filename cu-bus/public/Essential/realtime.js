@@ -2,17 +2,6 @@
 
 var submitted = 0;
 
-function changevaluebyGPS(loccode) {
-  document.querySelector(".select-box").value = loccode;
-  sessionStorage.setItem("realtime-Dest", loccode);
-  submitform(
-    document.querySelector("form"),
-    ".realtimeresult",
-    "realtime/index.php"
-  );
-  document.getElementById("details-box").style.display = "none";
-}
-
 function refreshform(form, replacecontent, target = "/") {
   const elm = document.querySelector(replacecontent);
   const xhr = new XMLHttpRequest();

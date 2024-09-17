@@ -40,6 +40,7 @@ interface GPSData
 const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
   const [t, i18n] = useTranslation("global");
   const [sortedGPSData, setSortedGPSData] = useState<GPSData>([]);
+  const [realtimeDest, setRealtimeDest] = useState<string>("MTR");
 
   const bus: BusData = appData?.bus;
   let allBusStop: string[] = [];
@@ -52,12 +53,37 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
     console.error(e);
   }
 
+  const generateResult = (log = true) => {
+    // $busschedule = json_decode(file_get_contents('../Data/timetable.json'), true);
+    // $busservices = json_decode(file_get_contents('../Data/Status.json'), true);
+
+    if (log) {
+      console.log("Realtime request for", realtimeDest);
+    }
+    // $currentbusservices = end($busservices);
+    // $thirtyminbusservice = array_slice($busservices, -60, 1)[0] ?? [];
+    // if (isset($currentbusservices['ERROR'])) {
+    //     // alert("alert", $translation["fetch-error"][$lang]);
+    //     $bus = filterBusesBySchedule($bus);
+    // } else {
+    //     $bus = filterBusesBySchedule($bus);
+    //     $bus = processBusStatus($currentbusservices, $thirtyminbusservice, $bus);
+    // }
+    // $outputschedule = array_filter($busschedule, fn($key) => explode("|", $key)[0] == $dest, ARRAY_FILTER_USE_KEY);
+    // $allBuses = processAndSortBuses($outputschedule, $bus, $lang, $translation);
+    // displayBuses($allBuses, $lang, $translation);
+  };
+
   const handleGetLocation = (item: any) => {
-    console.log("get location");
     getLocation(item, t, setSortedGPSData, appData.GPS);
   };
 
-  console.log(sortedGPSData);
+  const changevaluebyGPS = (locCode: string) => {
+    setRealtimeDest(locCode);
+    sessionStorage.setItem("realtime-Dest", locCode);
+    generateResult();
+    setSortedGPSData([]);
+  };
 
   return (
     <IonPage>
@@ -104,20 +130,19 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
         </div>
       )}
 
-      <form
-        className="stopselector"
-        method="POST"
-        onChange={() => {
-          // submitform(this, "realtimeresult", "realtime/index.php");
-        }}
-      >
+      <form className="stopselector" method="POST">
         <span>{t("DescTxt-yrloc")}</span>
         <select
           // mode="station"
           className="select-box"
           name="Dest"
           id="Dest"
-          defaultValue={"MTR"}
+          value={realtimeDest}
+          onChange={(e) => {
+            setRealtimeDest(e.target.value);
+            sessionStorage.setItem("realtime-Dest", e.target.value);
+            generateResult();
+          }}
         >
           {allBusStop.map((stop) => (
             <option key={stop} value={stop}>
@@ -133,19 +158,11 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
             handleGetLocation("Dest-GPS-box");
           }}
         ></IonIcon>
-        <input
-          type="hidden"
-          name="lang"
-          hidden
-          value={i18n.language === "zh" ? 1 : 0}
-        ></input>
-        <input type="hidden" name="loop" hidden value="0"></input>
       </form>
       <div className="realtimeresult"></div>
 
-      <div id="detail-route-container">
-        {/* <div id="close-button" onclick="closeRouteMap()"> */}
-        <div id="close-button" onClick={() => {}}>
+      {/* <div id="detail-route-container">
+        <div id="close-button" onClick={() => {closeRouteMap()}}>
           &times;
         </div>
         <div id="map-container">
@@ -157,7 +174,7 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
             <i className="fas fa-flag-checkered"></i>
           </div>
         </div>
-      </div>
+      </div> */}
     </IonPage>
   );
 };

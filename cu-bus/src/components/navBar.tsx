@@ -16,12 +16,23 @@ const NavBar: React.FC = () => {
   const { t, i18n } = useTranslation("global");
   const location = useLocation();
 
-  const navItem = (icon: string, text: string, link: string) => {
+  const navItem = (
+    icon: string,
+    text: string,
+    link: string,
+    home?: boolean
+  ) => {
     return (
       <li>
         <IonItem routerLink={link} routerDirection="none" detail={false}>
           <div
-            className={`navLink ${location.pathname === link ? "active" : ""}`}
+            className={`navLink
+               ${
+                 (home && location.pathname === "/") ||
+                 location.pathname === link
+                   ? "active"
+                   : ""
+               }`}
           >
             <IonIcon icon={icon} />
             <p className="navtext">{text}</p>
@@ -75,7 +86,7 @@ const NavBar: React.FC = () => {
       {metaTags()}
       <div className="navFunctions">
         <ul>
-          {navItem(homeOutline, t("NAV-Home"), "/realtime")}
+          {navItem(homeOutline, t("NAV-Home"), "/realtime", true)}
           {navItem(searchOutline, t("NAV-StationSearch"), "/route")}
           {navItem(informationOutline, t("NAV-Info"), "/info")}
           {navItem(settingsOutline, t("NAV-Settings"), "/settings")}

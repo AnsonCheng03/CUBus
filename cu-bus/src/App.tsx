@@ -103,7 +103,9 @@ const App: React.FC<RouteComponentProps> = () => {
                   <Info appData={appData} />
                 </Route>
                 <Route exact path="/settings" component={Settings} />
-                <Route component={Realtime} />
+                <Route>
+                  <Realtime appData={appData} />
+                </Route>
               </IonRouterOutlet>
               <NavBar />
               <PWAPrompt />

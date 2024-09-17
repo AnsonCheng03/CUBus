@@ -7,8 +7,6 @@ import appIcon from "../assets/bus.ico";
 const AlertBox: React.FC<{ notice: any }> = ({ notice }) => {
   const { i18n } = useTranslation("global");
 
-  console.log(notice);
-
   const alert = (type: string, content: string) => {
     return (
       <div className={`alert-box ${type}`}>
