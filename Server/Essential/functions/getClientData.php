@@ -26,6 +26,7 @@ function getTableDate($conn, $table)
 
 // Tables to check
 $tables = ['Route', 'translateroute', 'translatewebsite', 'translatebuilding', 'translateattribute', 'station', 'notice', 'gps', 'website'];
+$dataFiles = ['Status.json', 'timetable.json'];
 $translationTables = ['translateroute', 'translatewebsite', 'translatebuilding', 'translateattribute'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -33,6 +34,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $modificationDates = array();
     foreach ($tables as $table) {
         $modificationDates[$table] = getTableDate($conn, $table);
+    }
+    // Add modification dates for data files
+    foreach ($dataFiles as $file) {
+        $modificationDates[$file] = date("Y-m-d H:i:s", filemtime(__DIR__ . "/../../data/$file"));
     }
 
     header('Content-Type: application/json');
@@ -47,7 +52,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if ($clientDates === null) {
         // Client sent null, return all data
         $outdatedTables = $tables;
+        // add data files
+        $outdatedTables = array_merge($outdatedTables, $dataFiles);
     } else {
+        // check files
+        foreach ($dataFiles as $file) {
+            if (!isset($clientDates[$file]) || $clientDates[$file] < date("Y-m-d H:i:s", filemtime(__DIR__ . "/../../data/$file"))) {
+                $outdatedTables[] = $file;
+            }
+        }
+
         // Compare dates and determine which tables need updating
         foreach ($tables as $table) {
             $serverDate = getTableDate($conn, $table);
@@ -61,6 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             $outdatedTables = array_merge($outdatedTables, $translationTables);
         }
         $outdatedTables = array_unique($outdatedTables);
+
     }
 
     // Fetch data for outdated tables
@@ -161,11 +176,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $output['website'] = $WebsiteLinks;
     }
 
+    if (in_array('Status.json', $outdatedTables)) {
+        $output['Status.json'] = json_decode(file_get_contents(__DIR__ . "/../../Data/Status.json"), true);
+    }
+
+    if (in_array('timetable.json', $outdatedTables)) {
+        $output['timetable.json'] = json_decode(file_get_contents(__DIR__ . "/../../Data/timetable.json"), true);
+    }
+
     // Add modification dates to the output
     $output['modificationDates'] = array();
     foreach ($tables as $table) {
         $output['modificationDates'][$table] = getTableDate($conn, $table);
     }
+    // Add modification dates for data files
+    foreach ($dataFiles as $file) {
+        $output['modificationDates'][$file] = date("Y-m-d H:i:s", filemtime(__DIR__ . "/../../data/$file"));
+    }
+
+    $output['fetchTime'] = date("Y-m-d H:i:s");
 
     // Set the content type to JSON
     header('Content-Type: application/json');

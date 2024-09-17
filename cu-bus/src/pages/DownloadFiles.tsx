@@ -93,11 +93,13 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
         // check error type if its network error or server error
         if (error.message === "Network Error") {
           // use fallback data
+          console.log("Network Error, using fallback data");
           const serverDates = lastModifiedDates;
           await fetchData(currentDates, serverDates, true);
           setDownloadHint(t("DownloadFiles-Complete"));
           setDownloadedState(true);
         } else {
+          console.error(error);
           setDownloadHint(t("DownloadFiles-Error"));
           store.clear();
           setTimeout(() => {
@@ -225,6 +227,12 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
           });
           break;
         case "station":
+          setAppData((prev: any) => {
+            return { ...prev, [table]: data };
+          });
+          break;
+        case "Status.json":
+        case "timetable.json":
           setAppData((prev: any) => {
             return { ...prev, [table]: data };
           });

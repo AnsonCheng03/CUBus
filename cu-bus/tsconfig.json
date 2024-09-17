@@ -16,6 +16,6 @@
     "noEmit": true,
     "jsx": "react-jsx"
   },
-  "include": ["src", "public/Essential/realtime.js"],
+  "include": ["src", "../Server/Essential/realtime.js"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
