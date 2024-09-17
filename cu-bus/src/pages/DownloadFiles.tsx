@@ -81,7 +81,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
       try {
         setDownloadHint(t("DownloadFiles-Downloading"));
         const response = await axios.get<ModificationDates>(
-          "http://localhost:8000/Essential/functions/getClientData.php"
+          "https://beta.cu-bus.online/Essential/functions/getClientData.php"
         );
         const serverDates = response.data;
 
@@ -130,7 +130,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
                 },
               }
             : await axios.post<ServerResponse>(
-                "http://localhost:8000/Essential/functions/getClientData.php",
+                "https://beta.cu-bus.online/Essential/functions/getClientData.php",
                 currentDates
               );
 
@@ -285,6 +285,12 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
         currentDates = JSON.parse(storedDates);
       }
       await fetchDatabaseLastUpdated(currentDates);
+
+      // Fetch updates every 30 seconds
+      setInterval(async () => {
+        console.log("Fetching updates...");
+        await fetchDatabaseLastUpdated(currentDates);
+      }, 30 * 1000);
     };
 
     initializeData();

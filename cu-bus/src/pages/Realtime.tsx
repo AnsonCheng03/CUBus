@@ -45,17 +45,10 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
     console.error(e);
   }
 
-  const generateResult = (stationName: String | null = null, log = true) => {
+  const generateRouteResult = (searchStation: String | null = null) => {
     const busSchedule = appData["timetable.json"];
     const busServices = appData["Status.json"];
 
-    console.log("busServices", busServices);
-
-    const searchStation = stationName ?? realtimeDest;
-
-    if (log) {
-      console.log("Realtime request for", searchStation);
-    }
     const busServiceKeys = Object.keys(busServices);
     const currentBusServices =
       busServiceKeys.length > 0
@@ -95,12 +88,29 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
   const changevaluebyGPS = (locCode: string) => {
     setRealtimeDest(locCode);
     sessionStorage.setItem("realtime-Dest", locCode);
-    generateResult(locCode);
     setSortedGPSData([]);
   };
 
+  const generateResult = (stationName: string = realtimeDest, log = true) => {
+    generateRouteResult(stationName);
+
+    if (log) {
+      console.log("Realtime request for", stationName);
+    }
+  };
+
   useEffect(() => {
-    generateResult("MTR", false);
+    generateResult(realtimeDest);
+
+    const intervalId = setInterval(() => {
+      generateResult(realtimeDest, false); // This will use the latest stationName
+    }, 2000);
+
+    return () => clearInterval(intervalId);
+  }, [realtimeDest]);
+
+  useEffect(() => {
+    generateResult("MTR");
   }, []);
 
   return (
@@ -158,8 +168,6 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
             value={realtimeDest}
             onChange={(e) => {
               setRealtimeDest(e.target.value);
-              sessionStorage.setItem("realtime-Dest", e.target.value);
-              generateResult(e.target.value);
             }}
           >
             {allBusStop.map((stop) => (
