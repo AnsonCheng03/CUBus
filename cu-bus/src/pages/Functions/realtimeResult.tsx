@@ -94,41 +94,6 @@ const getScheduledTimes = (
   return scheduledTimes;
 };
 
-// function getNextStation($t, $stations, $currentStation)
-// {
-//     [$currentStationName, $currentStationAttr] = explode('|', $currentStation) + [1 => null];
-
-//     $foundIndex = -1;
-
-//     if (isset($stations['name']))
-//         foreach ($stations['name'] as $index => $name) {
-//             if (
-//                 $name === $currentStationName &&
-//                 ($currentStationAttr == null || $stations['attr'][$index] === $currentStationAttr)
-//             ) {
-//                 $foundIndex = $index;
-//                 break;
-//             }
-//         }
-
-//     if ($foundIndex === -1 || $foundIndex === count($stations['name']) - 1) {
-//         return null;
-//     }
-
-//     // return array_slice($stations['name'], $foundIndex + 1, count($stations['name']) - $foundIndex);
-//     $route = array_map(function ($index) use ($stations, $translation, $lang) {
-//         return $translation[$stations['name'][$index]][$lang]
-//             . ($stations['attr'][$index] != "NULL" ? " (" . $translation[$stations['attr'][$index]][$lang] . ")" : "");
-
-//     }, array_keys($stations['name']));
-
-//     return array(
-//         'route' => $route,
-//         'stationName' => $stations['name'][$foundIndex + 1],
-//         'startIndex' => $foundIndex
-//     );
-// }
-
 const getNextStation = (
   t: TFunction,
   stations: { name: string[]; attr: string[] },
@@ -228,6 +193,56 @@ export const processAndSortBuses = (
     }
   }
 
-  allBuses.sort((a, b) => a.time.localeCompare(b.time));
+  allBuses.sort((a, b) => {
+    if (a.arrived && !b.arrived) {
+      return -1;
+    }
+    if (!a.arrived && b.arrived) {
+      return 1;
+    }
+    return a.time.localeCompare(b.time);
+  });
   return allBuses;
+};
+
+export const generateRouteResult = (
+  t: TFunction,
+  bus: BusData,
+  appData: any,
+  searchStation: String | null = null,
+  setRealtimeResult: any
+) => {
+  const busSchedule = appData["timetable.json"];
+  const busServices = appData["Status.json"];
+
+  const busServiceKeys = Object.keys(busServices);
+  const currentBusServices =
+    busServiceKeys.length > 0
+      ? busServices[busServiceKeys[busServiceKeys.length - 1]]
+      : [];
+  const thirtyMinBusService =
+    busServiceKeys.length >= 60
+      ? busServices[busServiceKeys[busServiceKeys.length - 60]]
+      : [];
+
+  let filteredBus = {};
+  if (busServiceKeys.length === 0) {
+    filteredBus = filterBusesBySchedule(bus);
+  } else {
+    filteredBus = filterBusesBySchedule(bus);
+    filteredBus = processBusStatus(
+      currentBusServices,
+      thirtyMinBusService,
+      filteredBus
+    );
+  }
+
+  const outputSchedule = Object.fromEntries(
+    Object.entries(busSchedule).filter(
+      ([key]) => key.split("|")[0] === searchStation
+    )
+  );
+
+  const allBuses = processAndSortBuses(t, outputSchedule, filteredBus);
+  setRealtimeResult(allBuses);
 };

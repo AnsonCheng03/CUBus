@@ -7,12 +7,7 @@ import { getLocation } from "./Functions/getLocation";
 
 import "./Realtime.css";
 import "./routeComp.css";
-import {
-  filterBusesBySchedule,
-  processBusStatus,
-  processAndSortBuses,
-  BusData,
-} from "./Functions/realtimeResult";
+import { generateRouteResult, BusData } from "./Functions/realtimeResult";
 
 interface GPSData
   extends Array<
@@ -31,6 +26,7 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
   const [sortedGPSData, setSortedGPSData] = useState<GPSData>([]);
   const [realtimeDest, setRealtimeDest] = useState<string>("MTR");
   const [realtimeResult, setRealtimeResult] = useState<any>([]);
+  const [routeMap, setRouteMap] = useState<any>([]);
 
   const bus: BusData = appData?.bus;
   let allBusStop: string[] = [];
@@ -45,40 +41,16 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
     console.error(e);
   }
 
-  const generateRouteResult = (searchStation: String | null = null) => {
-    const busSchedule = appData["timetable.json"];
-    const busServices = appData["Status.json"];
+  // function createRouteMap(route, selectedStationIndex) {
+  const createRouteMap = (route: string, selectedStationIndex: number) => {
+    setRouteMap([route, selectedStationIndex]);
 
-    const busServiceKeys = Object.keys(busServices);
-    const currentBusServices =
-      busServiceKeys.length > 0
-        ? busServices[busServiceKeys[busServiceKeys.length - 1]]
-        : [];
-    const thirtyMinBusService =
-      busServiceKeys.length >= 60
-        ? busServices[busServiceKeys[busServiceKeys.length - 60]]
-        : [];
-
-    let filteredBus = {};
-    if (busServiceKeys.length === 0) {
-      filteredBus = filterBusesBySchedule(bus);
-    } else {
-      filteredBus = filterBusesBySchedule(bus);
-      filteredBus = processBusStatus(
-        currentBusServices,
-        thirtyMinBusService,
-        filteredBus
-      );
-    }
-
-    const outputSchedule = Object.fromEntries(
-      Object.entries(busSchedule).filter(
-        ([key]) => key.split("|")[0] === searchStation
-      )
-    );
-
-    const allBuses = processAndSortBuses(t, outputSchedule, filteredBus);
-    setRealtimeResult(allBuses);
+    // scroll to current station
+    const currentStation =
+      document.querySelectorAll(".station-container")[
+        selectedStationIndex - 1 < 0 ? 0 : selectedStationIndex - 1
+      ];
+    currentStation.scrollIntoView({ behavior: "smooth" });
   };
 
   const handleGetLocation = (item: any) => {
@@ -92,7 +64,7 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
   };
 
   const generateResult = (stationName: string = realtimeDest, log = true) => {
-    generateRouteResult(stationName);
+    generateRouteResult(t, bus, appData, stationName, setRealtimeResult);
 
     if (log) {
       console.log("Realtime request for", stationName);
@@ -104,7 +76,7 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
 
     const intervalId = setInterval(() => {
       generateResult(realtimeDest, false); // This will use the latest stationName
-    }, 2000);
+    }, 5000);
 
     return () => clearInterval(intervalId);
   }, [realtimeDest]);
@@ -186,20 +158,37 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
           ></IonIcon>
         </form>
         <div className="realtimeresult">
-          {/* <div id="detail-route-container">
-        <div id="close-button" onClick={() => {closeRouteMap()}}>
-          &times;
-        </div>
-        <div id="map-container">
-          <div id="route-bar"></div>
-          <div id="start-point" className="endpoint">
-            <i className="fas fa-map-marker-alt"></i>
-          </div>
-          <div id="end-point" className="endpoint">
-            <i className="fas fa-flag-checkered"></i>
-          </div>
-        </div>
-      </div> */}
+          {routeMap && routeMap.length > 0 && (
+            <div id="detail-route-container">
+              <div
+                id="close-button"
+                onClick={() => {
+                  setRouteMap([]);
+                }}
+              >
+                &times;
+              </div>
+
+              <div id="map-container">
+                {routeMap[0].map((station: string, index: number) => {
+                  return (
+                    <div
+                      className={
+                        "station-container-wrapper" +
+                        (index < routeMap[1] ? " completed" : "")
+                      }
+                      key={station}
+                    >
+                      <div className="station-container">
+                        <div className="station-number">{index + 1}</div>
+                        <div className="station-name">{station}</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           <div className="bus-grid">
             {realtimeResult.length === 0 ? (
@@ -215,7 +204,10 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
                   <div
                     className={"bus-row" + (bus.arrived ? " arrived" : "")}
                     onClick={() => {
-                      // createRouteMap(bus.nextStation.route, bus.nextStation.startIndex);
+                      createRouteMap(
+                        bus.nextStation.route,
+                        bus.nextStation.startIndex
+                      );
                     }}
                     key={bus.busno + bus.time}
                   >
