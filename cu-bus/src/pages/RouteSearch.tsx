@@ -21,10 +21,6 @@ const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
   return (
     <IonPage>
       {/* <?php
-//Init Program
-$fetcherror = false;
-?>
-
 
 <!--Fetch Busstop && Buildings to Array!-->
 <!--Need Fix!-->

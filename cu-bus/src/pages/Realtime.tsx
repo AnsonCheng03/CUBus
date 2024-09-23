@@ -7,7 +7,7 @@ import { getLocation } from "./Functions/getLocation";
 
 import "./Realtime.css";
 import "./routeComp.css";
-import { generateRouteResult, BusData } from "./Functions/realtimeResult";
+import { generateRouteResult, BusData } from "./Functions/generalRoute";
 
 interface GPSData
   extends Array<
