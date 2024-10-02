@@ -17,6 +17,7 @@ import {
   navigateCircleOutline,
 } from "ionicons/icons";
 import { useTranslation } from "react-i18next";
+import AutoComplete from "./Functions/autoComplete";
 
 const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
   const [routeMap, setRouteMap] = useState<any>([]);
@@ -56,6 +57,42 @@ const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
     // setSortedGPSData([]);
   };
 
+  let allBusStop: string[] = [];
+  try {
+    const stops = Object.values(bus).flatMap((busData) =>
+      busData.stations?.name.filter((stop) => stop !== undefined)
+    );
+    allBusStop = Array.from(
+      new Set(stops.filter((stop): stop is string => stop !== undefined))
+    ).sort();
+  } catch (e) {
+    console.error(e);
+  }
+
+  let allBuildings: string[] = [];
+  let translatedBuildings: string[] = [];
+
+  try {
+    const buildings = Object.values(appData.station).flatMap((building: any) =>
+      building.filter((stop: any) => stop !== undefined)
+    );
+
+    allBuildings = Array.from(
+      new Set(buildings.filter((stop): stop is string => stop !== undefined))
+    ).sort();
+
+    translatedBuildings = allBuildings
+      .map((building) => {
+        const buildingName = t(building);
+        return buildingName !== ""
+          ? `${buildingName} (${building.toUpperCase()})`
+          : "";
+      })
+      .filter((name) => name !== "");
+  } catch (e) {
+    console.error(e);
+  }
+
   return (
     <IonPage>
       {/* <?php
@@ -83,40 +120,6 @@ if (isset($buserrstat["suspended"]))
 // if ($finalerrbus !== "")
 //   alert("alert", $finalerrbus);
 
-
-//Concat all bus stops
-foreach ($bus as $busnum) {
-  foreach ($busnum["stations"]["name"] as $busstops) {
-    if (isset($busstops)) {
-      $allbusstop[] = $busstops;
-    }
-  }
-}
-$allbusstop = array_filter(array_unique($allbusstop));
-
-//Concat all Buildings
-foreach ($station as $stoparr) {
-  foreach ($stoparr as $buildings) {
-    if (isset($busstops)) {
-      $allbuildings[] = $buildings;
-    }
-  }
-}
-$allbuildings = array_filter(array_unique($allbuildings));
-
-
-//Translate building names
-foreach ($translation as $buildingcode => $buildingnamearr) {
-  foreach ($allbuildings as $allbuildingcode) {
-    if ($buildingcode == $allbuildingcode) {
-      if ($buildingnamearr[$lang] == "" || $buildingcode == "") {
-        $transbuilding[] = $buildingnamearr[$lang];
-      } else {
-        $transbuilding[] = $buildingnamearr[$lang] . " (" . strtoupper($buildingcode) . ")";
-      }
-    }
-  }
-}
 ?>
 
 
@@ -172,7 +175,7 @@ foreach ($translation as $buildingcode => $buildingnamearr) {
           name="mode"
           type="radio"
           value="building"
-          checked
+          defaultChecked
           hidden
         />
         <div className="search-boxes">
@@ -182,16 +185,7 @@ foreach ($translation as $buildingcode => $buildingnamearr) {
                 {t("Form-Start")}
               </label>
               <div className="locationinput">
-                <div className="autocomplete">
-                  <input
-                    className="text-box"
-                    type="text"
-                    onClick={(e) => e.currentTarget.select()}
-                    id="Startbd"
-                    name="Startbd"
-                    autoComplete="off"
-                  />
-                </div>
+                <AutoComplete allBuildings={translatedBuildings} />
               </div>
               <div className="functionbuttons">
                 <IonIcon
@@ -215,16 +209,7 @@ foreach ($translation as $buildingcode => $buildingnamearr) {
                 {t("Form-Dest")}
               </label>
               <div className="locationinput">
-                <div className="autocomplete">
-                  <input
-                    className="text-box"
-                    type="text"
-                    onClick={(e) => e.currentTarget.select()}
-                    id="Destbd"
-                    name="Destbd"
-                    autoComplete="off"
-                  />
-                </div>
+                <AutoComplete allBuildings={translatedBuildings} />
               </div>
               <div className="functionbuttons">
                 <IonIcon
@@ -285,7 +270,9 @@ foreach ($translation as $buildingcode => $buildingnamearr) {
                     <option
                       key={weekdays}
                       value={weekdays}
-                      selected={new Date().getDay() === value}
+                      {...(new Date().getDay() === value && {
+                        defaultChecked: true,
+                      })}
                     >
                       {t(weekdays)}
                     </option>
@@ -331,7 +318,9 @@ foreach ($translation as $buildingcode => $buildingnamearr) {
                     <option
                       key={value}
                       value={value}
-                      selected={new Date().getHours() === parseInt(value)}
+                      {...(new Date().getHours() === parseInt(value) && {
+                        defaultChecked: true,
+                      })}
                     >
                       {value}
                     </option>
@@ -356,10 +345,10 @@ foreach ($translation as $buildingcode => $buildingnamearr) {
                     <option
                       key={value}
                       value={value}
-                      selected={
-                        parseInt(value) >= new Date().getMinutes() &&
-                        parseInt(value) < new Date().getMinutes() + 5
-                      }
+                      {...(parseInt(value) >= new Date().getMinutes() &&
+                        parseInt(value) < new Date().getMinutes() + 5 && {
+                          defaultChecked: true,
+                        })}
                     >
                       {value}
                     </option>
