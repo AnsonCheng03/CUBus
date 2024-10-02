@@ -7,19 +7,12 @@ import { getLocation } from "./Functions/getLocation";
 
 import "./Realtime.css";
 import "./routeComp.css";
-import { generateRouteResult, BusData } from "./Functions/generalRoute";
 
-interface GPSData
-  extends Array<
-    [
-      string,
-      {
-        Lat: string;
-        Lng: string;
-        distance: number;
-      }
-    ]
-  > {}
+import {
+  generateRouteResult,
+  BusData,
+  GPSData,
+} from "./Functions/generalRoute";
 
 const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
   const [t, i18n] = useTranslation("global");
@@ -51,10 +44,6 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
         selectedStationIndex - 1 < 0 ? 0 : selectedStationIndex - 1
       ];
     currentStation.scrollIntoView({ behavior: "smooth" });
-  };
-
-  const handleGetLocation = (item: any) => {
-    getLocation(item, t, setSortedGPSData, appData.GPS);
   };
 
   const changevaluebyGPS = (locCode: string) => {
@@ -153,7 +142,7 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
             className="image-wrapper"
             id="Dest-GPS-box"
             onClick={() => {
-              handleGetLocation("Dest-GPS-box");
+              getLocation("Dest-GPS-box", t, setSortedGPSData, appData.GPS);
             }}
           ></IonIcon>
         </form>

@@ -23,6 +23,18 @@ export interface BusData {
   };
 }
 
+export interface GPSData
+  extends Array<
+    [
+      string,
+      {
+        Lat: string;
+        Lng: string;
+        distance: number;
+      }
+    ]
+  > {}
+
 export const filterBusesBySchedule = (bus: BusData) => {
   const weekday =
     "WK-" +

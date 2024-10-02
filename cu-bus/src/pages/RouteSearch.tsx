@@ -6,46 +6,59 @@ import {
   IonToolbar,
   IonRefresher,
   IonRefresherContent,
+  IonIcon,
 } from "@ionic/react";
 import "./RouteSearch.css";
-import "./routeComp.css";
+import { BusData, GPSData, processBusStatus } from "./Functions/generalRoute";
+import { getLocation } from "./Functions/getLocation";
+import { useState } from "react";
+import {
+  informationCircleOutline,
+  navigateCircleOutline,
+} from "ionicons/icons";
+import { useTranslation } from "react-i18next";
 
 const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
-  function handleRefresh(event: any) {
-    setTimeout(() => {
-      // Any calls to load data go here
-      event.target.complete();
-    }, 2000);
+  const [routeMap, setRouteMap] = useState<any>([]);
+  const [sortedGPSData, setSortedGPSData] = useState<GPSData>([]);
+  const [t, i18n] = useTranslation("global");
+
+  const bus: BusData = appData?.bus;
+  const busSchedule = appData["timetable.json"];
+  const busServices = appData["Status.json"];
+
+  const busServiceKeys = Object.keys(busServices);
+  const currentBusServices =
+    busServiceKeys.length > 0
+      ? busServices[busServiceKeys[busServiceKeys.length - 1]]
+      : [];
+  const thirtyMinBusService =
+    busServiceKeys.length >= 60
+      ? busServices[busServiceKeys[busServiceKeys.length - 60]]
+      : [];
+
+  // need double check realtime side
+  let fetchError = false;
+  let filteredBus = { ...bus };
+  if (busServices["ERROR"]) {
+    fetchError = true;
+  } else {
+    filteredBus = processBusStatus(
+      currentBusServices,
+      thirtyMinBusService,
+      filteredBus
+    );
   }
+
+  const changevaluebyGPS = (locCode: string) => {
+    // setRealtimeDest(locCode);
+    // sessionStorage.setItem("realtime-Dest", locCode);
+    // setSortedGPSData([]);
+  };
 
   return (
     <IonPage>
       {/* <?php
-
-<!--Fetch Busstop && Buildings to Array!-->
-<!--Need Fix!-->
-<?php
-
-$busservices = json_decode(file_get_contents('Data/Status.json'), true);
-$currentbusservices = $busservices ? end($busservices) : null;
-$temp = array_slice($busservices, -30, 1);
-$thirtyminbusservice = array_pop($temp);
-
-
-if (isset($currentbusservices['ERROR'])) {
-  $fetcherror = true;
-  // alert("alert", $translation["fetch-error"][$lang]);
-} else {
-  foreach ($currentbusservices as $busnumber => $busstatus) {
-    $bus[$busnumber]["stats"]["status"] = $busstatus;
-    $bus[$busnumber]["stats"]["prevstatus"] = $thirtyminbusservice[$busnumber];
-    if (isset($bus[$busnumber . "#"])) {
-      $bus[$busnumber . "#"]["stats"]["status"] = $busstatus;
-      $bus[$busnumber . "#"]["stats"]["prevstatus"] = $thirtyminbusservice[$busnumber];
-    }
-  }
-}
-
 
 
 //Alert Delay Bus
@@ -106,124 +119,6 @@ foreach ($translation as $buildingcode => $buildingnamearr) {
 }
 ?>
 
-<!--Input form!-->
-<form name="bussearch" method="post" onsubmit="return submitform(this,'.routeresult','routesearch/index.php')"
-  autocomplete="off">
-  <input hidden type="hidden" name="language" value="<?php echo $lang ?>"></input>
-
-  <input id="building" name="mode" type="radio" value="building" checked hidden />
-
-  <div class="search-boxes">
-    <div class="info-box optionssel">
-
-
-      <div class="locationchooser">
-        <label for="Start" id="Start-label"><?php echo $translation["Form-Start"][$lang] ?></label>
-        <div class="locationinput">
-          <div mode="building" class="autocomplete">
-            <input class="text-box" type="text" onclick="this.select();" id="Startbd" name="Startbd" autocomplete="off">
-          </div>
-          <select mode="station" class="select-box" name="Start" id="Start">
-            <?php
-            foreach ($allbusstop as $value)
-              echo '<option value="' . $value . '">' . $translation[$value][$lang] . "</option>";
-            ?>
-          </select>
-        </div>
-        <div class="functionbuttons">
-          <img alt="Get Current Location" width='20px' height='20px' class='image-wrapper' src='Images/GPS.jpg'
-            id='Start-GPS-box' onclick='getLocation(this.id);'></img>
-        </div>
-      </div>
-
-      <div class="locationchooser">
-        <label for="Dest" id="Dest-label"> <?php echo $translation["Form-Dest"][$lang] ?></label>
-        <div class="locationinput">
-          <div mode="building" class="autocomplete">
-            <input class="text-box" type="text" onclick="this.select();" id="Destbd" name="Destbd" autocomplete="off">
-          </div>
-          <select mode="station" class="select-box" name="Dest" id="Dest">
-            <?php
-            foreach ($allbusstop as $value)
-              echo '<option value="' . $value . '">' . $translation[$value][$lang] . "</option>";
-            ?>
-          </select>
-        </div>
-        <div class="functionbuttons">
-          <img alt="Get Current Location" width='20px' height='20px' class="image-wrapper" src="Images/GPS.jpg"
-            id="Dest-GPS-box" onclick="getLocation(this.id);"></img>
-        </div>
-      </div>
-
-      <div class="bus-options">
-        <span class="slider-wrapper">
-          <label for="deptnow"><?php echo $translation["info-deptnow"][$lang] ?></label>
-          <div class="slider-container">
-            <label class="switch"><input type="checkbox" id="deptnow" name="deptnow" checked onchange="time_change();">
-              <span class="slider"></span>
-            </label>
-          </div>
-        </span>
-      </div>
-
-
-
-      <!--手動時間!-->
-      <div id="time-schedule" style="display: none;">
-        <div class="time-schedule">
-          <select class="select-date" name="Trav-wk" id="Trav-wk" onchange="date_change();">
-            <?php
-            $weekday = ["WK-Sun", "WK-Mon", "WK-Tue", "WK-Wed", "WK-Thu", "WK-Fri", "WK-Sat"];
-            foreach ($weekday as $weekdays => $value)
-              echo '<option ' . (date('N') == $weekdays ? 'selected ' : '') . 'value="' . $value . '" >' . $translation[$value][$lang] . "</option>";
-            ?>
-          </select>
-
-          <select class="select-date" name="Trav-dt" id="Trav-dt">
-            <?php
-            $busdate = array_filter(array_unique(array_column(array_column($bus, 'schedule'), 3)));
-            foreach ($busdate as $value)
-              if (strpos($value, ",") == false)
-                echo '<option value="' . $value . '">' . $translation[$value][$lang] . "</option>";
-            ?>
-          </select>
-
-          <select class="select-time" name="Trav-hr" id="Trav-hr">
-            <?php
-            $hour = array("00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23");
-            foreach ($hour as $value) {
-              echo "<option " . (date('H') == $value ? 'selected ' : '') . 'value="' . $value . '">' . $value . "</option>";
-            }
-            ?>
-          </select>
-          :
-          <select class="select-time" name="Trav-min" id="Trav-min">
-            <?php
-            $minute = array("00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55");
-            foreach ($minute as $value) {
-              echo "<option " . ($value >= date('i') && $value < date('i') + 5 ? ' selected ' : '') . 'value="' . $value . '">' . $value . "</option>";
-            }
-            ?>
-          </select>
-          <input id="routesubmitbtn" class="submit-btn" type="submit" name="submit"
-            value=" <?php echo $translation["route-submit"][$lang] ?> " />
-        </div>
-
-        <!--自動時間!-->
-        <?php
-        if ($fetcherror) {
-          echo '<div id="time-now" class="show-time" style="display: none;">';
-          echo $translation["fetch-error"][$lang];
-          echo "</div>";
-        }
-
-        ?>
-
-      </div>
-    </div>
-
-  </div>
-</form>
 
 <script>
   // submit the form when the enter key is pressed or changed (event listener)
@@ -255,37 +150,323 @@ foreach ($translation as $buildingcode => $buildingnamearr) {
 
 </script>
 
-<!--GPS Details Box!-->
-<div id="details-box">
-  <div class="details-box">
-    <div class="showdetails">
-      <h4 id="details-box-heading">
-        <?php echo $translation["nearst_txt"][$lang] ?>
-      </h4>
-      <div class="map-submit-btn" onclick='document.getElementById("details-box").style.display="none"'>
-        <?php echo $translation["cancel_btntxt"][$lang] ?>
-      </div>
-    </div>
-    <div id="GPSresult"></div>
-  </div>
-</div>
+*/}
 
-<!--Output result!-->
-<div class="routeresult">
+      {/* <div class="routeresult">
   <div class='error-text'>
     <i class='fas fa-info-circle''></i>
     <p> <?php echo $translation["input-text-reminder"][$lang] ?></p>
   </div>
-</div>
+    </div> */}
 
-<div id="detail-route-container">
-    <div id="close-button" onclick="closeRouteMap()">&times;</div>
-    <div id="map-container"></div>
-</div>
+      <form
+        name="bussearch"
+        method="post"
+        autoComplete="off"
+        onSubmit={(e) => {
+          // return submitform(this, ".routeresult", "routesearch/index.php");
+        }}
+      >
+        <input
+          id="building"
+          name="mode"
+          type="radio"
+          value="building"
+          checked
+          hidden
+        />
+        <div className="search-boxes">
+          <div className="info-box optionssel">
+            <div className="locationchooser">
+              <label htmlFor="Start" id="Start-label">
+                {t("Form-Start")}
+              </label>
+              <div className="locationinput">
+                <div className="autocomplete">
+                  <input
+                    className="text-box"
+                    type="text"
+                    onClick={(e) => e.currentTarget.select()}
+                    id="Startbd"
+                    name="Startbd"
+                    autoComplete="off"
+                  />
+                </div>
+              </div>
+              <div className="functionbuttons">
+                <IonIcon
+                  icon={navigateCircleOutline}
+                  className="image-wrapper"
+                  id="Start-GPS-box"
+                  onClick={() => {
+                    getLocation(
+                      "Start-GPS-box",
+                      t,
+                      setSortedGPSData,
+                      appData.GPS
+                    );
+                  }}
+                />
+              </div>
+            </div>
 
-</body>
+            <div className="locationchooser">
+              <label htmlFor="Dest" id="Dest-label">
+                {t("Form-Dest")}
+              </label>
+              <div className="locationinput">
+                <div className="autocomplete">
+                  <input
+                    className="text-box"
+                    type="text"
+                    onClick={(e) => e.currentTarget.select()}
+                    id="Destbd"
+                    name="Destbd"
+                    autoComplete="off"
+                  />
+                </div>
+              </div>
+              <div className="functionbuttons">
+                <IonIcon
+                  icon={navigateCircleOutline}
+                  className="image-wrapper"
+                  id="Dest-GPS-box"
+                  onClick={() => {
+                    getLocation(
+                      "Dest-GPS-box",
+                      t,
+                      setSortedGPSData,
+                      appData.GPS
+                    );
+                  }}
+                />
+              </div>
+            </div>
 
-<footer> */}
+            <div className="bus-options">
+              <span className="slider-wrapper">
+                <label htmlFor="deptnow">{t("info-deptnow")}</label>
+                <div className="slider-container">
+                  <label className="switch">
+                    <input
+                      type="checkbox"
+                      id="deptnow"
+                      name="deptnow"
+                      checked
+                      onChange={() => {
+                        // time_change();
+                      }}
+                    />
+                    <span className="slider"></span>
+                  </label>
+                </div>
+              </span>
+            </div>
+
+            <div id="time-schedule" style={{ display: "none" }}>
+              <div className="time-schedule">
+                <select
+                  className="select-date"
+                  name="Trav-wk"
+                  id="Trav-wk"
+                  onChange={() => {
+                    // date_change();
+                  }}
+                >
+                  {[
+                    "WK-Sun",
+                    "WK-Mon",
+                    "WK-Tue",
+                    "WK-Wed",
+                    "WK-Thu",
+                    "WK-Fri",
+                    "WK-Sat",
+                  ].map((weekdays, value) => (
+                    <option
+                      key={weekdays}
+                      value={weekdays}
+                      selected={new Date().getDay() === value}
+                    >
+                      {t(weekdays)}
+                    </option>
+                  ))}
+                </select>
+                <select className="select-date" name="Trav-dt" id="Trav-dt">
+                  {/* 
+            <?php
+            $busdate = array_filter(array_unique(array_column(array_column($bus, 'schedule'), 3)));
+            foreach ($busdate as $value)
+              if (strpos($value, ",") == false)
+                echo '<option value="' . $value . '">' . $translation[$value][$lang] . "</option>";
+            ?>
+          */}
+                </select>
+                <select className="select-time" name="Trav-hr" id="Trav-hr">
+                  {[
+                    "00",
+                    "01",
+                    "02",
+                    "03",
+                    "04",
+                    "05",
+                    "06",
+                    "07",
+                    "08",
+                    "09",
+                    "10",
+                    "11",
+                    "12",
+                    "13",
+                    "14",
+                    "15",
+                    "16",
+                    "17",
+                    "18",
+                    "19",
+                    "20",
+                    "21",
+                    "22",
+                    "23",
+                  ].map((value) => (
+                    <option
+                      key={value}
+                      value={value}
+                      selected={new Date().getHours() === parseInt(value)}
+                    >
+                      {value}
+                    </option>
+                  ))}
+                </select>
+                :
+                <select className="select-time" name="Trav-min" id="Trav-min">
+                  {[
+                    "00",
+                    "05",
+                    "10",
+                    "15",
+                    "20",
+                    "25",
+                    "30",
+                    "35",
+                    "40",
+                    "45",
+                    "50",
+                    "55",
+                  ].map((value) => (
+                    <option
+                      key={value}
+                      value={value}
+                      selected={
+                        parseInt(value) >= new Date().getMinutes() &&
+                        parseInt(value) < new Date().getMinutes() + 5
+                      }
+                    >
+                      {value}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  id="routesubmitbtn"
+                  className="submit-btn"
+                  type="submit"
+                  value={t("route-submit")}
+                />
+              </div>
+              {fetchError && (
+                <div
+                  id="time-now"
+                  className="show-time"
+                  style={{ display: "none" }}
+                >
+                  {t("fetch-error")}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div className="routeresult">
+        <div className="error-text">
+          <IonIcon icon={informationCircleOutline}></IonIcon>
+          <p>{t("input-text-reminder")}</p>
+        </div>
+      </div>
+
+      {sortedGPSData.length > 0 && (
+        <div id="details-box">
+          <div className="details-box">
+            <div className="showdetails">
+              <h4 id="details-box-heading">{t("nearst_txt")}</h4>
+              <div
+                className="map-submit-btn"
+                onClick={() => setSortedGPSData([])}
+              >
+                {t("cancel_btntxt")}
+              </div>
+            </div>
+            <div id="GPSresult">
+              {sortedGPSData.slice(0, 3).map((data) => {
+                return (
+                  <div
+                    className="gpsOptions"
+                    key={data[0]}
+                    onClick={() => {
+                      changevaluebyGPS(data[0]);
+                    }}
+                  >
+                    <div className="GpsText">
+                      {data[0].includes("|")
+                        ? t(data[0].split("|")[0]) +
+                          " (" +
+                          t(data[0].split("|")[1]) +
+                          ")"
+                        : t(data[0])}
+                    </div>
+                    <div className="gpsMeter">
+                      {Number(data[1].distance.toFixed(3)) * 1000 > 1000
+                        ? "> 9999"
+                        : Number(data[1].distance.toFixed(3)) * 1000 + " m"}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {routeMap && routeMap.length > 0 && (
+        <div id="detail-route-container">
+          <div
+            id="close-button"
+            onClick={() => {
+              setRouteMap([]);
+            }}
+          >
+            &times;
+          </div>
+
+          <div id="map-container">
+            {routeMap[0].map((station: string, index: number) => {
+              return (
+                <div
+                  className={
+                    "station-container-wrapper" +
+                    (index < routeMap[1] ? " completed" : "")
+                  }
+                  key={station}
+                >
+                  <div className="station-container">
+                    <div className="station-number">{index + 1}</div>
+                    <div className="station-name">{station}</div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </IonPage>
   );
 };
