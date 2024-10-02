@@ -18,6 +18,7 @@ import {
 } from "ionicons/icons";
 import { useTranslation } from "react-i18next";
 import AutoComplete from "./Functions/autoComplete";
+import { capitalizeFirstLetter } from "./Functions/Tools";
 
 const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
   const [routeMap, setRouteMap] = useState<any>([]);
@@ -237,9 +238,20 @@ if (isset($buserrstat["suspended"]))
                       type="checkbox"
                       id="deptnow"
                       name="deptnow"
-                      checked
-                      onChange={() => {
-                        // time_change();
+                      defaultChecked
+                      onChange={(e) => {
+                        const timeNow = document.getElementById("time-now");
+                        const timeSchedule =
+                          document.getElementById("time-schedule");
+
+                        if (e.target.checked) {
+                          if (timeNow) timeNow.style.display = "block";
+                          if (timeSchedule) timeSchedule.style.display = "none";
+                        } else {
+                          if (timeNow) timeNow.style.display = "none";
+                          if (timeSchedule)
+                            timeSchedule.style.display = "block";
+                        }
                       }}
                     />
                     <span className="slider"></span>
@@ -254,8 +266,29 @@ if (isset($buserrstat["suspended"]))
                   className="select-date"
                   name="Trav-wk"
                   id="Trav-wk"
+                  defaultValue={
+                    "WK-" +
+                    capitalizeFirstLetter(
+                      new Date().toLocaleDateString("en-US", {
+                        weekday: "short",
+                      })
+                    )
+                  }
                   onChange={() => {
-                    // date_change();
+                    const TravWk = document.getElementById(
+                      "Trav-wk"
+                    ) as HTMLSelectElement;
+                    const TravDt = document.getElementById(
+                      "Trav-dt"
+                    ) as HTMLSelectElement;
+                    if (TravWk) {
+                      if (TravWk.value === "WK-Sun") {
+                        TravDt.style.display = "none";
+                        TravDt.value = "HD";
+                      } else {
+                        TravDt.style.display = "inline";
+                      }
+                    }
                   }}
                 >
                   {[
@@ -267,67 +300,54 @@ if (isset($buserrstat["suspended"]))
                     "WK-Fri",
                     "WK-Sat",
                   ].map((weekdays, value) => (
-                    <option
-                      key={weekdays}
-                      value={weekdays}
-                      {...(new Date().getDay() === value && {
-                        defaultChecked: true,
-                      })}
-                    >
+                    <option key={weekdays} value={weekdays}>
                       {t(weekdays)}
                     </option>
                   ))}
                 </select>
                 <select className="select-date" name="Trav-dt" id="Trav-dt">
-                  {/* 
-            <?php
-            $busdate = array_filter(array_unique(array_column(array_column($bus, 'schedule'), 3)));
-            foreach ($busdate as $value)
-              if (strpos($value, ",") == false)
-                echo '<option value="' . $value . '">' . $translation[$value][$lang] . "</option>";
-            ?>
-          */}
+                  {Array.from(
+                    new Set(
+                      Object.values(bus)
+                        .map((b) => b.schedule?.[3])
+                        .filter(Boolean)
+                    )
+                  )
+                    .filter((date) => (date ? !date.includes(",") : []))
+                    .map((date) => {
+                      return date ? (
+                        <option key={date} value={date}>
+                          {t(date)}
+                        </option>
+                      ) : null;
+                    })}
                 </select>
-                <select className="select-time" name="Trav-hr" id="Trav-hr">
-                  {[
-                    "00",
-                    "01",
-                    "02",
-                    "03",
-                    "04",
-                    "05",
-                    "06",
-                    "07",
-                    "08",
-                    "09",
-                    "10",
-                    "11",
-                    "12",
-                    "13",
-                    "14",
-                    "15",
-                    "16",
-                    "17",
-                    "18",
-                    "19",
-                    "20",
-                    "21",
-                    "22",
-                    "23",
-                  ].map((value) => (
-                    <option
-                      key={value}
-                      value={value}
-                      {...(new Date().getHours() === parseInt(value) && {
-                        defaultChecked: true,
-                      })}
-                    >
+                <select
+                  className="select-time"
+                  name="Trav-hr"
+                  id="Trav-hr"
+                  defaultValue={new Date()
+                    .getHours()
+                    .toString()
+                    .padStart(2, "0")}
+                >
+                  {Array.from({ length: 24 }, (_, i) =>
+                    i.toString().padStart(2, "0")
+                  ).map((value) => (
+                    <option key={value} value={value}>
                       {value}
                     </option>
                   ))}
                 </select>
                 :
-                <select className="select-time" name="Trav-min" id="Trav-min">
+                <select
+                  className="select-time"
+                  name="Trav-min"
+                  id="Trav-min"
+                  defaultValue={(Math.floor(new Date().getMinutes() / 5) * 5)
+                    .toString()
+                    .padStart(2, "0")}
+                >
                   {[
                     "00",
                     "05",
@@ -342,14 +362,7 @@ if (isset($buserrstat["suspended"]))
                     "50",
                     "55",
                   ].map((value) => (
-                    <option
-                      key={value}
-                      value={value}
-                      {...(parseInt(value) >= new Date().getMinutes() &&
-                        parseInt(value) < new Date().getMinutes() + 5 && {
-                          defaultChecked: true,
-                        })}
-                    >
+                    <option key={value} value={value}>
                       {value}
                     </option>
                   ))}

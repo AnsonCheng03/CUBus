@@ -154,29 +154,6 @@ function map_show(mode, text) {
   }
 }
 
-function time_change() {
-  if (document.getElementById("deptnow").checked) {
-    if (document.getElementById("time-now"))
-      document.getElementById("time-now").style.display = "block";
-    document.getElementById("time-schedule").style.display = "none";
-  } else {
-    document.getElementById("time-schedule").style.display = "block";
-    if (document.getElementById("time-now"))
-      document.getElementById("time-now").style.display = "none";
-  }
-}
-
-function date_change() {
-  if (document.getElementById("Trav-wk")) {
-    if (document.getElementById("Trav-wk").value == "WK-Sun") {
-      document.getElementById("Trav-dt").style.display = "none";
-      document.getElementById("Trav-dt").value = "HD";
-    } else {
-      document.getElementById("Trav-dt").style.display = "inline";
-    }
-  }
-}
-
 function submitform(form, replacecontent, target = "/") {
   if (!window.navigator.onLine) window.location.reload();
   const elm = document.querySelector(replacecontent);
