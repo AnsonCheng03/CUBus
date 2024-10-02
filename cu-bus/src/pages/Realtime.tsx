@@ -3,7 +3,7 @@ import { IonPage, IonIcon } from "@ionic/react";
 import { navigateCircleOutline } from "ionicons/icons";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
-import { getLocation } from "./Functions/getLocation";
+import { GPSSelectIcon } from "./Components/gpsSelectBox";
 
 import "./Realtime.css";
 import "./routeComp.css";
@@ -16,7 +16,6 @@ import {
 
 const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
   const [t, i18n] = useTranslation("global");
-  const [sortedGPSData, setSortedGPSData] = useState<GPSData>([]);
   const [realtimeDest, setRealtimeDest] = useState<string>("MTR");
   const [realtimeResult, setRealtimeResult] = useState<any>([]);
   const [routeMap, setRouteMap] = useState<any>([]);
@@ -46,12 +45,6 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
     currentStation.scrollIntoView({ behavior: "smooth" });
   };
 
-  const changevaluebyGPS = (locCode: string) => {
-    setRealtimeDest(locCode);
-    sessionStorage.setItem("realtime-Dest", locCode);
-    setSortedGPSData([]);
-  };
-
   const generateResult = (stationName: string = realtimeDest, log = true) => {
     generateRouteResult(t, bus, appData, stationName, setRealtimeResult);
 
@@ -77,49 +70,6 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
   return (
     <IonPage>
       <div className="realtime-page">
-        {sortedGPSData.length > 0 && (
-          <div id="details-box">
-            <div className="details-box">
-              <div className="showdetails">
-                <h4 id="details-box-heading">{t("nearst_txt")}</h4>
-                <div
-                  className="map-submit-btn"
-                  onClick={() => setSortedGPSData([])}
-                >
-                  {t("cancel_btntxt")}
-                </div>
-              </div>
-              <div id="GPSresult">
-                {sortedGPSData.slice(0, 3).map((data) => {
-                  return (
-                    <div
-                      className="gpsOptions"
-                      key={data[0]}
-                      onClick={() => {
-                        changevaluebyGPS(data[0]);
-                      }}
-                    >
-                      <div className="GpsText">
-                        {data[0].includes("|")
-                          ? t(data[0].split("|")[0]) +
-                            " (" +
-                            t(data[0].split("|")[1]) +
-                            ")"
-                          : t(data[0])}
-                      </div>
-                      <div className="gpsMeter">
-                        {Number(data[1].distance.toFixed(3)) * 1000 > 1000
-                          ? "> 9999"
-                          : Number(data[1].distance.toFixed(3)) * 1000 + " m"}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        )}
-
         <form className="stopselector" method="POST">
           <span>{t("DescTxt-yrloc")}</span>
           <select
@@ -137,14 +87,7 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
               </option>
             ))}
           </select>
-          <IonIcon
-            icon={navigateCircleOutline}
-            className="image-wrapper"
-            id="Dest-GPS-box"
-            onClick={() => {
-              getLocation("Dest-GPS-box", t, setSortedGPSData, appData.GPS);
-            }}
-          ></IonIcon>
+          <GPSSelectIcon appData={appData} setDest={setRealtimeDest} />
         </form>
         <div className="realtimeresult">
           {routeMap && routeMap.length > 0 && (

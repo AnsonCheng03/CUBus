@@ -90,6 +90,8 @@ function autocomplete(inp: HTMLInputElement, arr: string[]): void {
 
 interface AutoCompleteProps {
   allBuildings: string[];
+  inputState?: any;
+  setInputState?: any;
 }
 
 class AutoComplete extends Component<AutoCompleteProps> {
@@ -112,6 +114,10 @@ class AutoComplete extends Component<AutoCompleteProps> {
           id="Startbd"
           name="Startbd"
           autoComplete="off"
+          value={this.props.inputState}
+          onChange={(e) => {
+            this.props.setInputState(e.target.value);
+          }}
           onClick={(e) => e.currentTarget.select()}
         />
       </div>

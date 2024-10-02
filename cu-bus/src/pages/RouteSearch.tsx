@@ -10,20 +10,22 @@ import {
 } from "@ionic/react";
 import "./RouteSearch.css";
 import { BusData, GPSData, processBusStatus } from "./Functions/generalRoute";
-import { getLocation } from "./Functions/getLocation";
 import { useState } from "react";
 import {
   informationCircleOutline,
   navigateCircleOutline,
 } from "ionicons/icons";
 import { useTranslation } from "react-i18next";
-import AutoComplete from "./Functions/autoComplete";
+import AutoComplete from "./Components/autoComplete";
 import { capitalizeFirstLetter } from "./Functions/Tools";
+import RouteMap from "./Components/routeMap";
+import { GPSSelectBox, GPSSelectIcon } from "./Components/gpsSelectBox";
 
 const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
   const [routeMap, setRouteMap] = useState<any>([]);
-  const [sortedGPSData, setSortedGPSData] = useState<GPSData>([]);
   const [t, i18n] = useTranslation("global");
+  const [routeSearchStart, setRouteSearchStart] = useState<string>("");
+  const [routeSearchDest, setRouteSearchDest] = useState<string>("");
 
   const bus: BusData = appData?.bus;
   const busSchedule = appData["timetable.json"];
@@ -52,34 +54,21 @@ const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
     );
   }
 
-  const changevaluebyGPS = (locCode: string) => {
-    // setRealtimeDest(locCode);
-    // sessionStorage.setItem("realtime-Dest", locCode);
-    // setSortedGPSData([]);
-  };
+  let translatedBuildings: string[] = [];
 
-  let allBusStop: string[] = [];
   try {
     const stops = Object.values(bus).flatMap((busData) =>
       busData.stations?.name.filter((stop) => stop !== undefined)
     );
-    allBusStop = Array.from(
-      new Set(stops.filter((stop): stop is string => stop !== undefined))
-    ).sort();
-  } catch (e) {
-    console.error(e);
-  }
-
-  let allBuildings: string[] = [];
-  let translatedBuildings: string[] = [];
-
-  try {
     const buildings = Object.values(appData.station).flatMap((building: any) =>
       building.filter((stop: any) => stop !== undefined)
     );
 
-    allBuildings = Array.from(
-      new Set(buildings.filter((stop): stop is string => stop !== undefined))
+    const allBuildings = Array.from(
+      new Set([
+        ...stops.filter((stop): stop is string => stop !== undefined),
+        ...buildings.filter((stop): stop is string => stop !== undefined),
+      ])
     ).sort();
 
     translatedBuildings = allBuildings
@@ -93,6 +82,19 @@ const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
   } catch (e) {
     console.error(e);
   }
+
+  // const autoSubmitForm = () => {
+  //   // log both locationinput and slider value
+  //   const from = document.querySelector("#Startbd").value;
+  //   const to = document.querySelector("#Destbd").value;
+  //   const slider = document.querySelector(".slider-container input").checked;
+
+  //   if (from === "" || to === "" || slider === false) {
+  //     return;
+  //   }
+  //   // submit the form
+  //   document.querySelector("#routesubmitbtn").click();
+  // };
 
   return (
     <IonPage>
@@ -123,45 +125,7 @@ if (isset($buserrstat["suspended"]))
 
 ?>
 
-
-<script>
-  // submit the form when the enter key is pressed or changed (event listener)
-  const autoSubmitForm = () => {
-    // log both locationinput and slider value
-    const from = document.querySelector('#Startbd').value;
-    const to = document.querySelector('#Destbd').value;
-    const slider = document.querySelector('.slider-container input').checked;
-
-    if (from === "" || to === "" || slider === false) {
-      return;
-    }
-    // submit the form
-    document.querySelector('#routesubmitbtn').click();
-  }
-
-  // add event listener to the form
-  document.querySelector('form').addEventListener('keypress', (event) => {
-    if (event.key === 'Enter') {
-      autoSubmitForm();
-    }
-  });
-
-  document.querySelectorAll('.slider-container').forEach(element => {
-    // only 
-    element.addEventListener('change', autoSubmitForm);
-  });
-
-
-</script>
-
 */}
-
-      {/* <div class="routeresult">
-  <div class='error-text'>
-    <i class='fas fa-info-circle''></i>
-    <p> <?php echo $translation["input-text-reminder"][$lang] ?></p>
-  </div>
-    </div> */}
 
       <form
         name="bussearch"
@@ -170,15 +134,12 @@ if (isset($buserrstat["suspended"]))
         onSubmit={(e) => {
           // return submitform(this, ".routeresult", "routesearch/index.php");
         }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            // autoSubmitForm();
+          }
+        }}
       >
-        <input
-          id="building"
-          name="mode"
-          type="radio"
-          value="building"
-          defaultChecked
-          hidden
-        />
         <div className="search-boxes">
           <div className="info-box optionssel">
             <div className="locationchooser">
@@ -186,21 +147,17 @@ if (isset($buserrstat["suspended"]))
                 {t("Form-Start")}
               </label>
               <div className="locationinput">
-                <AutoComplete allBuildings={translatedBuildings} />
+                <AutoComplete
+                  allBuildings={translatedBuildings}
+                  inputState={routeSearchStart}
+                  setInputState={setRouteSearchStart}
+                />
               </div>
               <div className="functionbuttons">
-                <IonIcon
-                  icon={navigateCircleOutline}
-                  className="image-wrapper"
-                  id="Start-GPS-box"
-                  onClick={() => {
-                    getLocation(
-                      "Start-GPS-box",
-                      t,
-                      setSortedGPSData,
-                      appData.GPS
-                    );
-                  }}
+                <GPSSelectIcon
+                  appData={appData}
+                  setDest={setRouteSearchStart}
+                  fullName
                 />
               </div>
             </div>
@@ -210,21 +167,17 @@ if (isset($buserrstat["suspended"]))
                 {t("Form-Dest")}
               </label>
               <div className="locationinput">
-                <AutoComplete allBuildings={translatedBuildings} />
+                <AutoComplete
+                  allBuildings={translatedBuildings}
+                  inputState={routeSearchDest}
+                  setInputState={setRouteSearchDest}
+                />
               </div>
               <div className="functionbuttons">
-                <IonIcon
-                  icon={navigateCircleOutline}
-                  className="image-wrapper"
-                  id="Dest-GPS-box"
-                  onClick={() => {
-                    getLocation(
-                      "Dest-GPS-box",
-                      t,
-                      setSortedGPSData,
-                      appData.GPS
-                    );
-                  }}
+                <GPSSelectIcon
+                  appData={appData}
+                  setDest={setRouteSearchDest}
+                  fullName
                 />
               </div>
             </div>
@@ -252,6 +205,8 @@ if (isset($buserrstat["suspended"]))
                           if (timeSchedule)
                             timeSchedule.style.display = "block";
                         }
+
+                        // autoSubmitForm();
                       }}
                     />
                     <span className="slider"></span>
@@ -395,80 +350,7 @@ if (isset($buserrstat["suspended"]))
         </div>
       </div>
 
-      {sortedGPSData.length > 0 && (
-        <div id="details-box">
-          <div className="details-box">
-            <div className="showdetails">
-              <h4 id="details-box-heading">{t("nearst_txt")}</h4>
-              <div
-                className="map-submit-btn"
-                onClick={() => setSortedGPSData([])}
-              >
-                {t("cancel_btntxt")}
-              </div>
-            </div>
-            <div id="GPSresult">
-              {sortedGPSData.slice(0, 3).map((data) => {
-                return (
-                  <div
-                    className="gpsOptions"
-                    key={data[0]}
-                    onClick={() => {
-                      changevaluebyGPS(data[0]);
-                    }}
-                  >
-                    <div className="GpsText">
-                      {data[0].includes("|")
-                        ? t(data[0].split("|")[0]) +
-                          " (" +
-                          t(data[0].split("|")[1]) +
-                          ")"
-                        : t(data[0])}
-                    </div>
-                    <div className="gpsMeter">
-                      {Number(data[1].distance.toFixed(3)) * 1000 > 1000
-                        ? "> 9999"
-                        : Number(data[1].distance.toFixed(3)) * 1000 + " m"}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {routeMap && routeMap.length > 0 && (
-        <div id="detail-route-container">
-          <div
-            id="close-button"
-            onClick={() => {
-              setRouteMap([]);
-            }}
-          >
-            &times;
-          </div>
-
-          <div id="map-container">
-            {routeMap[0].map((station: string, index: number) => {
-              return (
-                <div
-                  className={
-                    "station-container-wrapper" +
-                    (index < routeMap[1] ? " completed" : "")
-                  }
-                  key={station}
-                >
-                  <div className="station-container">
-                    <div className="station-number">{index + 1}</div>
-                    <div className="station-name">{station}</div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+      <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
     </IonPage>
   );
 };
