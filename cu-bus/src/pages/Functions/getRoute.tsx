@@ -1,4 +1,6 @@
 import { TFunction } from "i18next";
+import { processAndSortBuses } from "./getRealTime";
+import { outputDate } from "./Tools";
 
 export interface BusData {
   [busNumber: string]: {
@@ -23,379 +25,449 @@ export interface BusData {
   };
 }
 
-// if (!isset($_POST))
-//     die();
-// include_once('../Essential/functions/loadenv.php');
+const logRequest = () => {
+  // try {
+  //     $conn = new mysqli(getenv('DB_HOST'), getenv('DB_USER'), getenv('DB_PASS'), getenv('DB_NAME'));
+  //     if ($conn->connect_error)
+  //         die("Connection failed: " . $conn->connect_error);
+  //     $stmt = $conn->prepare("INSERT INTO `logs` (`Time`, `Webpage`, `Start`, `Dest`, `Mode`, `Departnow`, `Lang`)
+  //         VALUES (?, 'routesearch', ?, ?, ?, ?, ?);");
+  //     $stmt->bind_param("ssssss", $Time, $Startsql, $Destsql, $searchMode, $departNow, $lang);
+  //     $Time = (new DateTime())->format('Y-m-d H:i:s');
+  //     $Startsql = $searchMode == "building" ? $_POST['Startbd'] : $_POST['Start'];
+  //     $Destsql = $searchMode == "building" ? $_POST['Destbd'] : $_POST['Dest'];
+  //     $stmt->execute();
+  //     $stmt->close();
+  //     $conn->close();
+  // } catch (Exception $e) {
+  // }
+};
 
-// /* Init Program */
-// date_default_timezone_set("Asia/Hong_Kong");
-// include('../Essential/functions/functions.php');
-// $initdataitems = array(
-//     "Route" => true,
-//     "Translate" => true,
-//     "Station" => true,
-// );
-// include('../Essential/functions/initdatas.php');
-// include_once('../realtime/getRealTimeFunc.php');
+const filterBus = (
+  bus: BusData,
+  selectWeekday: string,
+  selectDate: string,
+  selectHour: string,
+  selectMinute: string,
+  departNow: boolean
+) => {
+  if (departNow === false) {
+    return Object.fromEntries(
+      Object.entries(bus).filter(([busNumber, busData]) => {
+        const currentTime = outputDate(
+          `${selectHour}:${selectMinute}`
+        ).getTime();
+        if (!busData.schedule) return false;
+        const startTime = outputDate(busData.schedule[0]).getTime();
+        const endTime = outputDate(busData.schedule[1]).getTime();
+        if (currentTime < startTime || currentTime > endTime) {
+          return false;
+        }
 
-// //Bus Status
-// $busservices = json_decode(file_get_contents(__DIR__ . '/../Data/Status.json'), true);
-// $busschedule = json_decode(file_get_contents(__DIR__ . '/../Data/timetable.json'), true);
+        if (
+          !busData.schedule[3].includes(selectDate) &&
+          busData.schedule[3] !== selectDate
+        ) {
+          return false;
+        }
 
-// $temp = array_slice($busservices, -30, 1);
-// $thirtyminbusservice = array_pop($temp);
-// $currentbusservices = end($busservices);
-// if (isset($currentbusservices['ERROR'])) {
-//     $fetcherror = true;
-//     // alert("alert", $translation["fetch-error"][$lang]);
-// } else {
-//     foreach ($currentbusservices as $busnumber => $busstatus) {
-//         $bus[$busnumber]["stats"]["status"] = $busstatus;
-//         $bus[$busnumber]["stats"]["prevstatus"] = $thirtyminbusservice[$busnumber];
-//         if (isset($bus[$busnumber . "#"])) {
-//             $bus[$busnumber . "#"]["stats"]["status"] = $busstatus;
-//             $bus[$busnumber . "#"]["stats"]["prevstatus"] = $thirtyminbusservice[$busnumber];
-//         }
-//     }
-// }
+        if (!busData.schedule[4].includes(selectWeekday)) {
+          return false;
+        }
 
-// $noroute = 0;
-// $lang = $_POST['language'];
-// $poststart = $_POST['Start'];
-// $postdest = $_POST['Dest'];
-// $postmode = $_POST['mode'];
-// $posttravwk = $_POST['Trav-wk'];
-// $posttravdt = $_POST['Trav-dt'];
-// $posttravhr = $_POST['Trav-hr'];
-// $posttravmin = $_POST['Trav-min'];
-// $departnowbtn = isset($_POST['deptnow']);
+        return true;
+      })
+    );
+  } else {
+    return Object.fromEntries(
+      Object.entries(bus).filter(([busNumber, busData]) => {
+        if (
+          busData.stats &&
+          busData.stats.status === "no" &&
+          busData.stats.prevstatus !== "normal"
+        ) {
+          return false;
+        } else if (
+          busData.stats &&
+          busData.stats.status === "suspended" &&
+          busData.stats.prevstatus !== "normal"
+        ) {
+          return false;
+        }
+        return true;
+      })
+    );
+  }
+};
 
-// try {
-//     $conn = new mysqli(getenv('DB_HOST'), getenv('DB_USER'), getenv('DB_PASS'), getenv('DB_NAME'));
-//     if ($conn->connect_error)
-//         die("Connection failed: " . $conn->connect_error);
-//     $stmt = $conn->prepare("INSERT INTO `logs` (`Time`, `Webpage`, `Start`, `Dest`, `Mode`, `Departnow`, `Lang`)
-//         VALUES (?, 'routesearch', ?, ?, ?, ?, ?);");
-//     $stmt->bind_param("ssssss", $Time, $Startsql, $Destsql, $postmode, $departnowbtn, $lang);
-//     $Time = (new DateTime())->format('Y-m-d H:i:s');
-//     $Startsql = $postmode == "building" ? $_POST['Startbd'] : $_POST['Start'];
-//     $Destsql = $postmode == "building" ? $_POST['Destbd'] : $_POST['Dest'];
-//     $stmt->execute();
-//     $stmt->close();
-//     $conn->close();
-// } catch (Exception $e) {
-// }
+const getMultiBuildingFromStation = (
+  routeSearchStart: string,
+  routeSearchDest: string,
+  station: { [key: string]: string[] },
+  t: TFunction
+) => {
+  let startStation = [];
+  let destStation = [];
+  let totalStart = 0;
+  let totalDest = 0;
 
-// Get Available Buses
-// if (!$departnowbtn) {
-//     foreach ($bus as $index => $busarr) {
-//         //Base on time
-//         $currenttime = (DateTime::createFromFormat("H:i", $posttravhr . ":" . $posttravmin))->getTimestamp();
-//         $starttime = (DateTime::createFromFormat("H:i", $busarr["schedule"][0]))->getTimestamp();
-//         $endtime = (DateTime::createFromFormat("H:i", $busarr["schedule"][1]))->getTimestamp();
-//         if ($currenttime < $starttime || $currenttime > $endtime)
-//             unset($bus[$index]);
+  const routeSearchStartbd = routeSearchStart.split(" (");
+  const routeSearchDestbd = routeSearchDest.split(" (");
 
-//         // Base on weekday or day
-//         if (strpos($busarr["schedule"][3], $posttravdt) === false && $busarr["schedule"][3] !== $posttravdt)
-//             unset($bus[$index]);
-//         if (strpos($busarr["schedule"][4], $posttravwk) === false)
-//             unset($bus[$index]);
-//     }
-// } else {
-//     foreach ($bus as $index => $busarr)
-//         if (($busarr["stats"]["status"] == "no" && $busarr["stats"]["prevstatus"] != "normal") || ($busarr["stats"]["status"] == "suspended" && $busarr["stats"]["prevstatus"] != "normal"))
-//             unset($bus[$index]);
-// }
-// $bus = array_filter($bus);
+  if (
+    !routeSearchStartbd[0] ||
+    !routeSearchDestbd[0] ||
+    !routeSearchStartbd[1] ||
+    !routeSearchDestbd[1]
+  ) {
+    return {
+      error: true,
+      message: "warning-noinput",
+    };
+  } else {
+    routeSearchStartbd[1] = routeSearchStartbd[1].slice(0, -1);
+    routeSearchDestbd[1] = routeSearchDestbd[1].slice(0, -1);
+  }
 
-//Init
-// $totalstart = $currstart = $totaldest = $currdest = 0;
+  if (
+    routeSearchStartbd[0] !== t(routeSearchStartbd[1]) ||
+    routeSearchDestbd[0] !== t(routeSearchDestbd[1])
+  ) {
+    return {
+      error: true,
+      message: "warning-buildingMismatch",
+    };
+  }
 
-// if ($postmode == "building") {
+  for (const [stationCode, val] of Object.entries(station)) {
+    for (const building of val as string[]) {
+      if (building === routeSearchStartbd[1]) {
+        totalStart++;
+        startStation.push(stationCode);
+      }
+      if (building === routeSearchDestbd[1]) {
+        totalDest++;
+        destStation.push(stationCode);
+      }
+    }
+  }
 
-//     $poststartbd = strstr($_POST['Startbd'], ' (', true) ?: $_POST['Startbd'];
-//     $postdestbd = strstr($_POST['Destbd'], ' (', true) ?: $_POST['Destbd'];
+  startStation = Array.from(new Set(startStation));
+  destStation = Array.from(new Set(destStation));
 
-//     if ($poststartbd == "" || $postdestbd == "")
-//         die("<div class='error-text'>" .
-//             "<i class='fas fa-exclamation-triangle'></i>" .
-//             "<p>" . $translation["warning-noinput"][$lang] . "</p></div>");
+  if (totalStart <= 0 || totalDest <= 0) {
+    return {
+      error: true,
+      message: "building-error",
+    };
+  }
 
-//     //Building name to Building Code
-//     $flag[0] = $flag[1] = 0;
-//     foreach (array_reverse($translation) as $buildingcode => $buildingname) {
-//         foreach ($buildingname as $readablename) {
-//             if ($readablename == $poststartbd) {
-//                 $poststartbd = $buildingcode;
-//                 $flag[0]++;
-//             }
-//             if ($readablename == $postdestbd) {
-//                 $postdestbd = $buildingcode;
-//                 $flag[1]++;
-//             }
-//             if ($flag[0] == 1 && $flag[1] == 1)
-//                 break 2;
-//         }
-//     }
+  return {
+    error: false,
+    startStation,
+    destStation,
+    totalStart,
+    totalDest,
+  };
+};
 
-//     //Building to Station
-//     $startstation = [];
-//     $deststation = [];
-//     foreach ($station as $stationcode => $val) {
-//         foreach ($val as $building) {
-//             if ($building == $poststartbd) {
-//                 $totalstart++;
-//                 $startstation[] = $stationcode;
-//             }
-//             if ($building == $postdestbd) {
-//                 $totaldest++;
-//                 $deststation[] = $stationcode;
-//             }
-//         }
-//     }
+function searchRoutes(
+  startStation: string[],
+  destStation: string[],
+  bus: BusData,
+  t: TFunction
+) {
+  let totalDest = destStation.length;
+  let totalStart = startStation.length;
+  let sameStation = false;
+  interface RouteResult {
+    busno: string[];
+    start: string[];
+    end: string[];
+    time: number[];
+    route: string[];
+    routeIndex: number[];
+  }
 
-//     $startstation = array_values(array_filter(array_unique($startstation)));
-//     $deststation = array_values(array_filter(array_unique($deststation)));
+  const routeResult: any = [];
 
-//     //Check Error
-//     if ($totalstart <= 0 || $totaldest <= 0)
-//         die("<div class='error-text'>" .
-//             "<i class='fas fa-exclamation-triangle'></i>" .
-//             "<p>" . $translation["building-error"][$lang] . "</p></div>");
-// } else {
-//     $startstation = [$poststart];
-//     $deststation = [$postdest];
-// }
+  for (let currDest = 0; currDest < totalDest; currDest++) {
+    for (let currStart = 0; currStart < totalStart; currStart++) {
+      if (startStation[currStart] === destStation[currDest]) {
+        sameStation = true;
+        continue;
+      }
 
-// function searchRoutes($startstation, $deststation, $bus, $translation, $lang)
-// {
-//     $totaldest = count($deststation);
-//     $totalstart = count($startstation);
-//     $samestation = false;
-//     $routeresult = [
-//         "busno" => [],
-//         "start" => [],
-//         "end" => [],
-//         "time" => [],
-//         "route" => [],
-//         "routeIndex" => []
-//     ];
+      for (const [busNo, line] of Object.entries(bus)) {
+        const result = searchDirection(
+          startStation[currStart],
+          destStation[currDest],
+          busNo,
+          line.stations ? line.stations.name : [],
+          line.stations ? line.stations.attr : [],
+          line.stations ? line.stations.time : [],
+          t
+        );
+        for (const newResult of result) {
+          const timeOutput =
+            newResult.time[0] === 0
+              ? "N/A"
+              : Math.round(newResult.time[0] / 60);
 
-//     for ($currdest = 0; $currdest < $totaldest; $currdest++) {
-//         for ($currstart = 0; $currstart < $totalstart; $currstart++) {
-//             if ($startstation[$currstart] == $deststation[$currdest]) {
-//                 $samestation = true;
-//                 continue;
-//             }
+          routeResult.push({
+            [newResult.start[1]]: {
+              [busNo]: {
+                end: newResult.end,
+                start: {
+                  translatedName: newResult.start[0],
+                  attr: newResult.start[2],
+                },
+                route: newResult.route[0],
+                routeIndex: newResult.routeIndex,
+                timeused: timeOutput,
+              },
+            },
+          });
+        }
+      }
+    }
+  }
 
-//             foreach ($bus as $busno => $line) {
-//                 $result = searchDirection($startstation[$currstart], $deststation[$currdest], $busno, $line["stations"]["name"], $line["stations"]["attr"], $line["stations"]["time"], $translation, $lang);
-//                 foreach ($result as $newresult) {
-//                     $routeresult = mergeRouteResults($routeresult, $newresult);
-//                 }
-//             }
-//         }
-//     }
+  return {
+    sameStation,
+    routeResult,
+  };
+}
 
-//     return [
-//         'samestation' => $samestation,
-//         'routeresult' => $routeresult
-//     ];
-// }
+const searchDirection = (
+  start: string,
+  dest: string,
+  busno: string,
+  line: string[],
+  attrline: string[],
+  timeline: number[],
+  t: TFunction
+) => {
+  const possibilities: any[] = [];
 
-// function searchDirection($start, $dest, $busno, $line, $attrline, $timeline, $translation, $lang)
-// {
-//     $possibilities = [];
+  const startPositions = [];
+  for (let index = 0; index < line.length; index++) {
+    if (line[index] === start) {
+      startPositions.push(index);
+    }
+  }
 
-//     // Find all occurrences of the start station
-//     $startPositions = array_keys($line, $start);
+  startPositions.forEach((startPos) => {
+    const searchLine = line.slice(startPos + 1);
+    const destPositions = [];
+    for (let index = 0; index < searchLine.length; index++) {
+      if (searchLine[index] === dest) {
+        destPositions.push(index);
+      }
+    }
 
-//     foreach ($startPositions as $startPos) {
-//         // Search for destination stations after each start position
-//         $searchLine = array_slice($line, $startPos + 1);
-//         $destPositions = array_keys($searchLine, $dest);
+    destPositions.forEach((relativeDestPos) => {
+      const routeResult = buildRouteResult(
+        busno,
+        start,
+        dest,
+        line,
+        attrline,
+        timeline,
+        startPos,
+        relativeDestPos,
+        t
+      );
 
-//         foreach ($destPositions as $relativeDestPos) {
-//             // Build route result for this possibility
-//             $routeResult = buildRouteResult(
-//                 $busno,
-//                 $start,
-//                 $dest,
-//                 $line,
-//                 $attrline,
-//                 $timeline,
-//                 $startPos,
-//                 $relativeDestPos,
-//                 $translation,
-//                 $lang,
-//             );
+      if (routeResult) {
+        possibilities.push(routeResult);
+      }
+    });
+  });
 
-//             if ($routeResult) {
-//                 $possibilities[] = $routeResult;
-//             }
-//         }
-//     }
+  return possibilities;
+};
 
-//     return $possibilities;
-// }
+const buildRouteResult = (
+  busno: string,
+  start: string,
+  dest: string,
+  line: string[],
+  attrLine: string[],
+  timeline: number[],
+  startIndex: number,
+  endIndex: number,
+  t: TFunction
+) => {
+  let startPosition = t(start);
+  if (attrLine[startIndex] && attrLine[startIndex] !== "NULL") {
+    startPosition += ` (${t(attrLine[startIndex])})`;
+  }
 
-// function buildRouteResult($busno, $start, $dest, $line, $attrline, $timeline, $startIndex, $endIndex, $translation, $lang)
-// {
-//     // Build start position string
-//     $startpos = $translation[$start][$lang];
-//     if (isset($translation[$attrline[$startIndex] ?? ""][$lang])) {
-//         $startpos .= " ({$translation[$attrline[$startIndex] ?? ""][$lang]})";
-//     }
+  const endPosition = t(dest);
+  let endPositionAttr = "";
+  if (attrLine[startIndex + endIndex + 1] !== "NULL") {
+    endPositionAttr = ` (${t(attrLine[startIndex + endIndex + 1])})`;
+  }
 
-//     // Build end position string
-//     $endpos = $translation[$dest][$lang];
-//     $endposattr = "";
-//     if (isset($translation[$attrline[$startIndex + $endIndex + 1] ?? ""][$lang])) {
-//         $endposattr = " ({$translation[$attrline[$startIndex + $endIndex + 1] ?? ""][$lang]})";
-//     }
+  const route = line
+    .slice(0, startIndex + endIndex + 1)
+    .map((station, index) => {
+      return (
+        t(station) +
+        (attrLine[index] !== "NULL" ? ` (${t(attrLine[index])})` : "")
+      );
+    });
 
-//     // Build route
-//     $route = json_encode(array_map(function ($index) use ($line, $attrline, $translation, $lang) {
-//         return $translation[$line[$index]][$lang] .
-//             ($attrline[$index] != "NULL" ? " (" . $translation[$attrline[$index]][$lang] . ")" : "");
-//     }, range(0, $startIndex + $endIndex + 1)));
+  return {
+    busno: [busno],
+    start: [startPosition, start, attrLine[startIndex] ?? null],
+    end: endPosition + endPositionAttr,
+    time: [
+      timeline
+        .slice(startIndex, endIndex + 2)
+        .reduce((acc, curr) => acc + curr, 0),
+    ],
+    route: [route],
+    routeIndex: startIndex,
+  };
+};
 
-//     // Calculate total time
-//     $totalTime = array_sum(array_slice($timeline, $startIndex, $endIndex - $startIndex + 1));
+export const calculateRoute = (
+  t: TFunction,
+  routeSearchStart: string,
+  routeSearchDest: string,
+  searchMode: string,
+  selectWeekday: string,
+  selectDate: string,
+  selectHour: string,
+  selectMinute: string,
+  departNow: boolean,
+  originalBus: BusData,
+  station: { [key: string]: string[] },
+  busSchedule: any
+) => {
+  let routeCount = 0;
+  let bus = filterBus(
+    originalBus,
+    selectWeekday,
+    selectDate,
+    selectHour,
+    selectMinute,
+    departNow
+  );
 
-//     return [
-//         "busno" => [$busno],
-//         "start" => [[$startpos, $start, $attrline[$startIndex] ?? null]],
-//         "end" => [$endpos . $endposattr],
-//         "time" => [array_sum(array_slice($timeline, $startIndex, $endIndex + 2, true))],
-//         "route" => [$route],
-//         "routeIndex" => [$startIndex]
-//     ];
-// }
+  let startStation = [];
+  let destStation = [];
 
-// function mergeRouteResults($existing, $new)
-// {
-//     foreach ($new as $key => $value) {
-//         $existing[$key] = array_merge($existing[$key], $value);
-//     }
-//     return $existing;
-// }
+  if (searchMode === "building") {
+    const multiBuilding = getMultiBuildingFromStation(
+      routeSearchStart,
+      routeSearchDest,
+      station,
+      t
+    );
 
-// $searchResult = searchRoutes($startstation, $deststation, $bus, $translation, $lang);
+    if (multiBuilding.error) {
+      return multiBuilding;
+    }
 
-// if (empty($searchResult['routeresult'])) {
-//     $searchResult['routeresult']["busno"] = array("N/A");
-//     $searchResult['routeresult']["route"] = array($translation["No-BUS"][$lang] . ($departnowbtn ? "<br><br>" . ($bus ? $translation["warning-showbus"][$lang] . implode(", ", array_keys($bus)) : $translation['stop-running'][$lang]) : ""));
-//     $noroute = 1;
-// }
+    startStation = multiBuilding.startStation as string[];
+    destStation = multiBuilding.destStation as string[];
+  } else {
+    startStation = [routeSearchStart];
+    destStation = [routeSearchDest];
+  }
 
-// //Group Result
-// foreach ($searchResult['routeresult']["busno"] as $index => $startloc) {
-//     //time process
-//     ($searchResult['routeresult']["time"][$index] == 0) ? $timeoutput = "N/A" : $timeoutput = round($searchResult['routeresult']["time"][$index] / 60);
-//     $routegroupresult[
-//         $searchResult['routeresult']["start"][$index][1]
-//     ][
-//         $searchResult['routeresult']["busno"][$index]
-//     ][] = array(
-//         "end" => $searchResult['routeresult']["end"][$index],
-//         "start" => array(
-//             "translatedName" => $searchResult['routeresult']["start"][$index][0],
-//             "attr" => $searchResult['routeresult']["start"][$index][2]
-//         ),
-//         "route" => $searchResult['routeresult']["route"][$index],
-//         "routeIndex" => $searchResult['routeresult']["routeIndex"][$index],
-//         "timeused" => $timeoutput
-//     );
-// }
+  const routeGroupResult = searchRoutes(startStation, destStation, bus, t);
 
-// // Sort the results by time
-// $sortedResults = [];
-// if (isset($routegroupresult))
-//     foreach ($routegroupresult as $start => $temp) {
-//         // get all bus arrival times
-//         $outputschedule = array_filter($busschedule, fn($key) => explode("|", $key)[0] == $start, ARRAY_FILTER_USE_KEY);
+  if (routeGroupResult.routeResult.length === 0) {
+    return {
+      error: true,
+      message: "No-BUS",
+    };
+  }
 
-//         foreach ($temp as $busno => $busWithSameNo) {
-//             foreach ($busWithSameNo as $busarray) {
-//                 $time = $busarray["timeused"];
-//                 if ($time == "N/A") {
-//                     $time = PHP_INT_MAX; // Put "N/A" times at the end
-//                 }
+  // $sortedResults = [];
+  const sortedResults: any[] = [];
 
-//                 // Get each bus arrival time
-//                 $allBuses = processAndSortBuses($outputschedule, $bus, $lang, $translation, array(
-//                     'busno' => $busno,
-//                     'currtime' => $departnowbtn ? date('H:i:s') : date('H:i:s', strtotime($posttravhr . ":" . $posttravmin))
-//                 ));
+  routeGroupResult.routeResult.forEach((start: any) => {
+    for (const [startStation, temp] of Object.entries(start)) {
+      const outputSchedule = Object.fromEntries(
+        Object.entries(busSchedule).filter(
+          ([key]) => key.split("|")[0] === startStation
+        )
+      );
 
-//                 foreach ($allBuses as $busdata) {
-//                     $waitTime = (
-//                         strtotime($busdata['time']) -
-//                         ($departnowbtn ? strtotime(date('H:i:s')) : strtotime($posttravhr . ":" . $posttravmin))
-//                     ) / 60;
-//                     $waitTime = $waitTime < 0 ? 0 : intval($waitTime);
+      for (const [busNo, busArray] of Object.entries(
+        temp as { [key: string]: any }
+      )) {
+        let time = busArray.timeused;
+        if (time === "N/A") {
+          time = Number.MAX_SAFE_INTEGER;
+        }
 
-//                     if ($waitTime > 30) {
-//                         continue;
-//                     }
+        const allBuses = processAndSortBuses(t, outputSchedule, bus, {
+          busno: busNo,
+          currtime: departNow
+            ? null
+            : outputDate(`${selectHour}:${selectMinute}`).toISOString(),
+        });
 
-//                     $busarray["arrivalTime"] = date('H:i', strtotime($busdata['time']));
+        allBuses.forEach((busData: any) => {
+          const busTime = outputDate(busData.time).getTime();
 
-//                     $sortedResults[] = [
-//                         'time' => $time + $waitTime,
-//                         'busno' => $busno,
-//                         'start' => $busarray["start"]["translatedName"],
-//                         'end' => $busarray["end"],
-//                         'route' => $busarray["route"],
-//                         'timeDisplay' => $busarray["timeused"],
-//                         'routeIndex' => $busarray["routeIndex"],
-//                         'arrivalTime' => $busarray["arrivalTime"]
-//                     ];
-//                 }
+          const waitTime =
+            (new Date(busTime).getTime() -
+              (departNow
+                ? new Date().getTime()
+                : outputDate(`${selectHour}:${selectMinute}`).getTime())) /
+            60000;
+          const waitTimeInt = waitTime < 0 ? 0 : Math.floor(waitTime);
 
-//             }
-//         }
-//     }
+          if (waitTimeInt > 30) {
+            return;
+          }
 
-// // Sort the results
-// usort($sortedResults, function ($a, $b) {
-//     if ($a['time'] == $b['time']) {
-//         return strtotime($a['arrivalTime']) <=> strtotime($b['arrivalTime']);
-//     }
-//     return $a['time'] <=> $b['time'];
-// });
+          busArray.arrivalTime = new Date(busTime).toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "numeric",
+            hour12: true,
+          });
 
-// if ($searchResult['samestation']) {
-//     echo '<p class="samestation-info">' . $translation["samestation-info"][$lang] . '</p>';
-// }
+          sortedResults.push({
+            time: time + waitTimeInt,
+            busNo,
+            start: busArray.start.translatedName,
+            end: busArray.end,
+            route: busArray.route,
+            timeDisplay: busArray.timeused,
+            routeIndex: busArray.routeIndex,
+            arrivalTime: busArray.arrivalTime,
+          });
+        });
+      }
+    }
+  });
 
-// if ($sortedResults == null || $noroute) {
-//     echo "<div class='error-text'>" .
-//         "<i class='fas fa-exclamation-triangle'></i>" .
-//         "<p>" . $translation["No-BUS"][$lang] . "</p></div>";
-// } else {
-//     echo "<div class='route-result'>";
+  sortedResults.sort((a, b) => {
+    if (a.time === b.time) {
+      return (
+        new Date(a.arrivalTime).getTime() - new Date(b.arrivalTime).getTime()
+      );
+    }
+    return a.time - b.time;
+  });
 
-//     foreach ($sortedResults as $result) {
-//         $busnostr = explode("→", $result['busno']);
-//         echo "<div class='route-result-busno'
-//             onclick='createRouteMap(" . $result['route'] . ", " . $result['routeIndex'] . ")'>";
-//         echo "<div class='route-result-busno-number'>" . $result['busno'] . "</div>";
-//         echo "<div class='route-result-busno-details'>";
-//         echo "<div class='route-result-busno-details-time'>";
-//         echo "<div class='route-result-busno-details-totaltime'><p class='route-result-busno-details-totaltime-text'>" . $result['time'] . "</p> min</div>";
-//         echo "<div class='route-result-busno-details-arrivaltime'>" . $translation["next-bus-arrival-info"][$lang] . $result['arrivalTime'] . ", " . $result['timeDisplay'] . $translation["bus-length-info"][$lang] . "</div>";
-//         echo "</div>";
-//         echo "<div class='route-result-busno-simple-route'>";
-//         echo "<div class='route-result-busno-simple-route-start'>" . $result['start'] . "</div>";
-//         echo "<div class='route-result-busno-simple-route-arrow'>➤</div>";
-//         echo "<div class='route-result-busno-simple-route-end'>" . $result['end'] . "</div>";
-//         echo "</div>";
-//         // echo "<div class='route-result-busno-details-route'>" . $result['route'] . "</div>";
-//         echo "</div>";
-//         echo "</div>";
-//     }
-//     echo "</div>";
-// }
+  if (sortedResults.length === 0) {
+    return {
+      error: true,
+      message: "No-BUS",
+    };
+  }
+
+  return {
+    samestation: routeGroupResult.sameStation,
+    sortedResults,
+  };
+};

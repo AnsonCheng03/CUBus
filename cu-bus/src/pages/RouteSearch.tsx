@@ -1,7 +1,7 @@
 import { IonPage, IonIcon } from "@ionic/react";
 import "./RouteSearch.css";
 import { BusData, processBusStatus } from "./Functions/getRealTime";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { informationCircleOutline } from "ionicons/icons";
 import { useTranslation } from "react-i18next";
 import AutoComplete from "./Components/autoComplete";
@@ -9,6 +9,7 @@ import { capitalizeFirstLetter } from "./Functions/Tools";
 import RouteMap from "./Components/routeMap";
 import { GPSSelectIcon } from "./Components/gpsSelectBox";
 import { RouteSelect } from "./Components/selectRouteForm";
+import { calculateRoute } from "./Functions/getRoute";
 
 const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
   const [routeMap, setRouteMap] = useState<any>([]);
@@ -41,6 +42,7 @@ const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
     );
   }
 
+  let allBuildings: string[] = [];
   let translatedBuildings: string[] = [];
 
   try {
@@ -51,7 +53,7 @@ const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
       building.filter((stop: any) => stop !== undefined)
     );
 
-    const allBuildings = Array.from(
+    allBuildings = Array.from(
       new Set([
         ...stops.filter((stop): stop is string => stop !== undefined),
         ...buildings.filter((stop): stop is string => stop !== undefined),
@@ -69,19 +71,6 @@ const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
   } catch (e) {
     console.error(e);
   }
-
-  // const autoSubmitForm = () => {
-  //   // log both locationinput and slider value
-  //   const from = document.querySelector("#Startbd").value;
-  //   const to = document.querySelector("#Destbd").value;
-  //   const slider = document.querySelector(".slider-container input").checked;
-
-  //   if (from === "" || to === "" || slider === false) {
-  //     return;
-  //   }
-  //   // submit the form
-  //   document.querySelector("#routesubmitbtn").click();
-  // };
 
   const TravelDateOptions = Array.from(
     new Set(
@@ -113,6 +102,36 @@ const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
   const [selectMinute, setSelectMinute] = useState<string>(
     (Math.floor(new Date().getMinutes() / 5) * 5).toString().padStart(2, "0")
   );
+
+  const [routeResult, setRouteResult] = useState<any>([]);
+
+  const generateRouteResult = () => {
+    if (routeSearchStart === "" || routeSearchDest === "") {
+      return;
+    }
+
+    setRouteResult(
+      calculateRoute(
+        t,
+        routeSearchStart,
+        routeSearchDest,
+        "building",
+        selectWeekday,
+        selectDate,
+        selectHour,
+        selectMinute,
+        departNow,
+        filteredBus,
+        appData?.station,
+        busSchedule
+      )
+    );
+  };
+
+  useEffect(() => {
+    if (departNow === false) return;
+    generateRouteResult();
+  }, [routeSearchStart, routeSearchDest, departNow]);
 
   return (
     <IonPage>
@@ -150,11 +169,12 @@ if (isset($buserrstat["suspended"]))
         method="post"
         autoComplete="off"
         onSubmit={(e) => {
-          // return submitform(this, ".routeresult", "routesearch/index.php");
+          e.preventDefault();
+          generateRouteResult();
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter") {
-            // autoSubmitForm();
+            generateRouteResult();
           }
         }}
       >
@@ -304,10 +324,65 @@ if (isset($buserrstat["suspended"]))
       </form>
 
       <div className="routeresult">
-        <div className="error-text">
-          <IonIcon icon={informationCircleOutline}></IonIcon>
-          <p>{t("input-text-reminder")}</p>
-        </div>
+        {routeResult.samestation && (
+          <p className="samestation-info">{t("samestation-info")}</p>
+        )}
+
+        {routeResult.sortedResults ? (
+          routeResult.sortedResults.map((result: any, index: number) => {
+            return (
+              <div
+                className="route-result-busno"
+                key={index}
+                onClick={() => {
+                  setRouteMap([result.route, result.routeIndex]);
+                }}
+              >
+                <div className="route-result-busno-number">{result.busNo}</div>
+                <div className="route-result-busno-details">
+                  <div className="route-result-busno-details-time">
+                    <div className="route-result-busno-details-totaltime">
+                      <p className="route-result-busno-details-totaltime-text">
+                        {result.time}
+                      </p>
+                      min
+                    </div>
+                    <div className="route-result-busno-details-arrivaltime">
+                      {`${t("next-bus-arrival-info")}${result.arrivalTime}, ${
+                        result.timeDisplay
+                      } ${t("bus-length-info")}`}
+                    </div>
+                  </div>
+                  <div className="route-result-busno-simple-route">
+                    <div className="route-result-busno-simple-route-start">
+                      {result.start}
+                    </div>
+                    <div className="route-result-busno-simple-route-arrow">
+                      ➤
+                    </div>
+                    <div className="route-result-busno-simple-route-end">
+                      {result.end}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          <div className="error-text">
+            {routeResult.error ? (
+              <>
+                <IonIcon icon={informationCircleOutline}></IonIcon>
+                <p>{t(routeResult.message)}</p>
+              </>
+            ) : (
+              <>
+                <IonIcon icon={informationCircleOutline}></IonIcon>
+                <p>{t("input-text-reminder")}</p>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />

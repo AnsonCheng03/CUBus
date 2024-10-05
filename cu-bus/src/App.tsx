@@ -85,32 +85,51 @@ const App: React.FC<RouteComponentProps> = () => {
   const [isDownloaded, setDownloadedState] = useState(false);
   const [appData, setAppData] = useState<any>({});
 
+  const checkDownloadData = () => {
+    const dataToBeChecked = ["timetable.json", "Status.json", "bus"];
+    for (const data of dataToBeChecked) {
+      if (!appData[data]) {
+        return false;
+      }
+    }
+    return true;
+  };
+
   return (
     <I18nextProvider i18n={i18next}>
       <IonApp>
         {isDownloaded ? (
-          <>
-            <IonReactRouter>
-              {/* <Alert notice={appData.notice} /> */}
-              <IonRouterOutlet>
-                <Route exact path="/realtime">
-                  <Realtime appData={appData} />
-                </Route>
-                <Route exact path="/route">
-                  <RouteSearch appData={appData} />
-                </Route>
-                <Route exact path="/info" component={Info}>
-                  <Info appData={appData} />
-                </Route>
-                <Route exact path="/settings" component={Settings} />
-                <Route>
-                  <Realtime appData={appData} />
-                </Route>
-              </IonRouterOutlet>
-              <NavBar />
-              <PWAPrompt />
-            </IonReactRouter>
-          </>
+          checkDownloadData() ? (
+            <>
+              <IonReactRouter>
+                {/* <Alert notice={appData.notice} /> */}
+                <IonRouterOutlet>
+                  <Route exact path="/realtime">
+                    <Realtime appData={appData} />
+                  </Route>
+                  <Route exact path="/route">
+                    <RouteSearch appData={appData} />
+                  </Route>
+                  <Route exact path="/info" component={Info}>
+                    <Info appData={appData} />
+                  </Route>
+                  <Route exact path="/settings" component={Settings} />
+                  <Route>
+                    <Realtime appData={appData} />
+                  </Route>
+                </IonRouterOutlet>
+                <NavBar />
+                <PWAPrompt />
+              </IonReactRouter>
+            </>
+          ) : (
+            <Alert
+              notice={{
+                title: t("DownloadFiles-Error"),
+                message: t("DownloadFiles-Error-Message"),
+              }}
+            />
+          )
         ) : (
           <DownloadFiles
             setDownloadedState={setDownloadedState}
