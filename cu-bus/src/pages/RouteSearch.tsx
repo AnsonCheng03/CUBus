@@ -1,29 +1,17 @@
-import {
-  IonContent,
-  IonHeader,
-  IonPage,
-  IonTitle,
-  IonToolbar,
-  IonRefresher,
-  IonRefresherContent,
-  IonIcon,
-} from "@ionic/react";
+import { IonPage, IonIcon } from "@ionic/react";
 import "./RouteSearch.css";
-import { BusData, GPSData, processBusStatus } from "./Functions/generalRoute";
+import { BusData, processBusStatus } from "./Functions/generalRoute";
 import { useState } from "react";
-import {
-  informationCircleOutline,
-  navigateCircleOutline,
-} from "ionicons/icons";
+import { informationCircleOutline } from "ionicons/icons";
 import { useTranslation } from "react-i18next";
 import AutoComplete from "./Components/autoComplete";
 import { capitalizeFirstLetter } from "./Functions/Tools";
 import RouteMap from "./Components/routeMap";
-import { GPSSelectBox, GPSSelectIcon } from "./Components/gpsSelectBox";
+import { GPSSelectIcon } from "./Components/gpsSelectBox";
 
 const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
   const [routeMap, setRouteMap] = useState<any>([]);
-  const [t, i18n] = useTranslation("global");
+  const [t] = useTranslation("global");
   const [routeSearchStart, setRouteSearchStart] = useState<string>("");
   const [routeSearchDest, setRouteSearchDest] = useState<string>("");
 
@@ -303,20 +291,9 @@ if (isset($buserrstat["suspended"]))
                     .toString()
                     .padStart(2, "0")}
                 >
-                  {[
-                    "00",
-                    "05",
-                    "10",
-                    "15",
-                    "20",
-                    "25",
-                    "30",
-                    "35",
-                    "40",
-                    "45",
-                    "50",
-                    "55",
-                  ].map((value) => (
+                  {Array.from({ length: 12 }, (_, i) =>
+                    (i * 5).toString().padStart(2, "0")
+                  ).map((value) => (
                     <option key={value} value={value}>
                       {value}
                     </option>
