@@ -71,7 +71,7 @@ https://huemint.com/website-3/#palette=fdfefe-FEFAE0-001062-1d40b9-f4532c-fdf815
   flex-direction: column;
   padding: 20px;
   box-sizing: border-box;
-  transform: translateY(100%);
+  /* transform: translateY(100%); */
   border-radius: 20px 20px 0 0;
 }
 #detail-route-container.show {
@@ -123,11 +123,16 @@ https://huemint.com/website-3/#palette=fdfefe-FEFAE0-001062-1d40b9-f4532c-fdf815
   width: 100%;
   height: 28px;
   border-left: 5px solid rgb(212, 163, 115);
-  margin-left: 12;
+  margin-left: 12px;
 }
 .station-container-wrapper.completed::after {
   border-left: 5px solid rgba(212, 163, 115, 0.7);
 }
 .station-container-wrapper:last-child::after {
   display: none;
+}
+@media screen and (max-width: 768px) {
+  #detail-route-container {
+    bottom: 75px;
+  }
 }

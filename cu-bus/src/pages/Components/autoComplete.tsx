@@ -1,6 +1,6 @@
 import React, { Component, createRef } from "react";
 
-function autocomplete(inp: HTMLInputElement, arr: string[]): void {
+function autocomplete(inp: HTMLInputElement, arr: string[], props: any): void {
   let currentFocus: number;
 
   inp.addEventListener("input", function (e: Event) {
@@ -29,6 +29,7 @@ function autocomplete(inp: HTMLInputElement, arr: string[]): void {
               this.getElementsByTagName("input")[0] as HTMLInputElement
             ).value;
             sessionStorage.setItem("routesearch-" + inp.name, inp.value);
+            props.setInputState(inp.value);
             // autoSubmitForm();
           } catch (e) {
             console.log(e);
@@ -100,7 +101,7 @@ class AutoComplete extends Component<AutoCompleteProps> {
   componentDidMount() {
     if (this.inputRef.current) {
       // Initialize the autocomplete function when the component mounts
-      autocomplete(this.inputRef.current, this.props.allBuildings);
+      autocomplete(this.inputRef.current, this.props.allBuildings, this.props);
     }
   }
 

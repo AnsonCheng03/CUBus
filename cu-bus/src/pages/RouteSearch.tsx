@@ -129,7 +129,6 @@ const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
   };
 
   useEffect(() => {
-    if (departNow === false) return;
     generateRouteResult();
   }, [routeSearchStart, routeSearchDest, departNow]);
 
@@ -163,229 +162,234 @@ if (isset($buserrstat["suspended"]))
 ?>
 
 */}
-
-      <form
-        name="bussearch"
-        method="post"
-        autoComplete="off"
-        onSubmit={(e) => {
-          e.preventDefault();
-          generateRouteResult();
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") {
+      <div className="route-search-page">
+        <form
+          className="route-search-form"
+          name="bussearch"
+          method="post"
+          autoComplete="off"
+          onSubmit={(e) => {
+            e.preventDefault();
             generateRouteResult();
-          }
-        }}
-      >
-        <div className="search-boxes">
-          <div className="info-box optionssel">
-            <div className="locationchooser">
-              <label htmlFor="Start" id="Start-label">
-                {t("Form-Start")}
-              </label>
-              <div className="locationinput">
-                <AutoComplete
-                  allBuildings={translatedBuildings}
-                  inputState={routeSearchStart}
-                  setInputState={setRouteSearchStart}
-                />
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              generateRouteResult();
+            }
+          }}
+        >
+          <div className="search-boxes">
+            <div className="info-box optionssel">
+              <div className="locationchooser">
+                <label htmlFor="Start" id="Start-label">
+                  {t("Form-Start")}
+                </label>
+                <div className="locationinput">
+                  <AutoComplete
+                    allBuildings={translatedBuildings}
+                    inputState={routeSearchStart}
+                    setInputState={setRouteSearchStart}
+                  />
+                </div>
+                <div className="functionbuttons">
+                  <GPSSelectIcon
+                    appData={appData}
+                    setDest={setRouteSearchStart}
+                    fullName
+                  />
+                </div>
               </div>
-              <div className="functionbuttons">
-                <GPSSelectIcon
-                  appData={appData}
-                  setDest={setRouteSearchStart}
-                  fullName
-                />
+              <div className="locationchooser">
+                <label htmlFor="Dest" id="Dest-label">
+                  {t("Form-Dest")}
+                </label>
+                <div className="locationinput">
+                  <AutoComplete
+                    allBuildings={translatedBuildings}
+                    inputState={routeSearchDest}
+                    setInputState={setRouteSearchDest}
+                  />
+                </div>
+                <div className="functionbuttons">
+                  <GPSSelectIcon
+                    appData={appData}
+                    setDest={setRouteSearchDest}
+                    fullName
+                  />
+                </div>
               </div>
-            </div>
-            <div className="locationchooser">
-              <label htmlFor="Dest" id="Dest-label">
-                {t("Form-Dest")}
-              </label>
-              <div className="locationinput">
-                <AutoComplete
-                  allBuildings={translatedBuildings}
-                  inputState={routeSearchDest}
-                  setInputState={setRouteSearchDest}
-                />
-              </div>
-              <div className="functionbuttons">
-                <GPSSelectIcon
-                  appData={appData}
-                  setDest={setRouteSearchDest}
-                  fullName
-                />
-              </div>
-            </div>
-            <div className="bus-options">
-              <span className="slider-wrapper">
-                <label htmlFor="deptnow">{t("info-deptnow")}</label>
-                <div className="slider-container">
-                  <label className="switch">
-                    <input
-                      type="checkbox"
-                      id="deptnow"
-                      name="deptnow"
-                      checked={departNow}
-                      onChange={(e) => {
-                        const timeSchedule =
-                          document.getElementById("time-schedule");
+              <div className="bus-options">
+                <span className="slider-wrapper">
+                  <label htmlFor="deptnow">{t("info-deptnow")}</label>
+                  <div className="slider-container">
+                    <label className="switch">
+                      <input
+                        type="checkbox"
+                        id="deptnow"
+                        name="deptnow"
+                        checked={departNow}
+                        onChange={(e) => {
+                          const timeSchedule =
+                            document.getElementById("time-schedule");
 
-                        if (e.target.checked) {
-                          if (timeSchedule) timeSchedule.style.display = "none";
+                          if (e.target.checked) {
+                            if (timeSchedule)
+                              timeSchedule.style.display = "none";
+                          } else {
+                            if (timeSchedule)
+                              timeSchedule.style.display = "block";
+                          }
+
+                          setDepartNow(e.target.checked);
+                        }}
+                      />
+                      <span className="slider"></span>
+                    </label>
+                  </div>
+                </span>
+              </div>
+              {!departNow && (
+                <div id="time-schedule">
+                  <div className="time-schedule">
+                    <RouteSelect
+                      selectValue={selectWeekday}
+                      setSelectValue={setSelectWeekday}
+                      elementClass="select-Weekday"
+                      onChange={(e: any) => {
+                        const TravelDate = document.querySelector(
+                          ".select-date"
+                        ) as HTMLInputElement;
+
+                        if (e.target.value === "WK-Sun") {
+                          setSelectDate("HD");
+                          TravelDate.style.display = "none";
                         } else {
-                          if (timeSchedule)
-                            timeSchedule.style.display = "block";
+                          TravelDate.style.display = "inline";
                         }
-
-                        setDepartNow(e.target.checked);
                       }}
+                      options={[
+                        "WK-Sun",
+                        "WK-Mon",
+                        "WK-Tue",
+                        "WK-Wed",
+                        "WK-Thu",
+                        "WK-Fri",
+                        "WK-Sat",
+                      ]}
+                      translateValue
                     />
-                    <span className="slider"></span>
-                  </label>
+                    <RouteSelect
+                      selectValue={selectDate}
+                      setSelectValue={setSelectDate}
+                      elementClass="select-date"
+                      options={TravelDateOptions}
+                      translateValue
+                    />
+                    <RouteSelect
+                      selectValue={selectHour}
+                      setSelectValue={setSelectHour}
+                      elementClass="select-time"
+                      options={Array.from({ length: 24 }, (_, i) =>
+                        i.toString().padStart(2, "0")
+                      )}
+                    />
+                    :
+                    <RouteSelect
+                      selectValue={selectMinute}
+                      setSelectValue={setSelectMinute}
+                      elementClass="select-time"
+                      options={Array.from({ length: 12 }, (_, i) =>
+                        (i * 5).toString().padStart(2, "0")
+                      )}
+                    />
+                    <input
+                      id="routesubmitbtn"
+                      className="submit-btn"
+                      type="submit"
+                      value={t("route-submit")}
+                    />
+                  </div>
+                  {fetchError && (
+                    <div
+                      id="time-now"
+                      className="show-time"
+                      style={{ display: "none" }}
+                    >
+                      {t("fetch-error")}
+                    </div>
+                  )}
                 </div>
-              </span>
+              )}
             </div>
-            {!departNow && (
-              <div id="time-schedule">
-                <div className="time-schedule">
-                  <RouteSelect
-                    selectValue={selectWeekday}
-                    setSelectValue={setSelectWeekday}
-                    elementClass="select-Weekday"
-                    onChange={(e: any) => {
-                      const TravelDate = document.querySelector(
-                        ".select-date"
-                      ) as HTMLInputElement;
-
-                      if (e.target.value === "WK-Sun") {
-                        setSelectDate("HD");
-                        TravelDate.style.display = "none";
-                      } else {
-                        TravelDate.style.display = "inline";
-                      }
-                    }}
-                    options={[
-                      "WK-Sun",
-                      "WK-Mon",
-                      "WK-Tue",
-                      "WK-Wed",
-                      "WK-Thu",
-                      "WK-Fri",
-                      "WK-Sat",
-                    ]}
-                    translateValue
-                  />
-                  <RouteSelect
-                    selectValue={selectDate}
-                    setSelectValue={setSelectDate}
-                    elementClass="select-date"
-                    options={TravelDateOptions}
-                    translateValue
-                  />
-                  <RouteSelect
-                    selectValue={selectHour}
-                    setSelectValue={setSelectHour}
-                    elementClass="select-time"
-                    options={Array.from({ length: 24 }, (_, i) =>
-                      i.toString().padStart(2, "0")
-                    )}
-                  />
-                  :
-                  <RouteSelect
-                    selectValue={selectMinute}
-                    setSelectValue={setSelectMinute}
-                    elementClass="select-time"
-                    options={Array.from({ length: 12 }, (_, i) =>
-                      (i * 5).toString().padStart(2, "0")
-                    )}
-                  />
-                  <input
-                    id="routesubmitbtn"
-                    className="submit-btn"
-                    type="submit"
-                    value={t("route-submit")}
-                  />
-                </div>
-                {fetchError && (
-                  <div
-                    id="time-now"
-                    className="show-time"
-                    style={{ display: "none" }}
-                  >
-                    {t("fetch-error")}
-                  </div>
-                )}
-              </div>
-            )}
           </div>
+        </form>
+
+        <div className="routeresult">
+          {routeResult.samestation && (
+            <p className="samestation-info">{t("samestation-info")}</p>
+          )}
+
+          {routeResult.sortedResults ? (
+            routeResult.sortedResults.map((result: any, index: number) => {
+              return (
+                <div
+                  className="route-result-busno"
+                  key={index}
+                  onClick={() => {
+                    setRouteMap([result.route, result.routeIndex]);
+                  }}
+                >
+                  <div className="route-result-busno-number">
+                    {result.busNo}
+                  </div>
+                  <div className="route-result-busno-details">
+                    <div className="route-result-busno-details-time">
+                      <div className="route-result-busno-details-totaltime">
+                        <p className="route-result-busno-details-totaltime-text">
+                          {result.time > 1000 ? "N/A" : result.time}
+                        </p>
+                        min
+                      </div>
+                      <div className="route-result-busno-details-arrivaltime">
+                        {`${t("next-bus-arrival-info")}${result.arrivalTime}, ${
+                          result.timeDisplay
+                        } ${t("bus-length-info")}`}
+                      </div>
+                    </div>
+                    <div className="route-result-busno-simple-route">
+                      <div className="route-result-busno-simple-route-start">
+                        {result.start}
+                      </div>
+                      <div className="route-result-busno-simple-route-arrow">
+                        ➤
+                      </div>
+                      <div className="route-result-busno-simple-route-end">
+                        {result.end}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="error-text">
+              {routeResult.error ? (
+                <>
+                  <IonIcon icon={informationCircleOutline}></IonIcon>
+                  <p>{t(routeResult.message)}</p>
+                </>
+              ) : (
+                <>
+                  <IonIcon icon={informationCircleOutline}></IonIcon>
+                  <p>{t("input-text-reminder")}</p>
+                </>
+              )}
+            </div>
+          )}
         </div>
-      </form>
 
-      <div className="routeresult">
-        {routeResult.samestation && (
-          <p className="samestation-info">{t("samestation-info")}</p>
-        )}
-
-        {routeResult.sortedResults ? (
-          routeResult.sortedResults.map((result: any, index: number) => {
-            return (
-              <div
-                className="route-result-busno"
-                key={index}
-                onClick={() => {
-                  setRouteMap([result.route, result.routeIndex]);
-                }}
-              >
-                <div className="route-result-busno-number">{result.busNo}</div>
-                <div className="route-result-busno-details">
-                  <div className="route-result-busno-details-time">
-                    <div className="route-result-busno-details-totaltime">
-                      <p className="route-result-busno-details-totaltime-text">
-                        {result.time}
-                      </p>
-                      min
-                    </div>
-                    <div className="route-result-busno-details-arrivaltime">
-                      {`${t("next-bus-arrival-info")}${result.arrivalTime}, ${
-                        result.timeDisplay
-                      } ${t("bus-length-info")}`}
-                    </div>
-                  </div>
-                  <div className="route-result-busno-simple-route">
-                    <div className="route-result-busno-simple-route-start">
-                      {result.start}
-                    </div>
-                    <div className="route-result-busno-simple-route-arrow">
-                      ➤
-                    </div>
-                    <div className="route-result-busno-simple-route-end">
-                      {result.end}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            );
-          })
-        ) : (
-          <div className="error-text">
-            {routeResult.error ? (
-              <>
-                <IonIcon icon={informationCircleOutline}></IonIcon>
-                <p>{t(routeResult.message)}</p>
-              </>
-            ) : (
-              <>
-                <IonIcon icon={informationCircleOutline}></IonIcon>
-                <p>{t("input-text-reminder")}</p>
-              </>
-            )}
-          </div>
-        )}
+        <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
       </div>
-
-      <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
     </IonPage>
   );
 };

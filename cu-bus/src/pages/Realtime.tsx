@@ -9,6 +9,7 @@ import "./Realtime.css";
 import "./routeComp.css";
 
 import { generateRouteResult, BusData, GPSData } from "./Functions/getRealTime";
+import RouteMap from "./Components/routeMap";
 
 const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
   const [t, i18n] = useTranslation("global");
@@ -28,17 +29,6 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
   } catch (e) {
     console.error(e);
   }
-
-  const createRouteMap = (route: string, selectedStationIndex: number) => {
-    setRouteMap([route, selectedStationIndex]);
-
-    // scroll to current station
-    const currentStation =
-      document.querySelectorAll(".station-container")[
-        selectedStationIndex - 1 < 0 ? 0 : selectedStationIndex - 1
-      ];
-    currentStation.scrollIntoView({ behavior: "smooth" });
-  };
 
   const generateResult = (stationName: string = realtimeDest, log = true) => {
     generateRouteResult(t, bus, appData, stationName, setRealtimeResult);
@@ -85,37 +75,7 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
           <GPSSelectIcon appData={appData} setDest={setRealtimeDest} />
         </form>
         <div className="realtimeresult">
-          {routeMap && routeMap.length > 0 && (
-            <div id="detail-route-container">
-              <div
-                id="close-button"
-                onClick={() => {
-                  setRouteMap([]);
-                }}
-              >
-                &times;
-              </div>
-
-              <div id="map-container">
-                {routeMap[0].map((station: string, index: number) => {
-                  return (
-                    <div
-                      className={
-                        "station-container-wrapper" +
-                        (index < routeMap[1] ? " completed" : "")
-                      }
-                      key={station}
-                    >
-                      <div className="station-container">
-                        <div className="station-number">{index + 1}</div>
-                        <div className="station-name">{station}</div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+          <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
 
           <div className="bus-grid">
             {realtimeResult.length === 0 ? (
@@ -131,10 +91,10 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
                   <div
                     className={"bus-row" + (bus.arrived ? " arrived" : "")}
                     onClick={() => {
-                      createRouteMap(
+                      setRouteMap([
                         bus.nextStation.route,
-                        bus.nextStation.startIndex
-                      );
+                        bus.nextStation.startIndex,
+                      ]);
                     }}
                     key={bus.busno + bus.time}
                   >

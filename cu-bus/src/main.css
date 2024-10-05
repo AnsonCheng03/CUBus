@@ -2,6 +2,10 @@ ion-toolbar {
   display: none;
 }
 
+* {
+  overscroll-behavior: none;
+}
+
 html,
 body {
   overscroll-behavior: none;

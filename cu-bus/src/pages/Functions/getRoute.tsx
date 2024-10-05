@@ -311,7 +311,7 @@ const buildRouteResult = (
   }
 
   const route = line
-    .slice(0, startIndex + endIndex + 1)
+    .slice(0, startIndex + endIndex + 2)
     .map((station, index) => {
       return (
         t(station) +
@@ -325,7 +325,7 @@ const buildRouteResult = (
     end: endPosition + endPositionAttr,
     time: [
       timeline
-        .slice(startIndex, endIndex + 2)
+        .slice(startIndex, startIndex + endIndex + 2)
         .reduce((acc, curr) => acc + curr, 0),
     ],
     route: [route],
@@ -432,7 +432,7 @@ export const calculateRoute = (
           busArray.arrivalTime = new Date(busTime).toLocaleTimeString("en-US", {
             hour: "numeric",
             minute: "numeric",
-            hour12: true,
+            hour12: false,
           });
 
           sortedResults.push({

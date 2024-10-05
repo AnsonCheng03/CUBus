@@ -23,6 +23,12 @@
 
 /* Form */
 
+.realtime-page {
+  position: relative;
+  max-height: calc(100vh - 75px);
+  overflow: scroll;
+}
+
 .stopselector {
   text-align: center;
   padding: 20px 5%;
@@ -34,6 +40,8 @@
   margin: 0;
   justify-content: center;
   align-items: center;
+  position: sticky;
+  top: 0;
 }
 
 @media screen and (max-width: 768px) {

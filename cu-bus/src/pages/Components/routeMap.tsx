@@ -28,7 +28,7 @@ export default class RouteMap extends Component<routeMapProps> {
                   "station-container-wrapper" +
                   (index < routeMap[1] ? " completed" : "")
                 }
-                key={station}
+                key={station + index}
               >
                 <div className="station-container">
                   <div className="station-number">{index + 1}</div>

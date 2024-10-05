@@ -29,26 +29,26 @@
   transition: all 0.4s ease;
 }
 
-/* Selection boxes */
-/* form {
-  position: sticky;
-  top: 0;
-  background-color: #fff;
-} */
-
 @media screen and (min-width: 768px) {
-  /* form,
+  .route-search-page {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5%;
+    padding: 1% 5%;
+  }
+
+  .route-search-form,
   .routeresult {
     max-width: 768px;
     position: relative;
   }
 
-  form {
+  .route-search-form {
     margin-top: 10px;
     justify-self: right;
     width: 100%;
     max-width: 768px;
-  } */
+  }
 
   .info-box {
     border-radius: 10px;
@@ -269,6 +269,19 @@ input:checked + .slider:before {
 .autocomplete-active {
   background-color: DodgerBlue !important;
   color: #ffffff;
+}
+
+.route-search-page {
+  height: calc(100vh - 75px);
+  overflow: auto;
+}
+
+.route-search-form {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background-color: #fff;
+  height: min-content;
 }
 
 .locationchooser .functionbuttons {
