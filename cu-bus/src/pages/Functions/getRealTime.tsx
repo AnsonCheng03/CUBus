@@ -55,7 +55,7 @@ export const processBusStatus = (
 ) => {
   for (const [busNumber, busStatus] of Object.entries(currentBusServices)) {
     if (!bus[busNumber]) {
-      bus[busNumber] = {};
+      continue;
     }
     bus[busNumber]["stats"] = {
       status: busStatus as string,
