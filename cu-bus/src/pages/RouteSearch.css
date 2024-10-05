@@ -161,6 +161,7 @@ input:checked + .slider:before {
   color: #000;
 }
 
+.select-Weekday,
 .select-date {
   font-size: 14px;
   width: 100%;

@@ -1,6 +1,6 @@
 import { IonPage, IonIcon } from "@ionic/react";
 import "./RouteSearch.css";
-import { BusData, processBusStatus } from "./Functions/generalRoute";
+import { BusData, processBusStatus } from "./Functions/getRealTime";
 import { useState } from "react";
 import { informationCircleOutline } from "ionicons/icons";
 import { useTranslation } from "react-i18next";
@@ -8,12 +8,11 @@ import AutoComplete from "./Components/autoComplete";
 import { capitalizeFirstLetter } from "./Functions/Tools";
 import RouteMap from "./Components/routeMap";
 import { GPSSelectIcon } from "./Components/gpsSelectBox";
+import { RouteSelect } from "./Components/selectRouteForm";
 
 const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
   const [routeMap, setRouteMap] = useState<any>([]);
   const [t] = useTranslation("global");
-  const [routeSearchStart, setRouteSearchStart] = useState<string>("");
-  const [routeSearchDest, setRouteSearchDest] = useState<string>("");
 
   const bus: BusData = appData?.bus;
   const busSchedule = appData["timetable.json"];
@@ -84,6 +83,37 @@ const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
   //   document.querySelector("#routesubmitbtn").click();
   // };
 
+  const TravelDateOptions = Array.from(
+    new Set(
+      Object.values(bus)
+        .map((b) => b.schedule?.[3])
+        .filter(Boolean)
+    )
+  ).filter((date) => (date ? !date.includes(",") : []));
+
+  const [routeSearchStart, setRouteSearchStart] = useState<string>("");
+  const [routeSearchDest, setRouteSearchDest] = useState<string>("");
+  const [departNow, setDepartNow] = useState<boolean>(true);
+  const [selectWeekday, setSelectWeekday] = useState<string>(
+    "WK-" +
+      capitalizeFirstLetter(
+        new Date().toLocaleDateString("en-US", { weekday: "short" })
+      )
+  );
+  const [selectDate, setSelectDate] = useState<string>(
+    new Date().getDay() === 0
+      ? "HD"
+      : TravelDateOptions && TravelDateOptions[0]
+      ? TravelDateOptions[0]
+      : ""
+  );
+  const [selectHour, setSelectHour] = useState<string>(
+    new Date().getHours().toString().padStart(2, "0")
+  );
+  const [selectMinute, setSelectMinute] = useState<string>(
+    (Math.floor(new Date().getMinutes() / 5) * 5).toString().padStart(2, "0")
+  );
+
   return (
     <IonPage>
       {/* <?php
@@ -149,7 +179,6 @@ if (isset($buserrstat["suspended"]))
                 />
               </div>
             </div>
-
             <div className="locationchooser">
               <label htmlFor="Dest" id="Dest-label">
                 {t("Form-Dest")}
@@ -169,7 +198,6 @@ if (isset($buserrstat["suspended"]))
                 />
               </div>
             </div>
-
             <div className="bus-options">
               <span className="slider-wrapper">
                 <label htmlFor="deptnow">{t("info-deptnow")}</label>
@@ -179,22 +207,19 @@ if (isset($buserrstat["suspended"]))
                       type="checkbox"
                       id="deptnow"
                       name="deptnow"
-                      defaultChecked
+                      checked={departNow}
                       onChange={(e) => {
-                        const timeNow = document.getElementById("time-now");
                         const timeSchedule =
                           document.getElementById("time-schedule");
 
                         if (e.target.checked) {
-                          if (timeNow) timeNow.style.display = "block";
                           if (timeSchedule) timeSchedule.style.display = "none";
                         } else {
-                          if (timeNow) timeNow.style.display = "none";
                           if (timeSchedule)
                             timeSchedule.style.display = "block";
                         }
 
-                        // autoSubmitForm();
+                        setDepartNow(e.target.checked);
                       }}
                     />
                     <span className="slider"></span>
@@ -202,120 +227,78 @@ if (isset($buserrstat["suspended"]))
                 </div>
               </span>
             </div>
+            {!departNow && (
+              <div id="time-schedule">
+                <div className="time-schedule">
+                  <RouteSelect
+                    selectValue={selectWeekday}
+                    setSelectValue={setSelectWeekday}
+                    elementClass="select-Weekday"
+                    onChange={(e: any) => {
+                      const TravelDate = document.querySelector(
+                        ".select-date"
+                      ) as HTMLInputElement;
 
-            <div id="time-schedule" style={{ display: "none" }}>
-              <div className="time-schedule">
-                <select
-                  className="select-date"
-                  name="Trav-wk"
-                  id="Trav-wk"
-                  defaultValue={
-                    "WK-" +
-                    capitalizeFirstLetter(
-                      new Date().toLocaleDateString("en-US", {
-                        weekday: "short",
-                      })
-                    )
-                  }
-                  onChange={() => {
-                    const TravWk = document.getElementById(
-                      "Trav-wk"
-                    ) as HTMLSelectElement;
-                    const TravDt = document.getElementById(
-                      "Trav-dt"
-                    ) as HTMLSelectElement;
-                    if (TravWk) {
-                      if (TravWk.value === "WK-Sun") {
-                        TravDt.style.display = "none";
-                        TravDt.value = "HD";
+                      if (e.target.value === "WK-Sun") {
+                        setSelectDate("HD");
+                        TravelDate.style.display = "none";
                       } else {
-                        TravDt.style.display = "inline";
+                        TravelDate.style.display = "inline";
                       }
-                    }
-                  }}
-                >
-                  {[
-                    "WK-Sun",
-                    "WK-Mon",
-                    "WK-Tue",
-                    "WK-Wed",
-                    "WK-Thu",
-                    "WK-Fri",
-                    "WK-Sat",
-                  ].map((weekdays, value) => (
-                    <option key={weekdays} value={weekdays}>
-                      {t(weekdays)}
-                    </option>
-                  ))}
-                </select>
-                <select className="select-date" name="Trav-dt" id="Trav-dt">
-                  {Array.from(
-                    new Set(
-                      Object.values(bus)
-                        .map((b) => b.schedule?.[3])
-                        .filter(Boolean)
-                    )
-                  )
-                    .filter((date) => (date ? !date.includes(",") : []))
-                    .map((date) => {
-                      return date ? (
-                        <option key={date} value={date}>
-                          {t(date)}
-                        </option>
-                      ) : null;
-                    })}
-                </select>
-                <select
-                  className="select-time"
-                  name="Trav-hr"
-                  id="Trav-hr"
-                  defaultValue={new Date()
-                    .getHours()
-                    .toString()
-                    .padStart(2, "0")}
-                >
-                  {Array.from({ length: 24 }, (_, i) =>
-                    i.toString().padStart(2, "0")
-                  ).map((value) => (
-                    <option key={value} value={value}>
-                      {value}
-                    </option>
-                  ))}
-                </select>
-                :
-                <select
-                  className="select-time"
-                  name="Trav-min"
-                  id="Trav-min"
-                  defaultValue={(Math.floor(new Date().getMinutes() / 5) * 5)
-                    .toString()
-                    .padStart(2, "0")}
-                >
-                  {Array.from({ length: 12 }, (_, i) =>
-                    (i * 5).toString().padStart(2, "0")
-                  ).map((value) => (
-                    <option key={value} value={value}>
-                      {value}
-                    </option>
-                  ))}
-                </select>
-                <input
-                  id="routesubmitbtn"
-                  className="submit-btn"
-                  type="submit"
-                  value={t("route-submit")}
-                />
-              </div>
-              {fetchError && (
-                <div
-                  id="time-now"
-                  className="show-time"
-                  style={{ display: "none" }}
-                >
-                  {t("fetch-error")}
+                    }}
+                    options={[
+                      "WK-Sun",
+                      "WK-Mon",
+                      "WK-Tue",
+                      "WK-Wed",
+                      "WK-Thu",
+                      "WK-Fri",
+                      "WK-Sat",
+                    ]}
+                    translateValue
+                  />
+                  <RouteSelect
+                    selectValue={selectDate}
+                    setSelectValue={setSelectDate}
+                    elementClass="select-date"
+                    options={TravelDateOptions}
+                    translateValue
+                  />
+                  <RouteSelect
+                    selectValue={selectHour}
+                    setSelectValue={setSelectHour}
+                    elementClass="select-time"
+                    options={Array.from({ length: 24 }, (_, i) =>
+                      i.toString().padStart(2, "0")
+                    )}
+                  />
+                  :
+                  <RouteSelect
+                    selectValue={selectMinute}
+                    setSelectValue={setSelectMinute}
+                    elementClass="select-time"
+                    options={Array.from({ length: 12 }, (_, i) =>
+                      (i * 5).toString().padStart(2, "0")
+                    )}
+                  />
+                  <input
+                    id="routesubmitbtn"
+                    className="submit-btn"
+                    type="submit"
+                    value={t("route-submit")}
+                  />
                 </div>
-              )}
-            </div>
+                {fetchError && (
+                  <div
+                    id="time-now"
+                    className="show-time"
+                    style={{ display: "none" }}
+                  >
+                    {t("fetch-error")}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </form>

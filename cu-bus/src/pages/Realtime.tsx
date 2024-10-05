@@ -1,4 +1,4 @@
-// TODO: auto reload, startup load on gps
+// TODO: startup load on gps
 import { IonPage, IonIcon } from "@ionic/react";
 import { navigateCircleOutline } from "ionicons/icons";
 import { useTranslation } from "react-i18next";
@@ -8,11 +8,7 @@ import { GPSSelectIcon } from "./Components/gpsSelectBox";
 import "./Realtime.css";
 import "./routeComp.css";
 
-import {
-  generateRouteResult,
-  BusData,
-  GPSData,
-} from "./Functions/generalRoute";
+import { generateRouteResult, BusData, GPSData } from "./Functions/getRealTime";
 
 const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
   const [t, i18n] = useTranslation("global");
@@ -33,7 +29,6 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
     console.error(e);
   }
 
-  // function createRouteMap(route, selectedStationIndex) {
   const createRouteMap = (route: string, selectedStationIndex: number) => {
     setRouteMap([route, selectedStationIndex]);
 

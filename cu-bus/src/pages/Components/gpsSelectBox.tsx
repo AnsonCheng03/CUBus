@@ -3,7 +3,7 @@ import { navigateCircleOutline } from "ionicons/icons";
 import React, { Component, useState } from "react";
 import { withTranslation } from "react-i18next";
 import { getLocation } from "../Functions/getLocation";
-import { GPSData } from "../Functions/generalRoute";
+import { GPSData } from "../Functions/getRealTime";
 
 interface gpsSelectIconProps {
   appData: any;
