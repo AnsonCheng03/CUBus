@@ -38,25 +38,14 @@ function submitform(form, replacecontent, target = "/") {
     }
   };
   xhr.send(formData);
-  sessionStorage.setItem("routesearch-submit", "submitted");
   return false;
 }
 
 window.addEventListener("load", () => {
-  sessionStorage.setItem("loadstate", "load");
-
   //Save input
 
   document.querySelectorAll('input[type="text"], select').forEach((elm) => {
     const v = "routesearch-" + elm.name;
-
-    if (sessionStorage.getItem(v)) {
-      elm.value = sessionStorage.getItem(v);
-    }
-
-    elm.addEventListener("change", () => {
-      sessionStorage.setItem(v, elm.value);
-    });
   });
 
   document

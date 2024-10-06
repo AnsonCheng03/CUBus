@@ -1,5 +1,5 @@
 // TODO: startup load on gps
-import { IonPage, IonIcon } from "@ionic/react";
+import { IonPage, IonIcon, getPlatforms } from "@ionic/react";
 import { navigateCircleOutline } from "ionicons/icons";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
@@ -10,6 +10,7 @@ import "./routeComp.css";
 
 import { generateRouteResult, BusData, GPSData } from "./Functions/getRealTime";
 import RouteMap from "./Components/routeMap";
+import { getLocation } from "./Functions/getLocation";
 
 const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
   const [t, i18n] = useTranslation("global");
@@ -48,8 +49,19 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
     return () => clearInterval(intervalId);
   }, [realtimeDest]);
 
+  const mobileGetLocation = async (GPSData: GPSData) => {
+    if (!getPlatforms().includes("hybrid")) return;
+
+    const currentLocation = await getLocation(t, GPSData);
+    if (!currentLocation) return;
+
+    setRealtimeDest(currentLocation[0][0]);
+  };
+
   useEffect(() => {
     generateResult("MTR");
+
+    mobileGetLocation(appData.GPS);
   }, []);
 
   return (

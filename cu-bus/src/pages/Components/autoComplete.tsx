@@ -28,7 +28,6 @@ function autocomplete(inp: HTMLInputElement, arr: string[], props: any): void {
             inp.value = (
               this.getElementsByTagName("input")[0] as HTMLInputElement
             ).value;
-            sessionStorage.setItem("routesearch-" + inp.name, inp.value);
             props.setInputState(inp.value);
             // autoSubmitForm();
           } catch (e) {

@@ -37,7 +37,6 @@ class SelectIcon extends Component<gpsSelectIconProps> {
 
     const changeValuebyGPS = (locCode: string) => {
       if (setDest) setDest(locCode);
-      sessionStorage.setItem("realtime-Dest", locCode);
       this.setSortedGPSData([]);
     };
 
@@ -48,7 +47,7 @@ class SelectIcon extends Component<gpsSelectIconProps> {
           className="image-wrapper"
           id="Dest-GPS-box"
           onClick={() => {
-            getLocation("Dest-GPS-box", t, this.setSortedGPSData, appData.GPS);
+            getLocation(t, appData.GPS, this.setSortedGPSData);
           }}
         ></IonIcon>
         <GPSSelectBox

@@ -41,12 +41,10 @@ function distanceBetweenTwoPlace(
 }
 
 export function getLocation(
-  item: any,
   t: TFunction,
-  setSortedGPSData: React.Dispatch<React.SetStateAction<any>>,
-  gpsData: any
+  gpsData: any,
+  setSortedGPSData?: React.Dispatch<React.SetStateAction<any>>
 ) {
-  // globalThis.item = item;
   function showPosition(position: GeolocationPosition) {
     let updatedGPSData: GPSData = { ...gpsData };
 
@@ -64,26 +62,28 @@ export function getLocation(
       (a, b) => (a[1].distance || 0) - (b[1].distance || 0)
     );
 
-    if ((sortedGPSData[0][1].distance || 0) > 0.5) {
-      setSortedGPSData([]);
-
-      window.alert(t("nearst_error"));
-    } else {
-      setSortedGPSData(sortedGPSData);
-    }
+    if (setSortedGPSData)
+      if ((sortedGPSData[0][1].distance || 0) > 0.5) {
+        setSortedGPSData([]);
+        window.alert(t("nearst_error"));
+      } else {
+        setSortedGPSData(sortedGPSData);
+      }
+    else return sortedGPSData;
   }
 
   function Positionfailed() {
     window.alert(t("GPS-error"));
-    setSortedGPSData([]);
+    if (setSortedGPSData) setSortedGPSData([]);
   }
 
-  Geolocation.getCurrentPosition()
+  return Geolocation.getCurrentPosition()
     .then((position) => {
-      showPosition(position as GeolocationPosition);
+      return showPosition(position as GeolocationPosition);
     })
     .catch((error) => {
       window.alert(t("GPS-error"));
       Positionfailed();
+      return [];
     });
 }
