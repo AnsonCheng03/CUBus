@@ -1,16 +1,19 @@
-#details-box {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(50, 50, 50, 0.77);
-  z-index: 999999;
-  border-radius: 5px;
+ion-modal#GPSModal {
+  --height: calc(63px * 6);
+  --width: min(750px, 75%);
+  --border-radius: 16px;
+  --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
   overflow: hidden;
-  justify-content: center;
-  align-items: center;
-  display: flex;
+}
+
+ion-modal#GPSModal::part(backdrop) {
+  background: rgba(50, 50, 50, 0.77);
+}
+
+ion-modal#GPSModal ion-toolbar {
+  --background: rgb(14 116 144);
+  --color: white;
 }
 
 .details-box {
@@ -30,6 +33,10 @@
   border-bottom: 1px solid #ddd;
 }
 
+.gpsOptions:last-child {
+  border-bottom: none;
+}
+
 .showdetails {
   text-align: left;
   padding: 20px 5%;
@@ -38,7 +45,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid #d4a373;
 }
 
 #details-box-heading {
@@ -58,25 +64,11 @@ https://huemint.com/website-3/#palette=fdfefe-FEFAE0-001062-1d40b9-f4532c-fdf815
 */
 
 #detail-route-container {
-  position: fixed;
-  bottom: 0;
-  left: 0;
   width: 100%;
-  max-height: 50vh;
   background-color: white;
-  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease-in-out;
-  z-index: 99999;
-  display: flex;
-  flex-direction: column;
   padding: 20px;
-  box-sizing: border-box;
-  /* transform: translateY(100%); */
-  border-radius: 20px 20px 0 0;
 }
-#detail-route-container.show {
-  transform: translateY(0);
-}
+
 #close-button {
   align-self: flex-end;
   cursor: pointer;
@@ -87,9 +79,23 @@ https://huemint.com/website-3/#palette=fdfefe-FEFAE0-001062-1d40b9-f4532c-fdf815
 #map-container {
   flex-grow: 1;
   overflow-y: auto;
-  max-height: calc(50vh - 60px); /* Accounting for padding and close button */
-  padding: 0 20px;
+  max-height: calc(50vh - 40px);
+  padding: 20px 20px;
 }
+
+ion-modal#RouteModal {
+  --border-radius: 16px 16px 0 0;
+}
+
+ion-modal#RouteModal::part(backdrop) {
+  background: rgba(50, 50, 50, 0.77);
+}
+
+ion-modal#RouteModal ion-toolbar {
+  --background: rgb(14 116 144);
+  --color: white;
+}
+
 .station-container {
   display: flex;
   align-items: center;
@@ -130,9 +136,4 @@ https://huemint.com/website-3/#palette=fdfefe-FEFAE0-001062-1d40b9-f4532c-fdf815
 }
 .station-container-wrapper:last-child::after {
   display: none;
-}
-@media screen and (max-width: 768px) {
-  #detail-route-container {
-    bottom: 75px;
-  }
 }

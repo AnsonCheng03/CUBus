@@ -6,6 +6,7 @@ import i18next from "i18next";
 import { I18nextProvider } from "react-i18next";
 import HttpBackend from "i18next-http-backend";
 import LanguageDetector from "i18next-browser-languagedetector";
+import { Storage } from "@ionic/storage";
 import { useTranslation, initReactI18next } from "react-i18next";
 import preset_en from "./translations/en_preset.json";
 import preset_zh from "./translations/zh_preset.json";
@@ -80,6 +81,8 @@ i18next
     },
   });
 
+const store = new Storage();
+
 const App: React.FC<RouteComponentProps> = () => {
   const [t, i18n] = useTranslation("global");
   const [isDownloaded, setDownloadedState] = useState(false);
@@ -123,12 +126,18 @@ const App: React.FC<RouteComponentProps> = () => {
               </IonReactRouter>
             </>
           ) : (
-            <Alert
-              notice={{
-                title: t("DownloadFiles-Error"),
-                message: t("DownloadFiles-Error-Message"),
-              }}
-            />
+            <div>
+              <p>App is broken</p>
+              <button
+                onClick={async () => {
+                  await store.create();
+                  await store.clear();
+                  window.location.reload();
+                }}
+              >
+                Reset
+              </button>
+            </div>
           )
         ) : (
           <DownloadFiles
