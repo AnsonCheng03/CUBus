@@ -16,6 +16,19 @@ ion-modal#GPSModal ion-toolbar {
   --color: white;
 }
 
+ion-modal#LoadingModal {
+  --height: 100px;
+  --width: 100px;
+  --box-shadow: none;
+  --background: none;
+}
+
+ion-modal#LoadingModal img {
+  width: 100px;
+  height: 100px;
+  background-color: rgb(173, 173, 173);
+}
+
 .details-box {
   border-radius: 5px;
   overflow: hidden;

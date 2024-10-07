@@ -13,8 +13,10 @@ import {
   IonAvatar,
   IonImg,
   IonSearchbar,
+  IonLoading,
 } from "@ionic/react";
-import { navigateCircleOutline } from "ionicons/icons";
+import loadingImage from "../../assets/download.gif";
+import { key, navigateCircleOutline } from "ionicons/icons";
 import React, { Component, createRef, useRef, useState } from "react";
 import { withTranslation } from "react-i18next";
 import { getLocation } from "../Functions/getLocation";
@@ -40,11 +42,14 @@ class SelectIcon extends Component<gpsSelectIconProps> {
     super(props);
     this.state = {
       sortedGPSData: [],
+      loadingState: false,
     };
   }
 
-  setSortedGPSData = (data: GPSData) => {
-    this.setState({ sortedGPSData: data });
+  setItemState = (key: string, value: any) => {
+    this.setState((prevState: any) => {
+      return { ...prevState, [key]: value };
+    });
   };
 
   render() {
@@ -52,7 +57,7 @@ class SelectIcon extends Component<gpsSelectIconProps> {
 
     const changeValuebyGPS = (locCode: string) => {
       if (setDest) setDest(locCode);
-      this.setSortedGPSData([]);
+      this.setItemState("sortedGPSData", []);
     };
 
     return (
@@ -62,16 +67,44 @@ class SelectIcon extends Component<gpsSelectIconProps> {
           className="image-wrapper"
           id="Dest-GPS-box"
           onClick={() => {
-            getLocation(t, appData.GPS, this.setSortedGPSData);
+            this.setState({ loadingState: true });
+            getLocation(
+              t,
+              appData.GPS,
+              (value: any) => {
+                this.setItemState("sortedGPSData", value);
+              },
+              (value: any) => {
+                this.setItemState("loadingState", value);
+              }
+            );
           }}
         />
         <GPSSelectBox
           sortedGPSData={(this.state as any).sortedGPSData}
-          setSortedGPSData={this.setSortedGPSData}
+          // setSortedGPSData={this.setSortedGPSData}
+          setSortedGPSData={(value: any) => {
+            this.setItemState("sortedGPSData", value);
+          }}
           changeValuebyGPS={changeValuebyGPS}
           fullName={this.props.fullName}
         />
+        <Loading isOpen={(this.state as any).loadingState === true} />
       </>
+    );
+  }
+}
+
+class Loading extends Component<{ isOpen: boolean }> {
+  render() {
+    return (
+      <IonModal
+        isOpen={this.props.isOpen}
+        canDismiss={!this.props.isOpen}
+        id={"LoadingModal"}
+      >
+        <img src={loadingImage} alt="loading" />
+      </IonModal>
     );
   }
 }
@@ -88,6 +121,12 @@ class PopUpBox extends Component<gpsSelectBoxProps> {
       });
     }
 
+    const formattedGPSText = (string: any) => {
+      return string.includes("|")
+        ? t(string.split("|")[0]) + " (" + t(string.split("|")[1]) + ")"
+        : t(string);
+    };
+
     const returnNearest = (sortedGPSData: any) => {
       return sortedGPSData.slice(0, 5).map((data: any) => {
         return (
@@ -96,18 +135,11 @@ class PopUpBox extends Component<gpsSelectBoxProps> {
             key={data[0]}
             onClick={() => {
               changeValuebyGPS(
-                fullName ? `${t(data[0])} (${data[0]})` : data[0]
+                fullName ? `${formattedGPSText(data[0])} (${data[0]})` : data[0]
               );
             }}
           >
-            <div className="GpsText">
-              {data[0].includes("|")
-                ? t(data[0].split("|")[0]) +
-                  " (" +
-                  t(data[0].split("|")[1]) +
-                  ")"
-                : t(data[0])}
-            </div>
+            <div className="GpsText">{formattedGPSText(data[0])}</div>
             <div className="gpsMeter">
               {Number(data[1].distance.toFixed(3)) * 1000 > 1000
                 ? "> 9999"
@@ -124,20 +156,6 @@ class PopUpBox extends Component<gpsSelectBoxProps> {
         canDismiss={canDismiss}
         id={"GPSModal"}
       >
-        <IonHeader>
-          <IonToolbar>
-            <IonTitle>Modal</IonTitle>
-            <IonButtons slot="end">
-              <IonButton
-                onClick={() => {
-                  setSortedGPSData([]);
-                }}
-              >
-                Close
-              </IonButton>
-            </IonButtons>
-          </IonToolbar>
-        </IonHeader>
         <IonContent className="ion-padding">
           <div className="showdetails">
             <h4 id="details-box-heading">{t("nearst_txt")}</h4>

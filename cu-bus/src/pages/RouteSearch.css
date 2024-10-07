@@ -290,6 +290,12 @@ input:checked + .slider:before {
   align-items: center;
 }
 
+.locationchooser .functionbuttons ion-icon {
+  font-size: 20px;
+  padding: 7px 10px;
+  cursor: pointer;
+}
+
 .submit-btn {
   font-size: 14px;
   background-color: #d4a373;
@@ -315,6 +321,7 @@ input:checked + .slider:before {
   background: none;
   border: none;
   color: white;
+  cursor: pointer;
 }
 
 footer h2 {
