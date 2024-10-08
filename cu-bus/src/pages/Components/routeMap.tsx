@@ -46,20 +46,6 @@ export default class RouteMap extends Component<routeMapProps> {
         handleBehavior="cycle"
         id={"RouteModal"}
       >
-        <IonHeader>
-          <IonToolbar>
-            <IonTitle>Modal</IonTitle>
-            <IonButtons slot="end">
-              <IonButton
-                onClick={() => {
-                  setRouteMap([]);
-                }}
-              >
-                Close
-              </IonButton>
-            </IonButtons>
-          </IonToolbar>
-        </IonHeader>
         <IonContent className="ion-padding">
           <div id="detail-route-container">
             <div id="map-container">

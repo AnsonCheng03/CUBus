@@ -1,7 +1,3 @@
-ion-toolbar {
-  display: none;
-}
-
 * {
   overscroll-behavior: none;
 }

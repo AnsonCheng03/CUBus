@@ -1,6 +1,19 @@
-import { IonPage } from "@ionic/react";
+import {
+  IonButton,
+  IonItem,
+  IonNav,
+  IonNavLink,
+  IonPage,
+  IonRouterLink,
+  useIonModal,
+} from "@ionic/react";
 import "./Info.css";
 import { useTranslation } from "react-i18next";
+import { OverlayEventDetail } from "@ionic/core/components";
+import { useState } from "react";
+import ModalInput from "./Components/newPageModal";
+import BusMap from "./AddonPages/routeMap";
+import Settings from "./Settings";
 
 const Info: React.FC<{ appData: any }> = ({ appData }) => {
   const [t, i18n] = useTranslation("global");
@@ -18,6 +31,12 @@ const Info: React.FC<{ appData: any }> = ({ appData }) => {
   return (
     <IonPage>
       <div className="option-list">
+        <ModalInput
+          title="Bus Map"
+          previousPage="Info"
+          passedPage={<BusMap />}
+        />
+
         {appData.WebsiteLinks.map((row: any) => {
           if (row[0][lang]) {
             return (

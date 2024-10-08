@@ -1,5 +1,5 @@
 import { Route, RouteComponentProps } from "react-router-dom";
-import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
+import { IonApp, IonNav, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 
 import i18next from "i18next";
@@ -113,8 +113,8 @@ const App: React.FC<RouteComponentProps> = () => {
                   <Route exact path="/route">
                     <RouteSearch appData={appData} />
                   </Route>
-                  <Route exact path="/info" component={Info}>
-                    <Info appData={appData} />
+                  <Route exact path="/info">
+                    <IonNav root={() => <Info appData={appData} />}></IonNav>
                   </Route>
                   <Route exact path="/settings" component={Settings} />
                   <Route>
