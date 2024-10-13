@@ -110,6 +110,8 @@ ion-modal#timeSelectorModal {
 
 ion-modal#timeSelectorModal ion-picker {
   margin-bottom: var(--ion-safe-area-bottom);
+  max-width: 30vw;
+  width: fit-content;
 }
 
 .time-schedule {
@@ -213,7 +215,7 @@ ion-modal#timeSelectorModal ion-picker {
 .departTime {
   font-size: 14px;
   width: 100%;
-  text-align: right;
+  text-align: left;
   padding: 8px 13px;
   -webkit-appearance: none;
   cursor: pointer;

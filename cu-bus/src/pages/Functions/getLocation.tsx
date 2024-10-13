@@ -78,9 +78,10 @@ export async function getLocation(
     const position = await Geolocation.getCurrentPosition();
     return showPosition(position as GeolocationPosition);
   } catch (error: any) {
-    setSortedGPSData([
-      [t("GPS-error") + ": " + error.message, { error: true }],
-    ]);
+    if (setSortedGPSData)
+      setSortedGPSData([
+        [t("GPS-error") + ": " + error.message, { error: true }],
+      ]);
 
     return [];
   }

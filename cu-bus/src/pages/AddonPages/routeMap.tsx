@@ -1,25 +1,16 @@
-import { useRef, useCallback } from "react";
-import QuickPinchZoom, { make3dTransformValue } from "react-quick-pinch-zoom";
 import busMapImage from "../../assets/schoolbusmap.svg";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import "./routeMap.css";
 
 const BusMap = () => {
-  const imgRef = useRef<HTMLImageElement | null>(null);
-  const onUpdate = useCallback(({ x, y, scale }: any) => {
-    const { current: img } = imgRef;
-
-    if (img) {
-      const value = make3dTransformValue({ x, y, scale });
-
-      img.style.setProperty("transform", value);
-    }
-  }, []);
-
   return (
-    <>
-      <QuickPinchZoom onUpdate={onUpdate}>
-        <img ref={imgRef} src={busMapImage} />
-      </QuickPinchZoom>
-    </>
+    <div className="busMapContainer">
+      <TransformWrapper initialScale={1} wheel={{ step: 50 }} maxScale={100}>
+        <TransformComponent>
+          <img src={busMapImage} alt="Bus Map" />
+        </TransformComponent>
+      </TransformWrapper>
+    </div>
   );
 };
 

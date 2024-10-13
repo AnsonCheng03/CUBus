@@ -1,0 +1,5 @@
+.busMapContainer img {
+  height: calc(100vh - 44px);
+  width: 100vw;
+  position: relative;
+}

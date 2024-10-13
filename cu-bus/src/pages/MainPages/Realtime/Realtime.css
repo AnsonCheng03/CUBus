@@ -231,6 +231,14 @@
 
 .bus-info .direction {
   font-size: 0.75rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* number of lines to show */
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+  width: fit-content;
+  max-width: calc(5vw + 30px);
 }
 
 .arrival-info {
@@ -276,6 +284,12 @@
 
 .next-station {
   font-size: 1.2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
 }
 
 .next-station-display p {

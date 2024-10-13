@@ -23,7 +23,7 @@ const Realtime: React.FC<{
       return userSetRealtimeDest;
     }
     const currentLocation = await getLocation(t, appData.GPS);
-    if (!currentLocation) return "MTR";
+    if (!currentLocation || currentLocation.length === 0) return "MTR";
     return currentLocation[0][0];
   };
 

@@ -11,6 +11,7 @@ nav {
   margin: 0;
   padding-top: env(safe-area-inset-top);
   padding-bottom: 0;
+  height: calc(75px + env(safe-area-inset-top));
 }
 
 ion-router-outlet {
@@ -106,6 +107,7 @@ nav ion-icon {
     position: fixed;
     top: auto;
     bottom: 0;
+    height: calc(75px + env(safe-area-inset-bottom));
     width: 100%;
     padding-top: 0;
     padding-bottom: env(safe-area-inset-bottom);

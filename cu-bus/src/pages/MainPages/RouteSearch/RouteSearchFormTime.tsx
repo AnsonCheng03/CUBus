@@ -57,7 +57,6 @@ const locationTimeChooser = ({
           trigger="departTimePopover"
           dismissOnSelect={true}
           mode="ios"
-          side="end"
         >
           <IonContent>
             <IonList>

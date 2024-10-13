@@ -114,10 +114,7 @@ const Realtime: React.FC<{
                 >
                   <div className="bus-info">
                     <span className="bus-name">{bus.busno}</span>
-                    <span className="direction">
-                      {bus.direction !== t("mode-realtime") ? <br /> : ""}
-                      {bus.direction}
-                    </span>
+                    <span className="direction">{bus.direction}</span>
                   </div>
                   <div className="next-station-display">
                     <p className="next-station-text">{t("next-station")}</p>
