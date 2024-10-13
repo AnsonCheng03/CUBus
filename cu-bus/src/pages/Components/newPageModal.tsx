@@ -17,9 +17,10 @@ import {
 import loadingImage from "../../assets/download.gif";
 
 import { arrowBackOutline } from "ionicons/icons";
-import { Component, useRef, useState } from "react";
+import { Component, ComponentType, Suspense, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { OverlayEventDetail } from "@ionic/core/components";
+import { Await } from "@remix-run/react";
 
 interface BusMapProps {
   isOpen: boolean;
@@ -31,6 +32,13 @@ interface ModalProps {
   title: string;
   previousPage: string;
   passedPage: any;
+}
+
+interface LoadingSuspenseViewProps<T> {
+  resolveFunction: () => Promise<T>;
+  ViewComponent: ComponentType<any>;
+  propNameForResolvedValue: string;
+  otherProps?: Record<string, any>;
 }
 
 const ModalInput = (props: ModalProps) => {
@@ -83,6 +91,26 @@ export const LoadingImage = () => {
     <div className="loadingImageContainer">
       <img src={loadingImage} className="loadingImage" alt="loading" />
     </div>
+  );
+};
+
+export const LoadingSuspenseView = <T,>({
+  resolveFunction,
+  ViewComponent,
+  propNameForResolvedValue,
+  otherProps = {},
+}: LoadingSuspenseViewProps<T>) => {
+  return (
+    <Suspense fallback={<LoadingImage />}>
+      <Await resolve={resolveFunction()}>
+        {(resolvedValue: T) => (
+          <ViewComponent
+            {...otherProps}
+            {...{ [propNameForResolvedValue]: resolvedValue }}
+          />
+        )}
+      </Await>
+    </Suspense>
   );
 };
 

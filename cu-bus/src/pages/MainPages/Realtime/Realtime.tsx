@@ -1,17 +1,15 @@
 import { getPlatforms, IonPage } from "@ionic/react";
-import { Suspense, useEffect, useState } from "react";
 
 import "./Realtime.css";
 import "../assets/routeComp.css";
 
-import { LoadingImage } from "../../Components/newPageModal";
+import { LoadingSuspenseView } from "../../Components/newPageModal";
 import RealtimeView from "./RealtimeView";
 import { getLocation } from "../../Functions/getLocation";
 import { useTranslation } from "react-i18next";
-import { Await } from "@remix-run/react";
 
 const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
-  const [t, i18n] = useTranslation("global");
+  const [t] = useTranslation("global");
 
   const getDefualtStation = async () => {
     if (!getPlatforms().includes("hybrid")) {
@@ -24,16 +22,12 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
 
   return (
     <IonPage>
-      <Suspense fallback={<LoadingImage />}>
-        <Await resolve={getDefualtStation()}>
-          {(resolvedValue) => (
-            <RealtimeView
-              appData={appData}
-              defaultSelectedStation={resolvedValue}
-            />
-          )}
-        </Await>
-      </Suspense>
+      <LoadingSuspenseView
+        resolveFunction={getDefualtStation}
+        ViewComponent={RealtimeView}
+        propNameForResolvedValue="defaultSelectedStation"
+        otherProps={{ appData: appData }}
+      />
     </IonPage>
   );
 };
