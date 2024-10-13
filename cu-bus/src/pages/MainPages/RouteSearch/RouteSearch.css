@@ -6,7 +6,7 @@
   margin: 10px auto;
   box-shadow: 0 5px 10px rgba(154, 160, 185, 0.05),
     0 15px 40px rgba(166, 173, 201, 0.2);
-  background-color: #fff;
+  background-color: rgb(227, 227, 227);
   width: fit-content;
   line-height: 3;
 }
@@ -33,11 +33,10 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
-  border-bottom: 1px solid #ccd5ae;
-  padding: 20px 0 10px 0;
+  /* border-bottom: 10px solid #dedede; */
+  padding: 20px 0 15px 0;
   box-shadow: 0 2px 3px rgba(154, 160, 185, 0.05),
     0 15px 40px rgba(166, 173, 201, 0.2);
-  border-radius: 10px;
 }
 
 /* Options Selector */
@@ -102,6 +101,15 @@ input:checked + .slider {
 
 input:checked + .slider:before {
   transform: translateX(26px);
+}
+
+ion-modal#timeSelectorModal {
+  --height: auto;
+  align-items: end;
+}
+
+ion-modal#timeSelectorModal ion-picker {
+  margin-bottom: var(--ion-safe-area-bottom);
 }
 
 .time-schedule {
@@ -232,7 +240,7 @@ input:checked + .slider:before {
 }
 
 .autocomplete-items div {
-  padding: 5px 35px;
+  padding: 8px 35px;
   /* text-align: center; */
   cursor: pointer;
   background-color: #fff;
@@ -258,11 +266,10 @@ input:checked + .slider:before {
 
 .route-search-form {
   position: sticky;
-  width: 90vw;
-  margin: 20px auto;
+  width: 100vw;
   top: 0;
   z-index: 999;
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.98);
   height: min-content;
 }
 

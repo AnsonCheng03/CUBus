@@ -16,10 +16,11 @@ import {
 import RouteMap from "../../Components/routeMap";
 import { getLocation } from "../../Functions/getLocation";
 
-const Realtime: React.FC<{ appData: any; defaultSelectedStation: string }> = ({
-  appData,
-  defaultSelectedStation,
-}) => {
+const Realtime: React.FC<{
+  appData: any;
+  setUserSetRealtimeDest: any;
+  defaultSelectedStation: string;
+}> = ({ appData, setUserSetRealtimeDest, defaultSelectedStation }) => {
   const [t, i18n] = useTranslation("global");
   const [realtimeDest, setRealtimeDest] = useState<string>(
     defaultSelectedStation
@@ -49,6 +50,7 @@ const Realtime: React.FC<{ appData: any; defaultSelectedStation: string }> = ({
   };
 
   useEffect(() => {
+    setUserSetRealtimeDest(realtimeDest);
     generateResult(realtimeDest);
 
     const intervalId = setInterval(() => {

@@ -1,8 +1,6 @@
 import {
   IonButton,
   IonItem,
-  IonNav,
-  IonNavLink,
   IonPage,
   IonRouterLink,
   useIonModal,

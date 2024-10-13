@@ -8,12 +8,19 @@ import RealtimeView from "./RealtimeView";
 import { getLocation } from "../../Functions/getLocation";
 import { useTranslation } from "react-i18next";
 
-const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
+const Realtime: React.FC<{
+  appData: any;
+  userSetRealtimeDest: string | null;
+  setUserSetRealtimeDest: any;
+}> = ({ appData, userSetRealtimeDest, setUserSetRealtimeDest }) => {
   const [t] = useTranslation("global");
 
   const getDefualtStation = async () => {
     if (!getPlatforms().includes("hybrid")) {
       return "MTR";
+    }
+    if (userSetRealtimeDest) {
+      return userSetRealtimeDest;
     }
     const currentLocation = await getLocation(t, appData.GPS);
     if (!currentLocation) return "MTR";
@@ -26,7 +33,10 @@ const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
         resolveFunction={getDefualtStation}
         ViewComponent={RealtimeView}
         propNameForResolvedValue="defaultSelectedStation"
-        otherProps={{ appData: appData }}
+        otherProps={{
+          appData: appData,
+          setUserSetRealtimeDest: setUserSetRealtimeDest,
+        }}
       />
     </IonPage>
   );

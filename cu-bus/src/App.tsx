@@ -1,5 +1,11 @@
 import { Route, RouteComponentProps } from "react-router-dom";
-import { IonApp, IonNav, IonRouterOutlet, setupIonicReact } from "@ionic/react";
+import {
+  IonApp,
+  IonButton,
+  IonNav,
+  IonRouterOutlet,
+  setupIonicReact,
+} from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 
 import i18next from "i18next";
@@ -87,6 +93,9 @@ const App: React.FC<RouteComponentProps> = () => {
   const [t, i18n] = useTranslation("global");
   const [isDownloaded, setDownloadedState] = useState(false);
   const [appData, setAppData] = useState<any>({});
+  const [userSetRealtimeDest, setUserSetRealtimeDest] = useState<string | null>(
+    null
+  );
 
   const checkDownloadData = () => {
     const dataToBeChecked = ["timetable.json", "Status.json", "bus"];
@@ -108,17 +117,25 @@ const App: React.FC<RouteComponentProps> = () => {
                 {/* <Alert notice={appData.notice} /> */}
                 <IonRouterOutlet>
                   <Route exact path="/realtime">
-                    <Realtime appData={appData} />
+                    <Realtime
+                      appData={appData}
+                      userSetRealtimeDest={userSetRealtimeDest}
+                      setUserSetRealtimeDest={setUserSetRealtimeDest}
+                    />
                   </Route>
                   <Route exact path="/route">
                     <RouteSearch appData={appData} />
                   </Route>
                   <Route exact path="/info">
-                    <IonNav root={() => <Info appData={appData} />}></IonNav>
+                    <Info appData={appData} />
                   </Route>
                   <Route exact path="/settings" component={Settings} />
                   <Route>
-                    <Realtime appData={appData} />
+                    <Realtime
+                      appData={appData}
+                      userSetRealtimeDest={userSetRealtimeDest}
+                      setUserSetRealtimeDest={setUserSetRealtimeDest}
+                    />
                   </Route>
                 </IonRouterOutlet>
                 <NavBar />
@@ -128,7 +145,7 @@ const App: React.FC<RouteComponentProps> = () => {
           ) : (
             <div>
               <p>App is broken</p>
-              <button
+              <IonButton
                 onClick={async () => {
                   await store.create();
                   await store.clear();
@@ -136,7 +153,7 @@ const App: React.FC<RouteComponentProps> = () => {
                 }}
               >
                 Reset
-              </button>
+              </IonButton>
             </div>
           )
         ) : (

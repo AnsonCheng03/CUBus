@@ -1,3 +1,8 @@
+import {
+  IonPicker,
+  IonPickerColumn,
+  IonPickerColumnOption,
+} from "@ionic/react";
 import React, { Component } from "react";
 import { withTranslation } from "react-i18next";
 
@@ -25,22 +30,40 @@ class routeSelectOption extends Component<routeMapProps> {
       t,
     } = this.props;
     return (
-      <select
-        className={elementClass}
-        value={selectValue}
-        onChange={(e: any) => {
-          if (setValueOnChange !== false) setSelectValue(e.target.value);
-          if (onChange) onChange(e);
-        }}
-      >
-        {options.map((value) =>
-          value ? (
-            <option key={value} value={value}>
-              {translateValue ? t(value) : value}
-            </option>
-          ) : null
-        )}
-      </select>
+      // <select
+      //   className={elementClass}
+      //   value={selectValue}
+      //   onChange={(e: any) => {
+      //     if (setValueOnChange !== false) setSelectValue(e.target.value);
+      //     if (onChange) onChange(e);
+      //   }}
+      // >
+      //   {options &&
+      //     options.map((value) =>
+      //       value ? (
+      //         <option key={value} value={value}>
+      //           {translateValue ? t(value) : value}
+      //         </option>
+      //       ) : null
+      //     )}
+      // </select>
+      <IonPicker>
+        <IonPickerColumn
+          value={selectValue}
+          onIonChange={({ detail }: any) => {
+            setSelectValue(detail.value);
+          }}
+        >
+          {options &&
+            options.map((value) =>
+              value ? (
+                <IonPickerColumnOption key={value} value={value}>
+                  {translateValue ? t(value) : value}
+                </IonPickerColumnOption>
+              ) : null
+            )}
+        </IonPickerColumn>
+      </IonPicker>
     );
   }
 }

@@ -136,7 +136,7 @@ const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
 
   useEffect(() => {
     generateRouteResult();
-  }, [routeSearchStart, routeSearchDest, departNow]);
+  }, [routeSearchStart, routeSearchDest]);
 
   return (
     <IonPage>
@@ -231,83 +231,29 @@ if (isset($buserrstat["suspended"]))
                 </div>
               </div>
 
-              <LocationTimeChooser />
-
-              {!departNow && (
-                <div id="time-schedule">
-                  <div className="time-schedule">
-                    <RouteSelect
-                      selectValue={selectWeekday}
-                      setSelectValue={setSelectWeekday}
-                      elementClass="select-Weekday"
-                      onChange={(e: any) => {
-                        const TravelDate = document.querySelector(
-                          ".select-date"
-                        ) as HTMLInputElement;
-
-                        if (e.target.value === "WK-Sun") {
-                          setSelectDate("HD");
-                          TravelDate.style.display = "none";
-                        } else {
-                          TravelDate.style.display = "inline";
-                        }
-                      }}
-                      options={[
-                        "WK-Sun",
-                        "WK-Mon",
-                        "WK-Tue",
-                        "WK-Wed",
-                        "WK-Thu",
-                        "WK-Fri",
-                        "WK-Sat",
-                      ]}
-                      translateValue
-                    />
-                    <RouteSelect
-                      selectValue={selectDate}
-                      setSelectValue={setSelectDate}
-                      elementClass="select-date"
-                      options={TravelDateOptions}
-                      translateValue
-                    />
-                    <RouteSelect
-                      selectValue={selectHour}
-                      setSelectValue={setSelectHour}
-                      elementClass="select-time"
-                      options={Array.from({ length: 24 }, (_, i) =>
-                        i.toString().padStart(2, "0")
-                      )}
-                    />
-                    :
-                    <RouteSelect
-                      selectValue={selectMinute}
-                      setSelectValue={setSelectMinute}
-                      elementClass="select-time"
-                      options={Array.from({ length: 12 }, (_, i) =>
-                        (i * 5).toString().padStart(2, "0")
-                      )}
-                    />
-                    <input
-                      id="routesubmitbtn"
-                      className="submit-btn"
-                      type="submit"
-                      value={t("route-submit")}
-                    />
-                  </div>
-                  {fetchError && (
-                    <div
-                      id="time-now"
-                      className="show-time"
-                      style={{ display: "none" }}
-                    >
-                      {t("fetch-error")}
-                    </div>
-                  )}
-                </div>
-              )}
+              <LocationTimeChooser
+                generateRouteResult={generateRouteResult}
+                departNow={departNow}
+                setDepartNow={setDepartNow}
+                selectWeekday={selectWeekday}
+                setSelectWeekday={setSelectWeekday}
+                selectDate={selectDate}
+                setSelectDate={setSelectDate}
+                selectHour={selectHour}
+                setSelectHour={setSelectHour}
+                selectMinute={selectMinute}
+                setSelectMinute={setSelectMinute}
+                TravelDateOptions={TravelDateOptions}
+              />
             </div>
           </div>
         </form>
+
+        {fetchError && (
+          <div id="time-now" className="show-time" style={{ display: "none" }}>
+            {t("fetch-error")}
+          </div>
+        )}
 
         <div className="routeresult">
           {routeResult.samestation && (
