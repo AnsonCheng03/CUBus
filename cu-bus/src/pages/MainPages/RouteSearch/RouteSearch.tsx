@@ -2,7 +2,12 @@ import { IonPage, IonIcon } from "@ionic/react";
 import "./RouteSearch.css";
 import { BusData, processBusStatus } from "../../Functions/getRealTime";
 import { useEffect, useState } from "react";
-import { informationCircleOutline } from "ionicons/icons";
+import {
+  informationCircleOutline,
+  locationOutline,
+  pinOutline,
+  timeOutline,
+} from "ionicons/icons";
 import { useTranslation } from "react-i18next";
 import AutoComplete from "../../Components/autoComplete";
 import { capitalizeFirstLetter } from "../../Functions/Tools";
@@ -10,6 +15,7 @@ import RouteMap from "../../Components/routeMap";
 import { GPSSelectIcon } from "../../Components/gpsSelectBox";
 import { RouteSelect } from "../../Components/selectRouteForm";
 import { calculateRoute } from "../../Functions/getRoute";
+import LocationTimeChooser from "./RouteSearchFormTime";
 
 const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
   const [routeMap, setRouteMap] = useState<any>([]);
@@ -180,74 +186,53 @@ if (isset($buserrstat["suspended"]))
         >
           <div className="search-boxes">
             <div className="info-box optionssel">
-              <div className="locationchooser">
-                <label htmlFor="Start" id="Start-label">
-                  {t("Form-Start")}
-                </label>
-                <div className="locationinput">
-                  <AutoComplete
-                    allBuildings={translatedBuildings}
-                    inputState={routeSearchStart}
-                    setInputState={setRouteSearchStart}
-                  />
-                </div>
-                <div className="functionbuttons">
-                  <GPSSelectIcon
-                    appData={appData}
-                    setDest={setRouteSearchStart}
-                    fullName
-                  />
-                </div>
-              </div>
-              <div className="locationchooser">
-                <label htmlFor="Dest" id="Dest-label">
-                  {t("Form-Dest")}
-                </label>
-                <div className="locationinput">
-                  <AutoComplete
-                    allBuildings={translatedBuildings}
-                    inputState={routeSearchDest}
-                    setInputState={setRouteSearchDest}
-                  />
-                </div>
-                <div className="functionbuttons">
-                  <GPSSelectIcon
-                    appData={appData}
-                    setDest={setRouteSearchDest}
-                    fullName
-                  />
-                </div>
-              </div>
-              <div className="bus-options">
-                <span className="slider-wrapper">
-                  <label htmlFor="deptnow">{t("info-deptnow")}</label>
-                  <div className="slider-container">
-                    <label className="switch">
-                      <input
-                        type="checkbox"
-                        id="deptnow"
-                        name="deptnow"
-                        checked={departNow}
-                        onChange={(e) => {
-                          const timeSchedule =
-                            document.getElementById("time-schedule");
-
-                          if (e.target.checked) {
-                            if (timeSchedule)
-                              timeSchedule.style.display = "none";
-                          } else {
-                            if (timeSchedule)
-                              timeSchedule.style.display = "block";
-                          }
-
-                          setDepartNow(e.target.checked);
-                        }}
-                      />
-                      <span className="slider"></span>
-                    </label>
+              <div className="locationChooserContainer">
+                <div className="locationChooser">
+                  <label htmlFor="Start" id="Start-label">
+                    <IonIcon icon={pinOutline}></IonIcon>
+                  </label>
+                  <div className="locationinput">
+                    <AutoComplete
+                      allBuildings={translatedBuildings}
+                      inputState={routeSearchStart}
+                      setInputState={setRouteSearchStart}
+                    />
                   </div>
-                </span>
+                  <div className="functionbuttons">
+                    <GPSSelectIcon
+                      appData={appData}
+                      setDest={setRouteSearchStart}
+                      fullName
+                    />
+                  </div>
+                </div>
               </div>
+
+              <div className="locationChooserContainer">
+                <div className="locationChooser">
+                  <label htmlFor="Dest" id="Dest-label">
+                    <IonIcon icon={locationOutline}></IonIcon>
+                  </label>
+
+                  <div className="locationinput">
+                    <AutoComplete
+                      allBuildings={translatedBuildings}
+                      inputState={routeSearchDest}
+                      setInputState={setRouteSearchDest}
+                    />
+                  </div>
+                  <div className="functionbuttons">
+                    <GPSSelectIcon
+                      appData={appData}
+                      setDest={setRouteSearchDest}
+                      fullName
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <LocationTimeChooser />
+
               {!departNow && (
                 <div id="time-schedule">
                   <div className="time-schedule">

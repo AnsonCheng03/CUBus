@@ -29,51 +29,15 @@
   transition: all 0.4s ease;
 }
 
-@media screen and (min-width: 768px) {
-  .route-search-page {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 5%;
-    padding: 1% 5%;
-  }
-
-  .route-search-form,
-  .routeresult {
-    max-width: 768px;
-    position: relative;
-  }
-
-  .route-search-form {
-    margin-top: 10px;
-    justify-self: right;
-    width: 100%;
-    max-width: 768px;
-  }
-
-  .info-box {
-    border-radius: 10px;
-    border: 1px solid #ccd5ae;
-  }
-
-  .route-result {
-    max-height: calc(100vh - 130px);
-    overflow: scroll;
-  }
-
-  main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    padding: 20px 20px 0 20px;
-  }
-}
-
 .info-box {
   display: flex;
   flex-direction: column;
   gap: 5px;
   border-bottom: 1px solid #ccd5ae;
   padding: 20px 0 10px 0;
+  box-shadow: 0 2px 3px rgba(154, 160, 185, 0.05),
+    0 15px 40px rgba(166, 173, 201, 0.2);
+  border-radius: 10px;
 }
 
 /* Options Selector */
@@ -189,18 +153,36 @@ input:checked + .slider:before {
   height: min-content;
 }
 
-.locationchooser {
-  display: grid;
-  grid-template-columns: 75px 1fr 50px;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+.locationChooserContainer {
   padding: 0 20px;
 }
 
-.locationchooser #Start-label,
-.locationchooser #Dest-label {
-  text-align: left;
+.locationChooser {
+  display: grid;
+  grid-template-columns: 50px 1fr 50px;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #d4a373;
+  border-radius: 5px;
+  margin: 3px 0;
+}
+
+.timeChooser {
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #d4a373;
+  border-radius: 5px;
+  margin: 3px 0;
+}
+
+.locationChooser #Start-label,
+.locationChooser #Dest-label,
+.timeChooser #Time-label {
+  text-align: center;
+  display: flex;
+  justify-content: center;
 }
 
 .locationinput {
@@ -210,24 +192,22 @@ input:checked + .slider:before {
 .text-box {
   width: 100%;
   font-size: 14px;
-  border: 1px solid #d4a373;
+  border: none;
   border-radius: 5px;
   outline: 0;
   padding: 7px 15px;
   background: transparent;
   transition: border-color 0.2s;
   -webkit-appearance: none;
-  text-align: center;
 }
 
-.select-box {
+.departTime {
   font-size: 14px;
   width: 100%;
-  color: #000;
-  background-color: none;
-  box-shadow: 0 1px 3px -2px #9098a9;
-  padding: 7px 12px 7px 12px;
+  text-align: right;
+  padding: 8px 13px;
   -webkit-appearance: none;
+  cursor: pointer;
 }
 
 .autocomplete {
@@ -252,8 +232,8 @@ input:checked + .slider:before {
 }
 
 .autocomplete-items div {
-  padding: 5px 0;
-  text-align: center;
+  padding: 5px 15px;
+  /* text-align: center; */
   cursor: pointer;
   background-color: #fff;
   border-bottom: 1px solid #d4a373;
@@ -278,22 +258,29 @@ input:checked + .slider:before {
 
 .route-search-form {
   position: sticky;
+  width: 90vw;
+  margin: 20px auto;
   top: 0;
   z-index: 999;
   background-color: #fff;
   height: min-content;
 }
 
-.locationchooser .functionbuttons {
+.locationChooser .functionbuttons {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.locationchooser .functionbuttons ion-icon {
-  font-size: 20px;
+.timeChooser ion-icon,
+.locationChooser ion-icon {
+  font-size: 1.1rem;
   padding: 7px 10px;
+}
+
+.locationChooser .functionbuttons ion-icon {
   cursor: pointer;
+  border: none;
 }
 
 .submit-btn {
@@ -433,4 +420,43 @@ footer h2 {
 
 .error-text i {
   font-size: 50px;
+}
+
+@media screen and (min-width: 768px) {
+  .route-search-page {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5%;
+    padding: 1% 5%;
+  }
+
+  .route-search-form,
+  .routeresult {
+    max-width: 768px;
+    position: relative;
+  }
+
+  .route-search-form {
+    margin-top: 10px;
+    justify-self: right;
+    width: 100%;
+    max-width: 768px;
+  }
+
+  .info-box {
+    border-radius: 10px;
+    border: 1px solid #ccd5ae;
+  }
+
+  .route-result {
+    max-height: calc(100vh - 130px);
+    overflow: scroll;
+  }
+
+  main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 20px 20px 0 20px;
+  }
 }

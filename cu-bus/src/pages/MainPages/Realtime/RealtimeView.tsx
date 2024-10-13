@@ -65,23 +65,26 @@ const Realtime: React.FC<{ appData: any; defaultSelectedStation: string }> = ({
   return (
     <div className="realtime-page">
       <form className="stopselector" method="POST">
-        <span>{t("DescTxt-yrloc")}</span>
-        <select
-          className="select-box"
-          name="Dest"
-          id="Dest"
-          value={realtimeDest}
-          onChange={(e) => {
-            setRealtimeDest(e.target.value);
-          }}
-        >
-          {allBusStop.map((stop) => (
-            <option key={stop} value={stop}>
-              {t(stop)}
-            </option>
-          ))}
-        </select>
-        <GPSSelectIcon appData={appData} setDest={setRealtimeDest} />
+        <div className="searchStopSelector">
+          {/* <span>{t("DescTxt-yrloc")}</span> */}
+          <select
+            className="select-box"
+            name="Dest"
+            id="Dest"
+            value={realtimeDest}
+            onChange={(e) => {
+              setRealtimeDest(e.target.value);
+            }}
+          >
+            {allBusStop.map((stop) => (
+              <option key={stop} value={stop}>
+                {t(stop)}
+              </option>
+            ))}
+          </select>
+
+          <GPSSelectIcon appData={appData} setDest={setRealtimeDest} />
+        </div>
       </form>
       <div className="realtimeresult">
         <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />

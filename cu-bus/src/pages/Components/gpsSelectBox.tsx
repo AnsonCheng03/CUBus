@@ -33,9 +33,7 @@ class SelectIcon extends Component<gpsSelectIconProps> {
   }
 
   setItemState = (key: string, value: any) => {
-    this.setState((prevState: any) => {
-      return { ...prevState, [key]: value };
-    });
+    this.setState((prevState: any) => ({ ...prevState, [key]: value }));
   };
 
   render() {
@@ -51,13 +49,18 @@ class SelectIcon extends Component<gpsSelectIconProps> {
           icon={navigateCircleOutline}
           className="image-wrapper"
           id="Dest-GPS-box"
-          onClick={() => {
-            this.setItemState("openModal", true);
-            setTimeout(() => {
-              getLocation(t, appData.GPS, (value: any) => {
+          onClick={async () => {
+            await getLocation(
+              t,
+              appData.GPS,
+              (value: any) => {
                 this.setItemState("sortedGPSData", value);
-              });
-            }, 500);
+              },
+              (value: boolean) => {
+                this.setItemState("openModal", value);
+                this.forceUpdate();
+              }
+            );
           }}
         />
         <GPSSelectBox
@@ -66,7 +69,7 @@ class SelectIcon extends Component<gpsSelectIconProps> {
             this.setItemState("openModal", false);
           }}
           sortedGPSData={(this.state as any).sortedGPSData}
-          setSortedGPSData={(value: any) => {
+          setSortedGPSData={(value: any, closeModal?: boolean) => {
             this.setItemState("sortedGPSData", value);
           }}
           changeValuebyGPS={changeValuebyGPS}
@@ -115,18 +118,23 @@ class PopUpBox extends Component<gpsSelectBoxProps> {
             className="gpsOptions"
             key={data[0]}
             onClick={async () => {
-              changeValuebyGPS(
-                fullName ? `${formattedGPSText(data[0])} (${data[0]})` : data[0]
-              );
+              !data[1].error &&
+                changeValuebyGPS(
+                  fullName
+                    ? `${formattedGPSText(data[0])} (${data[0]})`
+                    : data[0]
+                );
               await this.modalRef.current?.dismiss();
             }}
           >
             <div className="GpsText">{formattedGPSText(data[0])}</div>
-            <div className="gpsMeter">
-              {Number(data[1].distance.toFixed(3)) * 1000 > 1000
-                ? "> 9999"
-                : Number(data[1].distance.toFixed(3)) * 1000 + " m"}
-            </div>
+            {!data[1].error && (
+              <div className="gpsMeter">
+                {Number(data[1].distance.toFixed(3)) * 1000 > 1000
+                  ? "> 9999"
+                  : Number(data[1].distance.toFixed(3)) * 1000 + " m"}
+              </div>
+            )}
           </div>
         );
       });
