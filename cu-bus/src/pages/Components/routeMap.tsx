@@ -25,26 +25,12 @@ export default class RouteMap extends Component<routeMapProps> {
         setRouteMap([]);
       });
     }
-    // return  ? (
-    //     <div
-    //       id="close-button"
-    //       onClick={() => {
-    //
-    //       }}
-    //     >
-    //       &times;
-    //     </div>
-
-    //   </div>
-    // ) : null;
 
     return (
       <IonModal
         initialBreakpoint={0.5}
         isOpen={routeMap && routeMap.length > 0}
         canDismiss={canDismiss}
-        breakpoints={[0, 0.5]}
-        handleBehavior="cycle"
         id={"RouteModal"}
       >
         <IonContent
