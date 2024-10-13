@@ -1,10 +1,11 @@
 ion-modal#GPSModal {
   --height: max-content;
   --width: min(750px, 75%);
-  --border-radius: 16px;
-  --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
-    0 4px 6px -4px rgb(0 0 0 / 0.1);
-  overflow: hidden;
+  --border-width: 0;
+  --border-color: transparent;
+  --border-style: none;
+  --border-radius: 0;
+  --background: transparent;
 }
 
 ion-modal#GPSModal::part(backdrop) {
@@ -28,6 +29,7 @@ ion-modal#LoadingModal {
   justify-content: center;
   align-items: center;
   height: 100%;
+  padding: 50px;
 }
 
 .loadingImage {
@@ -54,6 +56,15 @@ ion-modal#LoadingModal {
 
 .gpsOptions:last-child {
   border-bottom: none;
+}
+
+.GPSModalDetails,
+ion-modal#GPSModal .loading-image-wrapper {
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
 .showdetails {

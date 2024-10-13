@@ -16,10 +16,10 @@
 }
 
 .downloadFilesContainer img {
-  width: min(40vw, 40vh);
-  height: min(40vw, 40vh);
+  width: min(20vw, 20vh);
+  height: min(20vw, 20vh);
   margin: 20px auto;
-  animation: jump 1s infinite;
+  /* animation: jump 1s infinite; */
 }
 
 @keyframes jump {

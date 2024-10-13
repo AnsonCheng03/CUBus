@@ -43,8 +43,7 @@ function distanceBetweenTwoPlace(
 export function getLocation(
   t: TFunction,
   gpsData: any,
-  setSortedGPSData?: React.Dispatch<React.SetStateAction<any>>,
-  setLoadingState?: React.Dispatch<React.SetStateAction<boolean>>
+  setSortedGPSData?: React.Dispatch<React.SetStateAction<any>>
 ) {
   function showPosition(position: GeolocationPosition) {
     let updatedGPSData: GPSData = { ...gpsData };
@@ -63,7 +62,6 @@ export function getLocation(
       (a, b) => (a[1].distance || 0) - (b[1].distance || 0)
     );
 
-    if (setLoadingState) setLoadingState(false);
     if (setSortedGPSData) {
       if ((sortedGPSData[0][1].distance || 0) > 0.5) {
         setSortedGPSData([]);

@@ -1,27 +1,10 @@
-import {
-  IonIcon,
-  IonButton,
-  IonModal,
-  IonHeader,
-  IonContent,
-  IonToolbar,
-  IonTitle,
-  IonPage,
-  IonList,
-  IonItem,
-  IonButtons,
-  IonAvatar,
-  IonImg,
-  IonSearchbar,
-  IonLoading,
-  createAnimation,
-} from "@ionic/react";
-import { key, navigateCircleOutline } from "ionicons/icons";
-import React, { Component, createRef, useRef, useState } from "react";
+import { IonIcon, IonModal } from "@ionic/react";
+import { navigateCircleOutline } from "ionicons/icons";
+import { Component } from "react";
 import { withTranslation } from "react-i18next";
 import { getLocation } from "../Functions/getLocation";
-import { GPSData } from "../Functions/getRealTime";
-import { Loading } from "./newPageModal";
+import { LoadingImage } from "./newPageModal";
+import React from "react";
 
 interface gpsSelectIconProps {
   appData: any;
@@ -31,6 +14,8 @@ interface gpsSelectIconProps {
 }
 
 interface gpsSelectBoxProps {
+  openModal: boolean;
+  closeModal: any;
   sortedGPSData: any;
   setSortedGPSData: any;
   t: any;
@@ -42,8 +27,8 @@ class SelectIcon extends Component<gpsSelectIconProps> {
   constructor(props: gpsSelectIconProps) {
     super(props);
     this.state = {
+      openModal: false,
       sortedGPSData: [],
-      loadingState: false,
     };
   }
 
@@ -58,7 +43,6 @@ class SelectIcon extends Component<gpsSelectIconProps> {
 
     const changeValuebyGPS = (locCode: string) => {
       if (setDest) setDest(locCode);
-      this.setItemState("sortedGPSData", []);
     };
 
     return (
@@ -68,33 +52,25 @@ class SelectIcon extends Component<gpsSelectIconProps> {
           className="image-wrapper"
           id="Dest-GPS-box"
           onClick={() => {
-            this.setState({ loadingState: true });
-            getLocation(
-              t,
-              appData.GPS,
-              (value: any) => {
+            this.setItemState("openModal", true);
+            setTimeout(() => {
+              getLocation(t, appData.GPS, (value: any) => {
                 this.setItemState("sortedGPSData", value);
-              },
-              (value: any) => {
-                this.setItemState("loadingState", value);
-              }
-            );
+              });
+            }, 500);
           }}
         />
         <GPSSelectBox
+          openModal={(this.state as any).openModal}
+          closeModal={() => {
+            this.setItemState("openModal", false);
+          }}
           sortedGPSData={(this.state as any).sortedGPSData}
-          // setSortedGPSData={this.setSortedGPSData}
           setSortedGPSData={(value: any) => {
             this.setItemState("sortedGPSData", value);
           }}
           changeValuebyGPS={changeValuebyGPS}
           fullName={this.props.fullName}
-        />
-        <Loading
-          isOpen={
-            (this.state as any).loadingState === true ||
-            (this.state as any).sortedGPSData.length > 0
-          }
         />
       </>
     );
@@ -102,16 +78,29 @@ class SelectIcon extends Component<gpsSelectIconProps> {
 }
 
 class PopUpBox extends Component<gpsSelectBoxProps> {
-  render() {
-    const { sortedGPSData, setSortedGPSData, changeValuebyGPS, fullName, t } =
-      this.props;
+  modalRef: React.RefObject<HTMLIonModalElement>;
 
-    function canDismiss() {
-      return new Promise<boolean>((resolve, reject) => {
-        resolve(true);
-        setSortedGPSData([]);
-      });
-    }
+  constructor(props: gpsSelectBoxProps) {
+    super(props);
+
+    this.modalRef = React.createRef<HTMLIonModalElement>();
+  }
+
+  render() {
+    const {
+      openModal,
+      closeModal,
+      sortedGPSData,
+      setSortedGPSData,
+      changeValuebyGPS,
+      fullName,
+      t,
+    } = this.props;
+
+    const dismissModal = () => {
+      closeModal();
+      setSortedGPSData([]);
+    };
 
     const formattedGPSText = (string: any) => {
       return string.includes("|")
@@ -125,10 +114,11 @@ class PopUpBox extends Component<gpsSelectBoxProps> {
           <div
             className="gpsOptions"
             key={data[0]}
-            onClick={() => {
+            onClick={async () => {
               changeValuebyGPS(
                 fullName ? `${formattedGPSText(data[0])} (${data[0]})` : data[0]
               );
+              await this.modalRef.current?.dismiss();
             }}
           >
             <div className="GpsText">{formattedGPSText(data[0])}</div>
@@ -144,18 +134,33 @@ class PopUpBox extends Component<gpsSelectBoxProps> {
 
     return (
       <IonModal
-        isOpen={sortedGPSData && sortedGPSData.length > 0}
-        canDismiss={canDismiss}
+        isOpen={openModal}
         id={"GPSModal"}
-        showBackdrop={false}
+        canDismiss={sortedGPSData && sortedGPSData.length > 0}
+        onDidDismiss={dismissModal}
+        ref={this.modalRef}
+        mode="ios"
       >
-        <div className="showdetails">
-          <h4 id="details-box-heading">{t("nearst_txt")}</h4>
-          <div className="map-submit-btn" onClick={() => setSortedGPSData([])}>
-            {t("cancel_btntxt")}
+        {sortedGPSData && sortedGPSData.length > 0 ? (
+          <div className="GPSModalDetails">
+            <div className="showdetails">
+              <h4 id="details-box-heading">{t("nearst_txt")}</h4>
+              <div
+                className="map-submit-btn"
+                onClick={() => {
+                  this.modalRef.current?.dismiss();
+                }}
+              >
+                {t("cancel_btntxt")}
+              </div>
+            </div>
+            <div id="GPSresult">{returnNearest(sortedGPSData)}</div>
           </div>
-        </div>
-        <div id="GPSresult">{returnNearest(sortedGPSData)}</div>
+        ) : (
+          <div className="loading-image-wrapper">
+            <LoadingImage />
+          </div>
+        )}
       </IonModal>
     );
   }

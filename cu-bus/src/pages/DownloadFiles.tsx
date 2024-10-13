@@ -17,6 +17,7 @@ import timetable from "../initDatas/timetable.json";
 import lastModifiedDates from "../initDatas/lastModifiedDates.json";
 
 import { Storage } from "@ionic/storage";
+import { LoadingImage } from "./Components/newPageModal";
 const store = new Storage();
 store.create(); // Initialize the storage
 
@@ -299,7 +300,10 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
   return (
     <IonPage>
       <div className="downloadFilesContainer">
-        <img src={icon} alt="icon" />
+        {/* <img src={icon} alt="icon" /> */}
+        <div className="download-image-wrapper">
+          <LoadingImage />
+        </div>
         <h1>{downloadHint}</h1>
       </div>
     </IonPage>
