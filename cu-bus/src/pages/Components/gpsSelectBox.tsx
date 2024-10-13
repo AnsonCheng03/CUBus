@@ -14,13 +14,14 @@ import {
   IonImg,
   IonSearchbar,
   IonLoading,
+  createAnimation,
 } from "@ionic/react";
-import loadingImage from "../../assets/download.gif";
 import { key, navigateCircleOutline } from "ionicons/icons";
 import React, { Component, createRef, useRef, useState } from "react";
 import { withTranslation } from "react-i18next";
 import { getLocation } from "../Functions/getLocation";
 import { GPSData } from "../Functions/getRealTime";
+import { Loading } from "./newPageModal";
 
 interface gpsSelectIconProps {
   appData: any;
@@ -89,22 +90,13 @@ class SelectIcon extends Component<gpsSelectIconProps> {
           changeValuebyGPS={changeValuebyGPS}
           fullName={this.props.fullName}
         />
-        <Loading isOpen={(this.state as any).loadingState === true} />
+        <Loading
+          isOpen={
+            (this.state as any).loadingState === true ||
+            (this.state as any).sortedGPSData.length > 0
+          }
+        />
       </>
-    );
-  }
-}
-
-class Loading extends Component<{ isOpen: boolean }> {
-  render() {
-    return (
-      <IonModal
-        isOpen={this.props.isOpen}
-        canDismiss={!this.props.isOpen}
-        id={"LoadingModal"}
-      >
-        <img src={loadingImage} alt="loading" />
-      </IonModal>
     );
   }
 }
@@ -155,19 +147,15 @@ class PopUpBox extends Component<gpsSelectBoxProps> {
         isOpen={sortedGPSData && sortedGPSData.length > 0}
         canDismiss={canDismiss}
         id={"GPSModal"}
+        showBackdrop={false}
       >
-        <IonContent className="ion-padding">
-          <div className="showdetails">
-            <h4 id="details-box-heading">{t("nearst_txt")}</h4>
-            <div
-              className="map-submit-btn"
-              onClick={() => setSortedGPSData([])}
-            >
-              {t("cancel_btntxt")}
-            </div>
+        <div className="showdetails">
+          <h4 id="details-box-heading">{t("nearst_txt")}</h4>
+          <div className="map-submit-btn" onClick={() => setSortedGPSData([])}>
+            {t("cancel_btntxt")}
           </div>
-          <div id="GPSresult">{returnNearest(sortedGPSData)}</div>
-        </IonContent>
+        </div>
+        <div id="GPSresult">{returnNearest(sortedGPSData)}</div>
       </IonModal>
     );
   }

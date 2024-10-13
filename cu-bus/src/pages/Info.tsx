@@ -32,8 +32,20 @@ const Info: React.FC<{ appData: any }> = ({ appData }) => {
     <IonPage>
       <div className="option-list">
         <ModalInput
-          title="Bus Map"
-          previousPage="Info"
+          title={t("bus_map_page")}
+          previousPage={t("info_page")}
+          passedPage={<BusMap />}
+        />
+
+        <ModalInput
+          title={t("school_bus_permit")}
+          previousPage={t("info_page")}
+          passedPage={<BusMap />}
+        />
+
+        <ModalInput
+          title={t("cusis_timetable")}
+          previousPage={t("info_page")}
           passedPage={<BusMap />}
         />
 

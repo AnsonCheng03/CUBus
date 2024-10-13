@@ -14,8 +14,10 @@ import {
   IonToolbar,
   useIonModal,
 } from "@ionic/react";
+import loadingImage from "../../assets/download.gif";
+
 import { arrowBackOutline } from "ionicons/icons";
-import { useRef, useState } from "react";
+import { Component, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { OverlayEventDetail } from "@ionic/core/components";
 
@@ -75,6 +77,36 @@ const ModalInput = (props: ModalProps) => {
     </>
   );
 };
+
+export class Loading extends Component<{ isOpen?: boolean }> {
+  render() {
+    const enterAnimation = (baseEl: HTMLElement) => {
+      const root = baseEl.shadowRoot;
+
+      const backdropAnimation = createAnimation()
+        .addElement(root?.querySelector("ion-backdrop")!)
+        .fromTo("opacity", "1", "var(--backdrop-opacity)");
+
+      return createAnimation()
+        .addElement(baseEl)
+        .easing("ease-out")
+        .duration(0)
+        .addAnimation([backdropAnimation]);
+    };
+
+    return (
+      <IonModal
+        isOpen={this.props.isOpen ?? true}
+        canDismiss={!this.props.isOpen}
+        id={"LoadingModal"}
+        enterAnimation={enterAnimation}
+        leaveAnimation={enterAnimation}
+      >
+        <img src={loadingImage} alt="loading" />
+      </IonModal>
+    );
+  }
+}
 
 const ModalShown = ({
   dismiss,

@@ -18,7 +18,8 @@ export default class RouteMap extends Component<routeMapProps> {
   render() {
     const { routeMap, setRouteMap } = this.props;
 
-    function canDismiss() {
+    function canDismiss(data?: any, role?: string) {
+      if (role === "gesture") return Promise.resolve(false);
       return new Promise<boolean>((resolve, reject) => {
         resolve(true);
         setRouteMap([]);
@@ -46,7 +47,12 @@ export default class RouteMap extends Component<routeMapProps> {
         handleBehavior="cycle"
         id={"RouteModal"}
       >
-        <IonContent className="ion-padding">
+        <IonContent
+          className="ion-padding"
+          onTouchMove={(e) => {
+            e.stopPropagation();
+          }}
+        >
           <div id="detail-route-container">
             <div id="map-container">
               {routeMap[0] &&

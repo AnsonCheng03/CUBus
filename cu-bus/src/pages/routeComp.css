@@ -1,5 +1,5 @@
 ion-modal#GPSModal {
-  --height: calc(63px * 6);
+  --height: max-content;
   --width: min(750px, 75%);
   --border-radius: 16px;
   --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
@@ -8,7 +8,7 @@ ion-modal#GPSModal {
 }
 
 ion-modal#GPSModal::part(backdrop) {
-  background: rgba(50, 50, 50, 0.77);
+  background: rgba(50, 50, 50, 0.9);
 }
 
 ion-modal#GPSModal ion-toolbar {
@@ -54,6 +54,7 @@ ion-modal#LoadingModal img {
   text-align: left;
   padding: 20px 5%;
   background-color: #d4a373;
+  border: 1px solid #d4a373;
   color: #fff;
   display: flex;
   justify-content: space-between;
