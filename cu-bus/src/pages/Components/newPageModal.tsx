@@ -78,6 +78,14 @@ const ModalInput = (props: ModalProps) => {
   );
 };
 
+export const LoadingImage = () => {
+  return (
+    <div className="loadingImageContainer">
+      <img src={loadingImage} className="loadingImage" alt="loading" />
+    </div>
+  );
+};
+
 export class Loading extends Component<{ isOpen?: boolean }> {
   render() {
     const enterAnimation = (baseEl: HTMLElement) => {
@@ -96,13 +104,13 @@ export class Loading extends Component<{ isOpen?: boolean }> {
 
     return (
       <IonModal
-        isOpen={this.props.isOpen ?? true}
+        isOpen={this.props.isOpen}
         canDismiss={!this.props.isOpen}
         id={"LoadingModal"}
         enterAnimation={enterAnimation}
         leaveAnimation={enterAnimation}
       >
-        <img src={loadingImage} alt="loading" />
+        <LoadingImage />
       </IonModal>
     );
   }
