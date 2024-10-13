@@ -15,10 +15,10 @@ import NavBar from "./components/navBar";
 import PWAPrompt from "./components/mobilePWAPrompt";
 import Alert from "./components/alertBox";
 
-import Realtime from "./pages/Realtime";
-import RouteSearch from "./pages/RouteSearch";
-import Info from "./pages/Info";
-import Settings from "./pages/Settings";
+import Realtime from "./pages/MainPages/Realtime/Realtime";
+import RouteSearch from "./pages/MainPages/RouteSearch/RouteSearch";
+import Info from "./pages/MainPages/Info/Info";
+import Settings from "./pages/MainPages/Settings/Settings";
 import DownloadFiles from "./pages/DownloadFiles";
 
 /* Core CSS required for Ionic components to work properly */

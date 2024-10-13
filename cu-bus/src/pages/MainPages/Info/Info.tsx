@@ -11,9 +11,9 @@ import "./Info.css";
 import { useTranslation } from "react-i18next";
 import { OverlayEventDetail } from "@ionic/core/components";
 import { useState } from "react";
-import ModalInput from "./Components/newPageModal";
-import BusMap from "./AddonPages/routeMap";
-import Settings from "./Settings";
+import ModalInput from "../../Components/newPageModal";
+import BusMap from "../../AddonPages/routeMap";
+import Settings from "../Settings/Settings";
 
 const Info: React.FC<{ appData: any }> = ({ appData }) => {
   const [t, i18n] = useTranslation("global");

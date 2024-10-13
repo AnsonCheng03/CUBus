@@ -3,15 +3,19 @@ import { IonPage, IonIcon, getPlatforms } from "@ionic/react";
 import { navigateCircleOutline } from "ionicons/icons";
 import { useTranslation } from "react-i18next";
 import { Suspense, useEffect, useState } from "react";
-import { GPSSelectIcon } from "./Components/gpsSelectBox";
+import { GPSSelectIcon } from "../../Components/gpsSelectBox";
 
 import "./Realtime.css";
-import "./routeComp.css";
+import "../assets/routeComp.css";
 
-import { generateRouteResult, BusData, GPSData } from "./Functions/getRealTime";
-import RouteMap from "./Components/routeMap";
-import { getLocation } from "./Functions/getLocation";
-import { Loading } from "./Components/newPageModal";
+import {
+  generateRouteResult,
+  BusData,
+  GPSData,
+} from "../../Functions/getRealTime";
+import RouteMap from "../../Components/routeMap";
+import { getLocation } from "../../Functions/getLocation";
+import { Loading } from "../../Components/newPageModal";
 
 const Realtime: React.FC<{ appData: any }> = ({ appData }) => {
   const [t, i18n] = useTranslation("global");

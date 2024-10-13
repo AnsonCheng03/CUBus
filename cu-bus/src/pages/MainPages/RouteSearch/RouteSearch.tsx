@@ -1,15 +1,15 @@
 import { IonPage, IonIcon } from "@ionic/react";
 import "./RouteSearch.css";
-import { BusData, processBusStatus } from "./Functions/getRealTime";
+import { BusData, processBusStatus } from "../../Functions/getRealTime";
 import { useEffect, useState } from "react";
 import { informationCircleOutline } from "ionicons/icons";
 import { useTranslation } from "react-i18next";
-import AutoComplete from "./Components/autoComplete";
-import { capitalizeFirstLetter } from "./Functions/Tools";
-import RouteMap from "./Components/routeMap";
-import { GPSSelectIcon } from "./Components/gpsSelectBox";
-import { RouteSelect } from "./Components/selectRouteForm";
-import { calculateRoute } from "./Functions/getRoute";
+import AutoComplete from "../../Components/autoComplete";
+import { capitalizeFirstLetter } from "../../Functions/Tools";
+import RouteMap from "../../Components/routeMap";
+import { GPSSelectIcon } from "../../Components/gpsSelectBox";
+import { RouteSelect } from "../../Components/selectRouteForm";
+import { calculateRoute } from "../../Functions/getRoute";
 
 const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
   const [routeMap, setRouteMap] = useState<any>([]);
