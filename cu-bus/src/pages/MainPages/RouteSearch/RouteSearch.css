@@ -165,6 +165,7 @@ input:checked + .slider:before {
   border: 1px solid #d4a373;
   border-radius: 5px;
   margin: 3px 0;
+  position: relative;
 }
 
 .timeChooser {
@@ -211,7 +212,6 @@ input:checked + .slider:before {
 }
 
 .autocomplete {
-  position: relative;
   display: inline-block;
   width: 100%;
 }
@@ -232,7 +232,7 @@ input:checked + .slider:before {
 }
 
 .autocomplete-items div {
-  padding: 5px 15px;
+  padding: 5px 35px;
   /* text-align: center; */
   cursor: pointer;
   background-color: #fff;
