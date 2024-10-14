@@ -89,7 +89,7 @@ i18next
 
 const store = new Storage();
 
-const App: React.FC<RouteComponentProps> = () => {
+const App: React.FC<RouteComponentProps | any> = () => {
   const [t, i18n] = useTranslation("global");
   const [isDownloaded, setDownloadedState] = useState(false);
   const [appData, setAppData] = useState<any>({});
