@@ -145,7 +145,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $index = 0;
         while ($row = $result->fetch_assoc()) {
             $notice[$index]["content"] = [$row['CHINESE'], $row['ENGLISH']];
-            $notice[$index]["pref"]["type"] = $row['Type'];
+            $notice[$index]["id"] = $row['ID'];
+            $notice[$index]["pref"]["type"] = $row['type'];
+            $notice[$index]["pref"]["hide"] = $row['hide'];
+            $notice[$index]["pref"]["link"] = $row['link'];
+            $notice[$index]["pref"]["dismissible"] = $row['dismissible'];
+            $notice[$index]["pref"]["saveDismiss"] = $row['saveDismiss'];
+            $notice[$index]["pref"]["duration"] = $row['duration'];
             $index++;
         }
         $output['notice'] = $notice;

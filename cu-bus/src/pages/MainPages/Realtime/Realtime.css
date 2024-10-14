@@ -75,6 +75,7 @@
   left: 0;
   height: 35px;
   animation: busMove 10s infinite;
+  z-index: -1;
 }
 
 @keyframes busMove {

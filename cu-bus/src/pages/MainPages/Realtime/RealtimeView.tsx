@@ -1,4 +1,3 @@
-// TODO: startup load on gps
 import {
   IonContent,
   IonRefresher,

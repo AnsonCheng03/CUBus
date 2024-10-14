@@ -110,7 +110,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
           checkDownloadData() ? (
             <>
               <IonReactRouter>
-                {/* <Alert notice={appData.notice} /> */}
+                <Alert notice={appData.notice} />
                 <IonRouterOutlet>
                   <Route exact path="/realtime">
                     <Realtime appData={appData} />
