@@ -19,13 +19,13 @@ import lastModifiedDates from "../initDatas/lastModifiedDates.json";
 import { Storage } from "@ionic/storage";
 import { LoadingImage } from "./Components/newPageModal";
 const store = new Storage();
-store.create(); // Initialize the storage
 
 interface DownloadFilesProps {
   setDownloadedState: (isDownloaded: boolean) => void;
   i18next: any;
   appData: any;
   setAppData: any;
+  setAppSettings: any;
 }
 
 interface ServerResponse {
@@ -51,6 +51,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
   i18next,
   appData,
   setAppData,
+  setAppSettings,
 }) => {
   const { t } = useTranslation("preset");
 
@@ -282,6 +283,16 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
     await store.create();
     let currentDates: ModificationDates | null = null;
 
+    try {
+      const appSettings = await store.get("appSettings");
+      if (appSettings) {
+        setAppSettings(appSettings);
+      }
+    } catch (error) {
+      console.error(error);
+      await store.clear();
+    }
+
     const storedDates = await store.get("lastModifiedDates");
     if (storedDates) {
       currentDates = JSON.parse(storedDates);
@@ -302,10 +313,10 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
   return (
     <IonPage>
       <div className="downloadFilesContainer">
-        {/* <img src={icon} alt="icon" /> */}
-        <div className="download-image-wrapper">
+        <img src={icon} alt="icon" />
+        {/* <div className="download-image-wrapper">
           <LoadingImage />
-        </div>
+        </div> */}
         <h1>{downloadHint}</h1>
       </div>
     </IonPage>

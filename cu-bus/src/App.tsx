@@ -91,6 +91,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
   const [t, i18n] = useTranslation("global");
   const [isDownloaded, setDownloadedState] = useState(false);
   const [appData, setAppData] = useState<any>({});
+  const [appSettings, setAppSettings] = useState<any>({});
 
   const checkDownloadData = () => {
     const dataToBeChecked = ["timetable.json", "Status.json", "bus"];
@@ -115,12 +116,17 @@ const App: React.FC<RouteComponentProps | any> = () => {
                     <Realtime appData={appData} />
                   </Route>
                   <Route exact path="/route">
-                    <RouteSearch appData={appData} />
+                    <RouteSearch appData={appData} appSettings={appSettings} />
                   </Route>
                   <Route exact path="/info">
                     <Info appData={appData} />
                   </Route>
-                  <Route exact path="/settings" component={Settings} />
+                  <Route exact path="/settings">
+                    <Settings
+                      appSettings={appSettings}
+                      setAppSettings={setAppSettings}
+                    />
+                  </Route>
                   <Route>
                     <Realtime appData={appData} />
                   </Route>
@@ -138,6 +144,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
             i18next={i18next}
             setAppData={setAppData}
             appData={appData}
+            setAppSettings={setAppSettings}
           />
         )}
       </IonApp>

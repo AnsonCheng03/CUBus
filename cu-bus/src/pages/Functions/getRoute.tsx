@@ -345,7 +345,8 @@ export const calculateRoute = (
   departNow: boolean,
   originalBus: BusData,
   station: { [key: string]: string[] },
-  busSchedule: any
+  busSchedule: any,
+  appSettings: any
 ) => {
   let routeCount = 0;
   let bus = filterBus(
@@ -435,8 +436,13 @@ export const calculateRoute = (
             hour12: false,
           });
 
+          const outputTotalTime =
+            appSettings.searchSortDontIncludeWaitTime === true
+              ? time
+              : time + waitTimeInt;
+
           sortedResults.push({
-            time: time + waitTimeInt,
+            time: outputTotalTime,
             busNo,
             start: busArray.start.translatedName,
             end: busArray.end,

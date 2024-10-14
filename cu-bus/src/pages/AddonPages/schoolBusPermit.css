@@ -1,0 +1,208 @@
+.showPermitButtons {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  margin: 20px 0;
+  gap: 10px;
+}
+
+.busPermitInputModalDesc {
+  font-size: 14px;
+  margin: 10px 2.5%;
+}
+
+ion-modal#schoolBusPermitInputModal {
+  --height: auto;
+}
+
+ion-modal#schoolBusPermitShowModal {
+  --background: transparent;
+  --border-width: 0;
+  --border-color: transparent;
+  --border-style: none;
+  --border-radius: 0;
+  --box-shadow: none;
+  --backdrop-opacity: 0.9;
+}
+
+ion-modal#schoolBusPermitShowModal::part(backdrop) {
+  background: rgba(240, 240, 240, 1);
+}
+
+.cardImg {
+  width: 80%;
+  margin: 20px auto;
+}
+
+.cardImg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.card {
+  position: relative;
+  width: 560px;
+  height: 356px;
+
+  border: none;
+  background-repeat: no-repeat;
+  background-size: 560px 356px;
+
+  font-family: "PMingLiU", "STKaiti", "Times New Roman", serif;
+  color: #fff;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.originalCard {
+  width: 0;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.busimg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  background-size: 560px 356px;
+}
+
+.details {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 20px;
+  padding: 23px 40px;
+  z-index: 2;
+
+  width: 100%;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: auto 180px auto;
+  width: 100%;
+}
+
+.header .logo {
+  margin-left: -5px;
+  width: 53px;
+}
+
+.header .logo img {
+  width: 53px;
+}
+
+.header .schname {
+  margin: 2px 10px;
+  width: 400px;
+  font-size: 13px;
+}
+
+.header .schname span {
+  display: block;
+  white-space: nowrap;
+  font-size: 12.5px;
+}
+
+.header .schname span:first-child {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 15px;
+  letter-spacing: 5px;
+  margin-bottom: 1px;
+}
+
+.header .hinttxt {
+  margin: 6px -5px 2px 22px;
+  width: 300px;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.header .hinttxt span {
+  display: block;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.header .hinttxt span:first-child {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  letter-spacing: 1px;
+  font-weight: 400;
+}
+
+.header .hinttxt span:nth-child(2) {
+  font-size: 10px;
+  font-family: Helvetica, sans-serif;
+}
+
+.cardname h1 {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 45px;
+  letter-spacing: 3px;
+  margin: 8px 0 2px -3px;
+  text-align: left;
+}
+
+.cardname h2 {
+  font-family: Helvetica, sans-serif;
+  font-size: 20.5px;
+  margin: -5px 0 13px 0;
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.routeavil .desctxt {
+  font-size: 10px;
+  color: rgb(236, 240, 241);
+}
+
+.routeavil .desctxt span {
+  font-family: Arial, Helvetica, sans-serif, sans-serif;
+  display: block;
+}
+
+.routeavil .routes {
+  font-family: Helvetica, sans-serif;
+  margin: 10px 0 10px 0;
+  display: flex;
+  gap: 3px;
+}
+
+.routeavil .routes span {
+  display: inline-block;
+  width: 31px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: bold;
+  padding: 1px 0;
+  margin-right: 0px;
+}
+
+.studatas {
+  padding-top: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.studatas .desc {
+  display: inline-block;
+  width: 120px;
+  font-size: 12px;
+  line-height: 12px;
+}
+
+.studatas .value {
+  display: inline-block;
+  font-size: 13px;
+  line-height: 12px;
+}

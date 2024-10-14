@@ -8,7 +8,7 @@ import { Storage } from "@ionic/storage";
 
 const store = new Storage();
 
-const AppCorrupted: React.FC<RouteComponentProps> = () => {
+const AppCorrupted: React.FC<{}> = () => {
   const { t } = useTranslation("preset");
 
   return (

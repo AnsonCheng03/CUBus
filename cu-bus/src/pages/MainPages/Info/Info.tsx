@@ -31,21 +31,16 @@ const Info: React.FC<{ appData: any }> = ({ appData }) => {
     <IonPage>
       <div className="option-list">
         <ModalInput
-          title={t("school_bus_permit")}
-          previousPage={t("info_page")}
-          passedPage={<SchoolBusPermit />}
-        />
-        <ModalInput
           title={t("bus_map_page")}
           previousPage={t("info_page")}
           passedPage={<BusMap />}
         />
 
-        <ModalInput
+        {/* <ModalInput
           title={t("cusis_timetable")}
           previousPage={t("info_page")}
           passedPage={<BusMap />}
-        />
+        /> */}
 
         {appData.WebsiteLinks.map((row: any) => {
           if (row[0][lang]) {

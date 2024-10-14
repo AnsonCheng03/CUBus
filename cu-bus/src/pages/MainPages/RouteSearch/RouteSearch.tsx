@@ -24,7 +24,10 @@ import { RouteSelect } from "../../Components/selectRouteForm";
 import { calculateRoute } from "../../Functions/getRoute";
 import LocationTimeChooser from "./RouteSearchFormTime";
 
-const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
+const RouteSearch: React.FC<{
+  appData: any;
+  appSettings: any;
+}> = ({ appData, appSettings }) => {
   const [routeMap, setRouteMap] = useState<any>([]);
   const [t] = useTranslation("global");
 
@@ -136,7 +139,8 @@ const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
         departNow,
         filteredBus,
         appData?.station,
-        busSchedule
+        busSchedule,
+        appSettings
       )
     );
   };
