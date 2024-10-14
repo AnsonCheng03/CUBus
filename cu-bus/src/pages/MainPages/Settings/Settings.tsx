@@ -55,6 +55,13 @@ const Settings: React.FC<{}> = () => {
         >
           <div>{t("About-btn")}</div>
         </div>
+
+        <div
+          className="option"
+          onClick={() => window.open("https://github.com/AnsonCheng03")}
+        >
+          <div>{t("Designer-Abt-btn")}</div>
+        </div>
       </div>
     </IonPage>
   );

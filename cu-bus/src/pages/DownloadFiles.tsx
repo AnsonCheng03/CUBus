@@ -81,7 +81,8 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
     try {
       setDownloadHint(t("DownloadFiles-Downloading"));
       const response = await axios.get<ModificationDates>(
-        "https://beta.cu-bus.online/Essential/functions/getClientData.php"
+        "https://beta.cu-bus.online/Essential/functions/getClientData.php",
+        { timeout: 5000 }
       );
       const serverDates = response.data;
 
@@ -131,7 +132,8 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
             }
           : await axios.post<ServerResponse>(
               "https://beta.cu-bus.online/Essential/functions/getClientData.php",
-              currentDates
+              currentDates,
+              { timeout: 10000 }
             );
 
       // Process all data, whether it's newly downloaded or existing
