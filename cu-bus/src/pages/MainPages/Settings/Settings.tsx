@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next";
 import { Storage } from "@ionic/storage";
 import { useEffect } from "react";
 const store = new Storage();
-await store.create(); // Initialize the storage
+store.create(); // Initialize the storage
 
 const Settings: React.FC<{
   appSettings: any;
@@ -41,7 +41,10 @@ const Settings: React.FC<{
   return (
     <IonPage>
       <IonContent className="setting-content">
-        <SchoolBusPermit />
+        <SchoolBusPermit
+          appSettings={appSettings}
+          setAppSettings={setAppSettings}
+        />
 
         <IonList inset={true}>
           <IonItem
