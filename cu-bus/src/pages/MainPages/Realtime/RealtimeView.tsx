@@ -53,16 +53,19 @@ const Realtime: React.FC<{
   };
 
   useEffect(() => {
-    if (!setUserSetRealtimeDest) setUserSetRealtimeDest(realtimeDest);
     generateResult(realtimeDest);
   }, [realtimeDest]);
 
   useEffect(() => {
     generateResult(defaultSelectedStation);
+
+    return () => {
+      setUserSetRealtimeDest(realtimeDest);
+    };
   }, []);
 
   async function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
-    await generateResult(defaultSelectedStation);
+    await generateResult(realtimeDest);
     setTimeout(() => {
       event.detail.complete();
     }, 500);

@@ -91,9 +91,6 @@ const App: React.FC<RouteComponentProps | any> = () => {
   const [t, i18n] = useTranslation("global");
   const [isDownloaded, setDownloadedState] = useState(false);
   const [appData, setAppData] = useState<any>({});
-  const [userSetRealtimeDest, setUserSetRealtimeDest] = useState<string | null>(
-    null
-  );
 
   const checkDownloadData = () => {
     const dataToBeChecked = ["timetable.json", "Status.json", "bus"];
@@ -115,11 +112,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
                 {/* <Alert notice={appData.notice} /> */}
                 <IonRouterOutlet>
                   <Route exact path="/realtime">
-                    <Realtime
-                      appData={appData}
-                      userSetRealtimeDest={userSetRealtimeDest}
-                      setUserSetRealtimeDest={setUserSetRealtimeDest}
-                    />
+                    <Realtime appData={appData} />
                   </Route>
                   <Route exact path="/route">
                     <RouteSearch appData={appData} />
@@ -129,11 +122,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
                   </Route>
                   <Route exact path="/settings" component={Settings} />
                   <Route>
-                    <Realtime
-                      appData={appData}
-                      userSetRealtimeDest={userSetRealtimeDest}
-                      setUserSetRealtimeDest={setUserSetRealtimeDest}
-                    />
+                    <Realtime appData={appData} />
                   </Route>
                 </IonRouterOutlet>
                 <NavBar />

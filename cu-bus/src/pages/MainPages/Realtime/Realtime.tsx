@@ -7,13 +7,15 @@ import { LoadingSuspenseView } from "../../Components/newPageModal";
 import RealtimeView from "./RealtimeView";
 import { getLocation } from "../../Functions/getLocation";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 const Realtime: React.FC<{
   appData: any;
-  userSetRealtimeDest: string | null;
-  setUserSetRealtimeDest: any;
-}> = ({ appData, userSetRealtimeDest, setUserSetRealtimeDest }) => {
+}> = ({ appData }) => {
   const [t] = useTranslation("global");
+  const [userSetRealtimeDest, setUserSetRealtimeDest] = useState<string | null>(
+    null
+  );
 
   const getDefualtStation = async () => {
     if (userSetRealtimeDest) {
@@ -24,6 +26,7 @@ const Realtime: React.FC<{
     }
     const currentLocation = await getLocation(t, appData.GPS);
     if (!currentLocation || currentLocation.length === 0) return "MTR";
+    setUserSetRealtimeDest(currentLocation[0][0]);
     return currentLocation[0][0];
   };
 
