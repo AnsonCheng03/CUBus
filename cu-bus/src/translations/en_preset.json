@@ -5,5 +5,7 @@
   "DownloadFiles-Initializing": "Initializing",
   "DownloadFiles-Processing": "Processing data",
   "StoreFile-Complete": "Data processed and stored",
-  "StoreFile-Error": "Error processing data"
+  "StoreFile-Error": "Error processing data",
+  "app_data_corrupted": "Sorry, the application data is corrupted",
+  "reset_app": "Reset the application"
 }

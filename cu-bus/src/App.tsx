@@ -12,7 +12,6 @@ import i18next from "i18next";
 import { I18nextProvider } from "react-i18next";
 import HttpBackend from "i18next-http-backend";
 import LanguageDetector from "i18next-browser-languagedetector";
-import { Storage } from "@ionic/storage";
 import { useTranslation, initReactI18next } from "react-i18next";
 import preset_en from "./translations/en_preset.json";
 import preset_zh from "./translations/zh_preset.json";
@@ -49,6 +48,7 @@ import "./theme/variables.css";
 import "./main.css";
 
 import { useState } from "react";
+import AppCorrupted from "./pages/appCorruped";
 
 setupIonicReact({
   platform: {
@@ -86,8 +86,6 @@ i18next
       },
     },
   });
-
-const store = new Storage();
 
 const App: React.FC<RouteComponentProps | any> = () => {
   const [t, i18n] = useTranslation("global");
@@ -143,18 +141,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
               </IonReactRouter>
             </>
           ) : (
-            <div>
-              <p>App is broken</p>
-              <IonButton
-                onClick={async () => {
-                  await store.create();
-                  await store.clear();
-                  window.location.reload();
-                }}
-              >
-                Reset
-              </IonButton>
-            </div>
+            <AppCorrupted />
           )
         ) : (
           <DownloadFiles
