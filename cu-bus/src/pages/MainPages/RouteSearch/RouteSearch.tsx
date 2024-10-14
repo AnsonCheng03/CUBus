@@ -274,19 +274,6 @@ if (isset($buserrstat["suspended"]))
                     {result.busNo}
                   </div>
                   <div className="route-result-busno-details">
-                    <div className="route-result-busno-details-time">
-                      <div className="route-result-busno-details-totaltime">
-                        <p className="route-result-busno-details-totaltime-text">
-                          {result.time > 1000 ? "N/A" : result.time}
-                        </p>
-                        min
-                      </div>
-                      <div className="route-result-busno-details-arrivaltime">
-                        {`${t("next-bus-arrival-info")}${result.arrivalTime}, ${
-                          result.timeDisplay
-                        } ${t("bus-length-info")}`}
-                      </div>
-                    </div>
                     <div className="route-result-busno-simple-route">
                       <div className="route-result-busno-simple-route-start">
                         {result.start}
@@ -298,6 +285,19 @@ if (isset($buserrstat["suspended"]))
                         {result.end}
                       </div>
                     </div>
+                    <div className="route-result-busno-details-time">
+                      <div className="route-result-busno-details-arrivaltime">
+                        {`${t("next-bus-arrival-info")}${result.arrivalTime}, ${
+                          result.timeDisplay
+                        } ${t("bus-length-info")}`}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="route-result-busno-details-totaltime">
+                    <p className="route-result-busno-details-totaltime-text">
+                      {result.time > 1000 ? "N/A" : result.time}
+                    </p>
+                    {` min`}
                   </div>
                 </div>
               );
