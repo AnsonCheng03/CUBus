@@ -16,11 +16,11 @@ const Realtime: React.FC<{
   const [t] = useTranslation("global");
 
   const getDefualtStation = async () => {
-    if (!getPlatforms().includes("hybrid")) {
-      return "MTR";
-    }
     if (userSetRealtimeDest) {
       return userSetRealtimeDest;
+    }
+    if (!getPlatforms().includes("hybrid")) {
+      return "MTR";
     }
     const currentLocation = await getLocation(t, appData.GPS);
     if (!currentLocation || currentLocation.length === 0) return "MTR";

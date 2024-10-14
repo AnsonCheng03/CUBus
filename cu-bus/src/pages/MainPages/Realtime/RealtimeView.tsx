@@ -4,6 +4,7 @@ import { navigateCircleOutline } from "ionicons/icons";
 import { useTranslation } from "react-i18next";
 import { Suspense, useEffect, useState } from "react";
 import { GPSSelectIcon } from "../../Components/gpsSelectBox";
+import busMoving from "../../../assets/busMoving.gif";
 
 import "./Realtime.css";
 import "../assets/routeComp.css";
@@ -50,7 +51,7 @@ const Realtime: React.FC<{
   };
 
   useEffect(() => {
-    setUserSetRealtimeDest(realtimeDest);
+    if (!setUserSetRealtimeDest) setUserSetRealtimeDest(realtimeDest);
     generateResult(realtimeDest);
 
     const intervalId = setInterval(() => {
@@ -67,6 +68,9 @@ const Realtime: React.FC<{
   return (
     <div className="realtime-page">
       <form className="stopselector" method="POST">
+        <div className="busMovingImageRoute">
+          <img src={busMoving} alt="bus" />
+        </div>
         <div className="searchStopSelector">
           {/* <span>{t("DescTxt-yrloc")}</span> */}
           <select
