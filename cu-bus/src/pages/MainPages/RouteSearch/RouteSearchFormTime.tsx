@@ -65,7 +65,6 @@ const locationTimeChooser = ({
                 detail={false}
                 onClick={() => {
                   setDepartNow(true);
-                  generateRouteResult();
                 }}
               >
                 現在出發

@@ -264,6 +264,8 @@ ion-modal#timeSelectorModal ion-picker {
 .route-search-page {
   height: calc(100vh - 75px);
   overflow: auto;
+  display: grid;
+  grid-auto-rows: auto 1fr;
 }
 
 .route-search-form {

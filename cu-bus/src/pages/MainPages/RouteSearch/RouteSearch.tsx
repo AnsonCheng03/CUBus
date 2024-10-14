@@ -1,4 +1,11 @@
-import { IonPage, IonIcon } from "@ionic/react";
+import {
+  IonPage,
+  IonIcon,
+  IonContent,
+  IonRefresher,
+  IonRefresherContent,
+  RefresherEventDetail,
+} from "@ionic/react";
 import "./RouteSearch.css";
 import { BusData, processBusStatus } from "../../Functions/getRealTime";
 import { useEffect, useState } from "react";
@@ -134,9 +141,16 @@ const RouteSearch: React.FC<{ appData: any }> = ({ appData }) => {
     );
   };
 
+  async function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
+    await generateRouteResult();
+    setTimeout(() => {
+      event.detail.complete();
+    }, 500);
+  }
+
   useEffect(() => {
     generateRouteResult();
-  }, [routeSearchStart, routeSearchDest]);
+  }, [routeSearchStart, routeSearchDest, departNow]);
 
   return (
     <IonPage>
@@ -256,67 +270,73 @@ if (isset($buserrstat["suspended"]))
         )}
 
         <div className="routeresult">
-          {routeResult.samestation && (
-            <p className="samestation-info">{t("samestation-info")}</p>
-          )}
+          <IonContent>
+            <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+              <IonRefresherContent></IonRefresherContent>
+            </IonRefresher>
+            <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
+            {routeResult.samestation && (
+              <p className="samestation-info">{t("samestation-info")}</p>
+            )}
 
-          {routeResult.sortedResults ? (
-            routeResult.sortedResults.map((result: any, index: number) => {
-              return (
-                <div
-                  className="route-result-busno"
-                  key={index}
-                  onClick={() => {
-                    setRouteMap([result.route, result.routeIndex]);
-                  }}
-                >
-                  <div className="route-result-busno-number">
-                    {result.busNo}
-                  </div>
-                  <div className="route-result-busno-details">
-                    <div className="route-result-busno-simple-route">
-                      <div className="route-result-busno-simple-route-start">
-                        {result.start}
+            {routeResult.sortedResults ? (
+              routeResult.sortedResults.map((result: any, index: number) => {
+                return (
+                  <div
+                    className="route-result-busno"
+                    key={index}
+                    onClick={() => {
+                      setRouteMap([result.route, result.routeIndex]);
+                    }}
+                  >
+                    <div className="route-result-busno-number">
+                      {result.busNo}
+                    </div>
+                    <div className="route-result-busno-details">
+                      <div className="route-result-busno-simple-route">
+                        <div className="route-result-busno-simple-route-start">
+                          {result.start}
+                        </div>
+                        <div className="route-result-busno-simple-route-arrow">
+                          ➤
+                        </div>
+                        <div className="route-result-busno-simple-route-end">
+                          {result.end}
+                        </div>
                       </div>
-                      <div className="route-result-busno-simple-route-arrow">
-                        ➤
-                      </div>
-                      <div className="route-result-busno-simple-route-end">
-                        {result.end}
+                      <div className="route-result-busno-details-time">
+                        <div className="route-result-busno-details-arrivaltime">
+                          {`${t("next-bus-arrival-info")}${
+                            result.arrivalTime
+                          }, ${result.timeDisplay} ${t("bus-length-info")}`}
+                        </div>
                       </div>
                     </div>
-                    <div className="route-result-busno-details-time">
-                      <div className="route-result-busno-details-arrivaltime">
-                        {`${t("next-bus-arrival-info")}${result.arrivalTime}, ${
-                          result.timeDisplay
-                        } ${t("bus-length-info")}`}
-                      </div>
+                    <div className="route-result-busno-details-totaltime">
+                      <p className="route-result-busno-details-totaltime-text">
+                        {result.time > 1000 ? "N/A" : result.time}
+                      </p>
+                      {` min`}
                     </div>
                   </div>
-                  <div className="route-result-busno-details-totaltime">
-                    <p className="route-result-busno-details-totaltime-text">
-                      {result.time > 1000 ? "N/A" : result.time}
-                    </p>
-                    {` min`}
-                  </div>
-                </div>
-              );
-            })
-          ) : (
-            <div className="error-text">
-              {routeResult.error ? (
-                <>
-                  <IonIcon icon={informationCircleOutline}></IonIcon>
-                  <p>{t(routeResult.message)}</p>
-                </>
-              ) : (
-                <>
-                  <IonIcon icon={informationCircleOutline}></IonIcon>
-                  <p>{t("input-text-reminder")}</p>
-                </>
-              )}
-            </div>
-          )}
+                );
+              })
+            ) : (
+              <div className="error-text">
+                {routeResult.error ? (
+                  <>
+                    <IonIcon icon={informationCircleOutline}></IonIcon>
+                    <p>{t(routeResult.message)}</p>
+                  </>
+                ) : (
+                  <>
+                    <IonIcon icon={informationCircleOutline}></IonIcon>
+                    <p>{t("input-text-reminder")}</p>
+                  </>
+                )}
+              </div>
+            )}
+          </IonContent>
         </div>
 
         <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />

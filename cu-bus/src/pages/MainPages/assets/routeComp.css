@@ -150,6 +150,10 @@ ion-modal#RouteModal ion-toolbar {
 .station-name {
   font-size: 16px;
   color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
 }
 .station-container-wrapper.completed .station-number {
   background-color: rgba(212, 163, 115, 0.7);
