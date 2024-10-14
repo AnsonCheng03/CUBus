@@ -55,7 +55,7 @@ const SchoolBusPermitInputModal = ({
       !inputExpiry.current?.value
     ) {
       presentAlert({
-        header: t("School_Bus_Permit_Error_No_Input"),
+        header: t("Permit_Error_No_Input"),
         buttons: ["OK"],
       });
       return;
@@ -190,9 +190,10 @@ const SchoolBusPermitCard = ({
 
   useEffect(() => {
     domtoimage
-      .toSvg(cardRef.current as Node, {
-        width: 560,
-        height: 356,
+      .toPng(cardRef.current as Node, {
+        width: 560 * 2,
+        height: 356 * 2,
+        quality: 1,
       })
       .then(function (dataUrl) {
         var img = new Image();
@@ -209,15 +210,17 @@ const SchoolBusPermitCard = ({
 
   return (
     <div className="cardsContainer">
-      <div className="cardImg" ref={cardImgRef} />
+      <div className="cardImg">
+        <div className="busCardImg" ref={cardImgRef} />
+        <div className="busimg">
+          <img
+            src={busMode === "meet_class_bus" ? l_bus_img : d_bus_img}
+            alt="bus"
+          />
+        </div>
+      </div>
       <div className="originalCard">
         <div className="card" ref={cardRef}>
-          <div className="busimg">
-            <img
-              src={busMode === "meet_class_bus" ? l_bus_img : d_bus_img}
-              alt="bus"
-            />
-          </div>
           <div className="details">
             <div className="header">
               <div className="logo">
@@ -330,11 +333,13 @@ const SchoolBusPermitShowModal = ({
       id="schoolBusPermitShowModal"
       mode="ios"
       canDismiss={(data?: any, role?: string) => {
-        if (fullScreen === true) setFullScreen(false);
         if (role === "backdrop") return Promise.resolve(false);
         return new Promise<boolean>((resolve, reject) => {
           resolve(true);
         });
+      }}
+      onClick={() => {
+        if (fullScreen === true) setFullScreen(false);
       }}
     >
       {fullScreen === false && (
@@ -360,7 +365,7 @@ const SchoolBusPermitShowModal = ({
               setFullScreen(true);
             }}
           >
-            {t("School_Bus_Permit_FullScreen")}
+            {t("Permit_FullScreen")}
           </IonButton>
           <IonButton
             onClick={() => {
@@ -368,14 +373,14 @@ const SchoolBusPermitShowModal = ({
               setShowInputModal(true);
             }}
           >
-            {t("School_Bus_Permit_Edit")}
+            {t("Permit_Edit")}
           </IonButton>
           <IonButton
             onClick={() => {
               modal.current?.dismiss();
             }}
           >
-            {t("School_Bus_Permit_Close")}
+            {t("Permit_Close")}
           </IonButton>
         </IonButtons>
       )}
@@ -383,7 +388,7 @@ const SchoolBusPermitShowModal = ({
   );
 };
 
-const SchoolBusPermit = () => {
+const SchoolBusPermit = ({ appSettings, setAppSettings }: any) => {
   const [t] = useTranslation("global");
 
   const [permit, setPermit] = useState<{
@@ -391,14 +396,20 @@ const SchoolBusPermit = () => {
     sid: string | null;
     major: string | null;
     expiry: string | null;
-  }>({
-    name: null,
-    sid: null,
-    major: null,
-    expiry: null,
-  });
+  }>(
+    appSettings.schoolBusPermit ?? {
+      name: null,
+      sid: null,
+      major: null,
+      expiry: null,
+    }
+  );
   const [showInputModal, setShowInputModal] = useState(false);
   const [showShowModal, setShowShowModal] = useState(false);
+
+  useEffect(() => {
+    setAppSettings({ ...appSettings, schoolBusPermit: permit });
+  }, [permit]);
 
   return (
     <>
