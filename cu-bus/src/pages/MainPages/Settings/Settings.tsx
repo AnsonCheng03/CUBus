@@ -23,9 +23,10 @@ const Settings: React.FC<{}> = () => {
       <div className="option-list">
         <div
           className="option"
-          onClick={() =>
-            i18n.changeLanguage(i18n.language === "en" ? "zh" : "en")
-          }
+          onClick={() => {
+            i18n.changeLanguage(i18n.language === "en" ? "zh" : "en");
+            window.location.reload();
+          }}
         >
           <div>{i18n.language === "zh" ? "Change Language" : "轉換語言"}</div>
         </div>
@@ -41,12 +42,12 @@ const Settings: React.FC<{}> = () => {
           <div>{t("Delete-Storage")}</div>
         </div>
 
-        <div
+        {/* <div
           className="option"
           onClick={() => window.open("https://payme.hsbc/anson03")}
         >
           <div>{t("Support-btn")}</div>
-        </div>
+        </div> */}
 
         <div
           className="option"
