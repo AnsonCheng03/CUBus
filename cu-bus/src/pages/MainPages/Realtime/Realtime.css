@@ -28,6 +28,9 @@
   position: relative;
   max-height: calc(100vh - 75px);
   overflow: scroll;
+  display: grid;
+  grid-auto-rows: auto 1fr;
+  height: calc(100vh - 75px);
 }
 
 .stopselector {

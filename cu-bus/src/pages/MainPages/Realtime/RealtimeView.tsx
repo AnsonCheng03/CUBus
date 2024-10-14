@@ -1,21 +1,20 @@
 // TODO: startup load on gps
-import { IonPage, IonIcon, getPlatforms } from "@ionic/react";
-import { navigateCircleOutline } from "ionicons/icons";
+import {
+  IonContent,
+  IonRefresher,
+  IonRefresherContent,
+  RefresherEventDetail,
+} from "@ionic/react";
 import { useTranslation } from "react-i18next";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { GPSSelectIcon } from "../../Components/gpsSelectBox";
 import busMoving from "../../../assets/busMoving.gif";
 
 import "./Realtime.css";
 import "../assets/routeComp.css";
 
-import {
-  generateRouteResult,
-  BusData,
-  GPSData,
-} from "../../Functions/getRealTime";
+import { generateRouteResult, BusData } from "../../Functions/getRealTime";
 import RouteMap from "../../Components/routeMap";
-import { getLocation } from "../../Functions/getLocation";
 
 const Realtime: React.FC<{
   appData: any;
@@ -42,8 +41,11 @@ const Realtime: React.FC<{
     console.error(e);
   }
 
-  const generateResult = (stationName: string = realtimeDest, log = true) => {
-    generateRouteResult(t, bus, appData, stationName, setRealtimeResult);
+  const generateResult = async (
+    stationName: string = realtimeDest,
+    log = true
+  ) => {
+    await generateRouteResult(t, bus, appData, stationName, setRealtimeResult);
 
     if (log) {
       console.log("Realtime request for", stationName);
@@ -53,17 +55,18 @@ const Realtime: React.FC<{
   useEffect(() => {
     if (!setUserSetRealtimeDest) setUserSetRealtimeDest(realtimeDest);
     generateResult(realtimeDest);
-
-    const intervalId = setInterval(() => {
-      generateResult(realtimeDest, false); // This will use the latest stationName
-    }, 5000);
-
-    return () => clearInterval(intervalId);
   }, [realtimeDest]);
 
   useEffect(() => {
     generateResult(defaultSelectedStation);
   }, []);
+
+  async function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
+    await generateResult(defaultSelectedStation);
+    setTimeout(() => {
+      event.detail.complete();
+    }, 500);
+  }
 
   return (
     <div className="realtime-page">
@@ -92,54 +95,60 @@ const Realtime: React.FC<{
           <GPSSelectIcon appData={appData} setDest={setRealtimeDest} />
         </div>
       </form>
-      <div className="realtimeresult">
-        <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
 
-        <div className="bus-grid">
-          {realtimeResult.length === 0 ? (
-            <div className="no-bus">
-              <div className="no-bus-icon">
-                <i className="fa-solid fa-ban"></i>
-              </div>
-              <p>{t("No-bus-time")}</p>
-            </div>
-          ) : (
-            realtimeResult.slice(0, 10).map((bus: any) => {
-              return (
-                <div
-                  className={"bus-row" + (bus.arrived ? " arrived" : "")}
-                  onClick={() => {
-                    setRouteMap([
-                      bus.nextStation.route,
-                      bus.nextStation.startIndex,
-                    ]);
-                  }}
-                  key={bus.busno + bus.time}
-                >
-                  <div className="bus-info">
-                    <span className="bus-name">{bus.busno}</span>
-                    <span className="direction">{bus.direction}</span>
-                  </div>
-                  <div className="next-station-display">
-                    <p className="next-station-text">{t("next-station")}</p>
-                    {bus.nextStation && (
-                      <p className="next-station">
-                        {t(bus.nextStation.stationName)}
-                      </p>
-                    )}
-                    {bus.warning && (
-                      <>
-                        <span></span>
-                        <span className="warning">{t(bus.warning)}</span>
-                      </>
-                    )}
-                  </div>
-                  <div className="arrival-time">{bus.time}</div>
+      <div className="realtimeresult">
+        <IonContent>
+          <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+            <IonRefresherContent></IonRefresherContent>
+          </IonRefresher>
+          <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
+
+          <div className="bus-grid">
+            {realtimeResult.length === 0 ? (
+              <div className="no-bus">
+                <div className="no-bus-icon">
+                  <i className="fa-solid fa-ban"></i>
                 </div>
-              );
-            })
-          )}
-        </div>
+                <p>{t("No-bus-time")}</p>
+              </div>
+            ) : (
+              realtimeResult.slice(0, 10).map((bus: any) => {
+                return (
+                  <div
+                    className={"bus-row" + (bus.arrived ? " arrived" : "")}
+                    onClick={() => {
+                      setRouteMap([
+                        bus.nextStation.route,
+                        bus.nextStation.startIndex,
+                      ]);
+                    }}
+                    key={bus.busno + bus.time}
+                  >
+                    <div className="bus-info">
+                      <span className="bus-name">{bus.busno}</span>
+                      <span className="direction">{bus.direction}</span>
+                    </div>
+                    <div className="next-station-display">
+                      <p className="next-station-text">{t("next-station")}</p>
+                      {bus.nextStation && (
+                        <p className="next-station">
+                          {t(bus.nextStation.stationName)}
+                        </p>
+                      )}
+                      {bus.warning && (
+                        <>
+                          <span></span>
+                          <span className="warning">{t(bus.warning)}</span>
+                        </>
+                      )}
+                    </div>
+                    <div className="arrival-time">{bus.time}</div>
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </IonContent>
       </div>
     </div>
   );

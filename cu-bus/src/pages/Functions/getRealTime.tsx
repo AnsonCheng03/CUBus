@@ -257,4 +257,5 @@ export const generateRouteResult = (
 
   const allBuses = processAndSortBuses(t, outputSchedule, filteredBus);
   setRealtimeResult(allBuses);
+  return allBuses;
 };
