@@ -64,7 +64,7 @@
   cursor: pointer;
   position: relative;
   height: 30px;
-  width: 90%;
+  width: calc(100% - 75px);
 }
 
 .busMovingImageRoute img {
