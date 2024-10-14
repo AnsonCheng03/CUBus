@@ -75,26 +75,43 @@ const AlertToast: React.FC<{
 };
 
 const AlertBox: React.FC<{ notice: any }> = ({ notice }) => {
-  const [noticeIndex, setNoticeIndex] = useState(notice.length - 1);
   // instead return the first notice
-  console.log(notice);
+  const { i18n } = useTranslation("global");
+  const lang = i18n.language === "zh" ? 0 : 1;
+
+  const showNotice =
+    notice &&
+    notice
+      .filter((noti: any) => {
+        return noti.content[lang] !== "" && noti.pref.hide !== 1;
+      })
+      .reverse();
+
+  const [noticeIndex, setNoticeIndex] = useState(showNotice.length - 1);
+
   return (
     <>
-      {notice
-        ? notice
-            .reverse()
-            .map((noti: any, index: number) => (
-              <AlertToast
-                key={noti.id}
-                Index={index}
-                NoticeIndex={noticeIndex}
-                setNoticeIndex={setNoticeIndex}
-                content={noti.content[0]}
-                position="top"
-                type={noti.pref.type}
-                dismissButton={true}
-              />
-            ))
+      {showNotice
+        ? showNotice.map((noti: any, index: number) => (
+            <AlertToast
+              key={noti.id}
+              Index={index}
+              NoticeIndex={noticeIndex}
+              setNoticeIndex={setNoticeIndex}
+              content={noti.content[lang]}
+              position="top"
+              type={noti.pref.type}
+              dismissButton={noti.pref.dismissible}
+              duration={noti.pref.duration > 0 ? noti.pref.duration : undefined}
+              moreInfoButton={
+                noti.pref.link !== ""
+                  ? () => {
+                      window.open(noti.pref.link, "_blank");
+                    }
+                  : undefined
+              }
+            />
+          ))
         : null}
     </>
   );

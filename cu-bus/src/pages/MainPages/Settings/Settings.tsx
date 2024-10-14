@@ -64,12 +64,8 @@ const Settings: React.FC<{
                 });
               }}
             >
-              <IonLabel>
-                {t("search-sort-dont-include-wait-time-title")}
-              </IonLabel>
-              <IonNote color="medium">
-                {t("search-sort-dont-include-wait-time-desc")}
-              </IonNote>
+              <IonLabel>{t("routeNoWaitTimeT")}</IonLabel>
+              <IonNote color="medium">{t("routeNoWaitTimeD")}</IonNote>
             </IonToggle>
           </IonItem>
           <IonItem

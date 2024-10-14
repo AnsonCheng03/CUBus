@@ -115,7 +115,7 @@ const SchoolBusPermitInputModal = ({
       </IonHeader>
 
       <div className="busPermitInputModalDesc">
-        <IonNote color="medium"> {t("School_Bus_Permit_Description")}</IonNote>
+        <IonNote color="medium"> {t("School_Bus_Permit_Desc")}</IonNote>
       </div>
 
       <IonItem>
@@ -147,7 +147,7 @@ const SchoolBusPermitInputModal = ({
       </IonItem>
       <IonItem>
         <IonInput
-          label={t("School_Bus_Permit_Expiry")}
+          label={t("School_Bus_Permit_Exp")}
           labelPlacement="stacked"
           ref={inputExpiry}
           type="text"

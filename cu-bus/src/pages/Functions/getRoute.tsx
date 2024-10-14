@@ -135,7 +135,7 @@ const getMultiBuildingFromStation = (
   ) {
     return {
       error: true,
-      message: "warning-buildingMismatch",
+      message: t("warningBuildingMismatch"),
     };
   }
 
