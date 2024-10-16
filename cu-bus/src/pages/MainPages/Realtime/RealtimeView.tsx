@@ -14,6 +14,7 @@ import "../assets/routeComp.css";
 
 import { generateRouteResult, BusData } from "../../Functions/getRealTime";
 import RouteMap from "../../Components/routeMap";
+import ReactPullToRefresh from "react-pull-to-refresh";
 
 const Realtime: React.FC<{
   appData: any;
@@ -63,11 +64,13 @@ const Realtime: React.FC<{
     };
   }, []);
 
-  async function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
+  async function handleRefresh(): Promise<void> {
     await generateResult(realtimeDest);
-    setTimeout(() => {
-      event.detail.complete();
-    }, 500);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(void 0);
+      }, 1000);
+    });
   }
 
   return (
@@ -99,10 +102,7 @@ const Realtime: React.FC<{
       </form>
 
       <div className="realtimeresult">
-        <IonContent>
-          <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-            <IonRefresherContent></IonRefresherContent>
-          </IonRefresher>
+        <ReactPullToRefresh onRefresh={handleRefresh}>
           <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
 
           <div className="bus-grid">
@@ -150,7 +150,7 @@ const Realtime: React.FC<{
               })
             )}
           </div>
-        </IonContent>
+        </ReactPullToRefresh>
       </div>
     </div>
   );

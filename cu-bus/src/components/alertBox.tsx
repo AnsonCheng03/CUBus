@@ -117,7 +117,7 @@ const AlertBox: React.FC<{
           ))
         : null}
 
-      <AlertToast
+      {/* <AlertToast
         Index={-1}
         NoticeIndex={networkError ? 0 : -1}
         content={
@@ -128,7 +128,7 @@ const AlertBox: React.FC<{
         position="bottom"
         type="warning"
         dismissButton={false}
-      />
+      /> */}
     </>
   );
 };

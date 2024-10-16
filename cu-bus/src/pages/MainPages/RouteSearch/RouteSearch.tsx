@@ -23,6 +23,7 @@ import { GPSSelectIcon } from "../../Components/gpsSelectBox";
 import { RouteSelect } from "../../Components/selectRouteForm";
 import { calculateRoute } from "../../Functions/getRoute";
 import LocationTimeChooser from "./RouteSearchFormTime";
+import ReactPullToRefresh from "react-pull-to-refresh";
 
 const RouteSearch: React.FC<{
   appData: any;
@@ -145,11 +146,13 @@ const RouteSearch: React.FC<{
     );
   };
 
-  async function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
+  async function handleRefresh(): Promise<void> {
     await generateRouteResult();
-    setTimeout(() => {
-      event.detail.complete();
-    }, 500);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(void 0);
+      }, 1000);
+    });
   }
 
   useEffect(() => {
@@ -274,10 +277,10 @@ if (isset($buserrstat["suspended"]))
         )}
 
         <div className="routeresult">
-          <IonContent>
-            <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-              <IonRefresherContent></IonRefresherContent>
-            </IonRefresher>
+          <ReactPullToRefresh
+            onRefresh={handleRefresh}
+            icon={<span className="genericon genericon-next">Loading</span>}
+          >
             <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
             {routeResult.samestation && (
               <p className="samestation-info">{t("samestation-info")}</p>
@@ -340,7 +343,7 @@ if (isset($buserrstat["suspended"]))
                 )}
               </div>
             )}
-          </IonContent>
+          </ReactPullToRefresh>
         </div>
 
         <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
