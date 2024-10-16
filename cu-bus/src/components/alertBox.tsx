@@ -7,7 +7,7 @@ import appIcon from "../assets/bus.ico";
 const AlertToast: React.FC<{
   NoticeIndex: number;
   Index: number;
-  setNoticeIndex: any;
+  setNoticeIndex?: any;
   content: string;
   position: "top" | "middle" | "bottom";
   type?:
@@ -41,7 +41,7 @@ const AlertToast: React.FC<{
       isOpen={NoticeIndex === Index}
       message={content}
       onDidDismiss={() => {
-        setNoticeIndex((prev: number) => prev - 1);
+        if (setNoticeIndex) setNoticeIndex((prev: number) => prev - 1);
       }}
       position={position}
       swipeGesture={dismissButton ? "vertical" : undefined}
@@ -74,7 +74,10 @@ const AlertToast: React.FC<{
   );
 };
 
-const AlertBox: React.FC<{ notice: any }> = ({ notice }) => {
+const AlertBox: React.FC<{
+  notice: any;
+  networkError: boolean;
+}> = ({ notice, networkError }) => {
   // instead return the first notice
   const { i18n } = useTranslation("global");
   const lang = i18n.language === "zh" ? 0 : 1;
@@ -113,6 +116,19 @@ const AlertBox: React.FC<{ notice: any }> = ({ notice }) => {
             />
           ))
         : null}
+
+      <AlertToast
+        Index={-1}
+        NoticeIndex={networkError ? 0 : -1}
+        content={
+          lang === 0
+            ? "網絡錯誤，無法取得實時資料，請檢查網絡連接。"
+            : "Network error, realtime feature is not available. Please check your network connection."
+        }
+        position="bottom"
+        type="warning"
+        dismissButton={false}
+      />
     </>
   );
 };

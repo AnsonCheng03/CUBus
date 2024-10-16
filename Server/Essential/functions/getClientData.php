@@ -146,12 +146,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         while ($row = $result->fetch_assoc()) {
             $notice[$index]["content"] = [$row['CHINESE'], $row['ENGLISH']];
             $notice[$index]["id"] = $row['ID'];
-            $notice[$index]["pref"]["type"] = $row['type'];
-            $notice[$index]["pref"]["hide"] = $row['hide'];
-            $notice[$index]["pref"]["link"] = $row['link'];
-            $notice[$index]["pref"]["dismissible"] = $row['dismissible'];
-            $notice[$index]["pref"]["saveDismiss"] = $row['saveDismiss'];
-            $notice[$index]["pref"]["duration"] = $row['duration'];
+            $notice[$index]["pref"]["type"] = isset($row['type']) ? $row['type'] : "";
+            $notice[$index]["pref"]["hide"] = isset($row['hide']) ? $row['hide'] : "";
+            $notice[$index]["pref"]["link"] = isset($row['link']) ? $row['link'] : "";
+            $notice[$index]["pref"]["dismissible"] = isset($row['dismissible']) ? $row['dismissible'] : "";
+            $notice[$index]["pref"]["saveDismiss"] = isset($row['saveDismiss']) ? $row['saveDismiss'] : "";
+            $notice[$index]["pref"]["duration"] = isset($row['duration']) ? $row['duration'] : "";
             $index++;
         }
         $output['notice'] = $notice;

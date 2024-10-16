@@ -26,7 +26,12 @@ interface DownloadFilesProps {
   appData: any;
   setAppData: any;
   setAppSettings: any;
+  setNetworkError: any;
 }
+
+const baseUrl =
+  "https://beta.cu-bus.online/Essential/functions/getClientData.php";
+// "http://localhost:8080/Essential/functions/getClientData.php";
 
 interface ServerResponse {
   bus?: any;
@@ -52,6 +57,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
   appData,
   setAppData,
   setAppSettings,
+  setNetworkError,
 }) => {
   const { t } = useTranslation("preset");
 
@@ -81,10 +87,9 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
   ) => {
     try {
       setDownloadHint(t("DownloadFiles-Downloading"));
-      const response = await axios.get<ModificationDates>(
-        "https://beta.cu-bus.online/Essential/functions/getClientData.php",
-        { timeout: 5000 }
-      );
+      const response = await axios.get<ModificationDates>(baseUrl, {
+        timeout: 5000,
+      });
       const serverDates = response.data;
 
       // Fetch and process all data, regardless of update status
@@ -93,10 +98,15 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
       setDownloadHint(t("DownloadFiles-Complete"));
       setDownloadedState(true);
     } catch (error: any) {
+      console.error(error);
       // check error type if its network error or server error
-      if (error.message === "Network Error") {
+      if (
+        error.message === "Network Error" ||
+        error.message.includes("timeout")
+      ) {
         // use fallback data
-        console.log("Network Error, using fallback data");
+        console.log(error.message);
+        setNetworkError(true);
         // const serverDates = lastModifiedDates;
         const localStoredDates = JSON.parse(
           await store.get("lastModifiedDates")
@@ -131,11 +141,9 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
                 lastModifiedDates,
               },
             }
-          : await axios.post<ServerResponse>(
-              "https://beta.cu-bus.online/Essential/functions/getClientData.php",
-              currentDates,
-              { timeout: 10000 }
-            );
+          : await axios.post<ServerResponse>(baseUrl, currentDates, {
+              timeout: 10000,
+            });
 
       // Process all data, whether it's newly downloaded or existing
       let translateHandled = false;
@@ -198,6 +206,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
 
         // Process and store the data
         if (tableData) {
+          setNetworkError(false);
           await processTableData(table, tableData, networkError);
         }
       }
@@ -211,13 +220,21 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
       }
 
       setDownloadHint(t("StoreFile-Complete"));
-    } catch (error) {
-      setDownloadHint(t("StoreFile-Error"));
-      console.error(error);
-      store.clear();
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+    } catch (error: any) {
+      if (
+        error.message === "Network Error" ||
+        error.message.includes("timeout")
+      ) {
+        console.log(error.message);
+        setNetworkError(true);
+      } else {
+        setDownloadHint(t("StoreFile-Error"));
+        console.error(error);
+        store.clear();
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      }
     }
   };
 
@@ -247,15 +264,6 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
         });
         break;
       case "notice":
-        if (networkError) {
-          data.push({
-            content: [
-              "網絡錯誤，請檢查網絡連接。",
-              "Network error, please check your network connection.",
-            ],
-            pref: { type: "Alert" },
-          });
-        }
         setAppData((prev: any) => {
           return { ...prev, [table]: data };
         });
@@ -303,7 +311,8 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
     setInterval(async () => {
       console.log("Fetching updates...");
       await fetchDatabaseLastUpdated(currentDates);
-    }, 30 * 1000);
+    }, 60 * 1000);
+    // }, 10 * 1000);
   };
 
   useEffect(() => {

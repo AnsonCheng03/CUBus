@@ -92,6 +92,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
   const [isDownloaded, setDownloadedState] = useState(false);
   const [appData, setAppData] = useState<any>({});
   const [appSettings, setAppSettings] = useState<any>({});
+  const [networkError, setNetworkError] = useState(true);
 
   const checkDownloadData = () => {
     const dataToBeChecked = ["timetable.json", "Status.json", "bus"];
@@ -110,7 +111,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
           checkDownloadData() ? (
             <>
               <IonReactRouter>
-                <Alert notice={appData.notice} />
+                <Alert notice={appData.notice} networkError={networkError} />
                 <IonRouterOutlet>
                   <Route exact path="/realtime">
                     <Realtime appData={appData} />
@@ -145,6 +146,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
             setAppData={setAppData}
             appData={appData}
             setAppSettings={setAppSettings}
+            setNetworkError={setNetworkError}
           />
         )}
       </IonApp>
