@@ -256,6 +256,7 @@ const SchoolBusPermitCard = ({
                 {Object.keys(busRoutes[busMode]).map((route) => (
                   <span
                     className={busMode}
+                    key={route}
                     style={{ background: busRoutes[busMode][route] }}
                   >
                     {route}
@@ -331,7 +332,6 @@ const SchoolBusPermitShowModal = ({
       isOpen={showShowModal}
       onDidDismiss={onDidDismiss}
       id="schoolBusPermitShowModal"
-      mode="ios"
       canDismiss={(data?: any, role?: string) => {
         if (role === "backdrop") return Promise.resolve(false);
         return new Promise<boolean>((resolve, reject) => {

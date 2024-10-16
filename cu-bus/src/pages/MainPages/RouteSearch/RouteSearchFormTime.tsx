@@ -67,7 +67,7 @@ const locationTimeChooser = ({
                   setDepartNow(true);
                 }}
               >
-                現在出發
+                {t("info-deptnow")}
               </IonItem>
               <IonItem
                 button={true}

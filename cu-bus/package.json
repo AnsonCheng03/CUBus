@@ -44,6 +44,7 @@
     "react-helmet": "^6.1.0",
     "react-i18next": "^15.0.1",
     "react-quick-pinch-zoom": "^5.1.0",
+    "react-redux": "^9.1.2",
     "react-router": "^5.3.4",
     "react-router-dom": "^5.3.4",
     "react-zoom-pan-pinch": "^3.6.1"

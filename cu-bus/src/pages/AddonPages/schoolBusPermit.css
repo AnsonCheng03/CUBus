@@ -13,6 +13,8 @@
 
 ion-modal#schoolBusPermitInputModal {
   --height: auto;
+  --width: 80vw;
+  --border-radius: 20px;
 }
 
 ion-modal#schoolBusPermitShowModal {
