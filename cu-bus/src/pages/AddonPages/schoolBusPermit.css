@@ -11,12 +11,6 @@
   margin: 10px 2.5%;
 }
 
-ion-modal#schoolBusPermitInputModal {
-  --height: auto;
-  --width: 80vw;
-  --border-radius: 20px;
-}
-
 ion-modal#schoolBusPermitShowModal {
   --background: transparent;
   --border-width: 0;

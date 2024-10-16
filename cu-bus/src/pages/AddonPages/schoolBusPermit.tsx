@@ -114,46 +114,48 @@ const SchoolBusPermitInputModal = ({
         </IonToolbar>
       </IonHeader>
 
-      <div className="busPermitInputModalDesc">
-        <IonNote color="medium"> {t("School_Bus_Permit_Desc")}</IonNote>
-      </div>
+      <IonContent>
+        <div className="busPermitInputModalDesc">
+          <IonNote color="medium"> {t("School_Bus_Permit_Desc")}</IonNote>
+        </div>
 
-      <IonItem>
-        <IonInput
-          label={t("School_Bus_Permit_Name")}
-          labelPlacement="stacked"
-          ref={inputName}
-          type="text"
-          value={Permit.name}
-        />
-      </IonItem>
-      <IonItem>
-        <IonInput
-          label={t("School_Bus_Permit_SID")}
-          labelPlacement="stacked"
-          ref={inputSID}
-          type="text"
-          value={Permit.sid}
-        />
-      </IonItem>
-      <IonItem>
-        <IonInput
-          label={t("School_Bus_Permit_Major")}
-          labelPlacement="stacked"
-          ref={inputMajor}
-          type="text"
-          value={Permit.major}
-        />
-      </IonItem>
-      <IonItem>
-        <IonInput
-          label={t("School_Bus_Permit_Exp")}
-          labelPlacement="stacked"
-          ref={inputExpiry}
-          type="text"
-          value={Permit.expiry}
-        />
-      </IonItem>
+        <IonItem>
+          <IonInput
+            label={t("School_Bus_Permit_Name")}
+            labelPlacement="stacked"
+            ref={inputName}
+            type="text"
+            value={Permit.name}
+          />
+        </IonItem>
+        <IonItem>
+          <IonInput
+            label={t("School_Bus_Permit_SID")}
+            labelPlacement="stacked"
+            ref={inputSID}
+            type="text"
+            value={Permit.sid}
+          />
+        </IonItem>
+        <IonItem>
+          <IonInput
+            label={t("School_Bus_Permit_Major")}
+            labelPlacement="stacked"
+            ref={inputMajor}
+            type="text"
+            value={Permit.major}
+          />
+        </IonItem>
+        <IonItem>
+          <IonInput
+            label={t("School_Bus_Permit_Exp")}
+            labelPlacement="stacked"
+            ref={inputExpiry}
+            type="text"
+            value={Permit.expiry}
+          />
+        </IonItem>
+      </IonContent>
     </IonModal>
   );
 };
