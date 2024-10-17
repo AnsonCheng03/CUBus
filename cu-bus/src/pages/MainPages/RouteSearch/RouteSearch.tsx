@@ -277,10 +277,7 @@ if (isset($buserrstat["suspended"]))
         )}
 
         <div className="routeresult">
-          <ReactPullToRefresh
-            onRefresh={handleRefresh}
-            icon={<span className="genericon genericon-next">Loading</span>}
-          >
+          <ReactPullToRefresh onRefresh={handleRefresh}>
             <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
             {routeResult.samestation && (
               <p className="samestation-info">{t("samestation-info")}</p>

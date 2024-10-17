@@ -6,8 +6,10 @@ import {
   IonButtons,
   IonButton,
   IonContent,
+  IonIcon,
 } from "@ionic/react";
-import React, { Component } from "react";
+import { navigateOutline, pinOutline } from "ionicons/icons";
+import React, { Component, useEffect } from "react";
 
 interface routeMapProps {
   routeMap: any;
@@ -17,6 +19,8 @@ interface routeMapProps {
 export default class RouteMap extends Component<routeMapProps> {
   render() {
     const { routeMap, setRouteMap } = this.props;
+
+    const currentStation = React.createRef<HTMLDivElement>();
 
     function canDismiss(data?: any, role?: string) {
       if (role === "gesture") return Promise.resolve(false);
@@ -31,6 +35,14 @@ export default class RouteMap extends Component<routeMapProps> {
         initialBreakpoint={0.5}
         isOpen={routeMap && routeMap.length > 0}
         canDismiss={canDismiss}
+        onDidPresent={() => {
+          if (currentStation.current) {
+            currentStation.current.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }
+        }}
         id={"RouteModal"}
       >
         <IonContent
@@ -50,9 +62,20 @@ export default class RouteMap extends Component<routeMapProps> {
                         (index < routeMap[1] ? " completed" : "")
                       }
                       key={station + index}
+                      {...(routeMap[1] === index + 1
+                        ? {
+                            ref: currentStation,
+                          }
+                        : {})}
                     >
                       <div className="station-container">
-                        <div className="station-number">{index + 1}</div>
+                        <div className="station-number">
+                          {routeMap[1] === index ? (
+                            <IonIcon icon={navigateOutline} />
+                          ) : (
+                            index + 1
+                          )}
+                        </div>
                         <div className="station-name">{station}</div>
                       </div>
                     </div>
