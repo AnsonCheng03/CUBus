@@ -1,5 +1,4 @@
 nav {
-  background-color: #fefae0;
   position: sticky;
   top: 0;
   display: grid;
@@ -12,6 +11,7 @@ nav {
   padding-top: env(safe-area-inset-top);
   padding-bottom: 0;
   height: calc(75px + env(safe-area-inset-top));
+  background-color: #911f27;
 }
 
 ion-router-outlet {
@@ -20,7 +20,7 @@ ion-router-outlet {
 
 nav h1 {
   margin: 0;
-  color: #d4a373;
+  color: #fff;
   font-size: 2rem;
   font-weight: 600;
   letter-spacing: -1px;
@@ -60,10 +60,10 @@ nav ion-item {
   --background-hover: transparent;
   --ripple-color: transparent;
 }
-nav .navLink,
+
 nav .navLink {
   font-size: 1.2rem;
-  color: #ccd5ae;
+  color: #ccc;
   text-decoration: none;
   padding: 1em 0;
   display: flex;
@@ -75,13 +75,14 @@ nav .navLink {
   white-space: nowrap;
 }
 
-nav .navLink:hover {
-  color: #d4a373;
-}
-
+nav .navLink:hover,
 nav .navLink.active,
 nav .navLink.active:link {
-  color: #d4a373;
+  color: #fff;
+}
+
+nav .navLink ion-icon {
+  font-weight: bolder;
 }
 
 nav .navtext {
@@ -94,7 +95,8 @@ nav ion-item a .item-inner {
 }
 
 nav ion-icon {
-  scale: 1.2;
+  font-size: 1.3rem;
+  --ionicon-stroke-width: 3rem;
 }
 
 .ion-page {
@@ -111,6 +113,10 @@ nav ion-icon {
     width: 100%;
     padding-top: 0;
     padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: 0 2px 6px rgba(154, 160, 185, 0.5),
+      0 6px 20px rgba(166, 173, 201, 0.8);
+    border-radius: 15px 15px 0 0;
+    background-color: #fff;
   }
 
   nav h1 {
@@ -131,5 +137,15 @@ nav ion-icon {
     top: env(safe-area-inset-top);
     bottom: calc(75px + env(safe-area-inset-bottom));
     bottom: calc(75px + constant(safe-area-inset-bottom));
+  }
+
+  nav .navLink {
+    color: #aaa;
+  }
+
+  nav .navLink:hover,
+  nav .navLink.active,
+  nav .navLink.active:link {
+    color: rgb(145, 31, 39);
   }
 }

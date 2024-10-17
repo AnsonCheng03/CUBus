@@ -6,6 +6,8 @@ import { getLocation } from "../Functions/getLocation";
 import { LoadingImage } from "./newPageModal";
 import React from "react";
 
+import { LuLocateFixed } from "react-icons/lu";
+
 interface gpsSelectIconProps {
   appData: any;
   t: any;
@@ -45,24 +47,25 @@ class SelectIcon extends Component<gpsSelectIconProps> {
 
     return (
       <>
-        <IonIcon
-          icon={navigateCircleOutline}
-          className="image-wrapper"
-          id="Dest-GPS-box"
-          onClick={async () => {
-            await getLocation(
-              t,
-              appData.GPS,
-              (value: any) => {
-                this.setItemState("sortedGPSData", value);
-              },
-              (value: boolean) => {
-                this.setItemState("openModal", value);
-                this.forceUpdate();
-              }
-            );
-          }}
-        />
+        <div class="gpsIcon">
+          <LuLocateFixed
+            className="image-wrapper"
+            id="Dest-GPS-box"
+            onClick={async () => {
+              await getLocation(
+                t,
+                appData.GPS,
+                (value: any) => {
+                  this.setItemState("sortedGPSData", value);
+                },
+                (value: boolean) => {
+                  this.setItemState("openModal", value);
+                  this.forceUpdate();
+                }
+              );
+            }}
+          />
+        </div>
         <GPSSelectBox
           openModal={(this.state as any).openModal}
           closeModal={() => {

@@ -1,5 +1,6 @@
 import {
   IonContent,
+  IonIcon,
   IonRefresher,
   IonRefresherContent,
   RefresherEventDetail,
@@ -8,6 +9,9 @@ import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { GPSSelectIcon } from "../../Components/gpsSelectBox";
 import busMoving from "../../../assets/busMoving.gif";
+
+import { FaBus } from "react-icons/fa";
+import { IconoirProvider, BusStop } from "iconoir-react";
 
 import "./Realtime.css";
 import "../assets/routeComp.css";
@@ -80,7 +84,17 @@ const Realtime: React.FC<{
           <img src={busMoving} alt="bus" />
         </div>
         <div className="searchStopSelector">
-          {/* <span>{t("DescTxt-yrloc")}</span> */}
+          <span>
+            <IconoirProvider
+              iconProps={{
+                strokeWidth: 2,
+                width: "1em",
+                height: "1em",
+              }}
+            >
+              <BusStop />
+            </IconoirProvider>
+          </span>
           <select
             className="select-box"
             name="Dest"

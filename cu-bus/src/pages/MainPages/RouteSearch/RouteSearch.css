@@ -96,7 +96,7 @@
 }
 
 input:checked + .slider {
-  background-color: #d4a373;
+  background-color: #630a10;
 }
 
 input:checked + .slider:before {
@@ -127,7 +127,7 @@ ion-modal#timeSelectorModal ion-picker {
   width: 50%;
   text-align-last: center;
   padding: 4px 12px;
-  border: 1px solid #d4a373;
+  border: 1px solid #630a10;
   appearance: none;
   border-radius: 5px;
   -webkit-appearance: none;
@@ -140,7 +140,7 @@ ion-modal#timeSelectorModal ion-picker {
   font-size: 14px;
   width: 100%;
   text-align-last: center;
-  border: 1px solid #d4a373;
+  border: 1px solid #630a10;
   padding: 4px 12px;
   appearance: none;
   border-radius: 5px;
@@ -172,7 +172,7 @@ ion-modal#timeSelectorModal ion-picker {
   grid-template-columns: 50px 1fr 50px;
   justify-content: center;
   align-items: center;
-  border: 1px solid #d4a373;
+  border: 1px solid #630a10;
   border-radius: 5px;
   margin: 3px 0;
   position: relative;
@@ -183,7 +183,7 @@ ion-modal#timeSelectorModal ion-picker {
   grid-template-columns: 50px 1fr;
   justify-content: center;
   align-items: center;
-  border: 1px solid #d4a373;
+  border: 1px solid #630a10;
   border-radius: 5px;
   margin: 3px 0;
 }
@@ -228,7 +228,7 @@ ion-modal#timeSelectorModal ion-picker {
 
 .autocomplete-items {
   position: absolute;
-  border: 1px solid #d4a373;
+  border: 1px solid #630a10;
   box-shadow: 0 1px 3px -2px #9098a9;
   overscroll-behavior: none;
   border-bottom: none;
@@ -246,7 +246,7 @@ ion-modal#timeSelectorModal ion-picker {
   /* text-align: center; */
   cursor: pointer;
   background-color: #fff;
-  border-bottom: 1px solid #d4a373;
+  border-bottom: 1px solid #630a10;
   width: 100%;
   white-space: no-wrap;
   text-overflow: ellipsis;
@@ -296,7 +296,7 @@ ion-modal#timeSelectorModal ion-picker {
 
 .submit-btn {
   font-size: 14px;
-  background-color: #d4a373;
+  background-color: #630a10;
   border: none;
   width: 75%;
   border-radius: 5px;
@@ -353,7 +353,7 @@ footer h2 {
   grid-template-columns: 70px 1fr auto;
   gap: 10px;
   padding: 20px;
-  border-bottom: #ccd5ae 1px solid;
+  border-bottom: #ddd 1px solid;
 }
 
 .route-result-busno:last-child {
@@ -365,7 +365,7 @@ footer h2 {
   font-weight: bold;
   text-align: center;
   border-radius: 10px;
-  background-color: #d4a373;
+  background-color: #630a10;
   color: #fff;
   width: 50px;
   height: 50px;
@@ -412,11 +412,11 @@ footer h2 {
 }
 
 .route-result-busno-simple-route-arrow {
-  color: #d4a373;
+  color: #630a10;
 }
 
 .samestation-info {
-  border: 1px solid #d4a373;
+  border: 1px solid #630a10;
   margin: 10px;
   padding: 20px;
   border-radius: 5px;
@@ -426,7 +426,7 @@ footer h2 {
   text-align: center;
   margin: 20px;
   padding: 40px 20px;
-  color: #d4a373;
+  color: #630a10;
 }
 
 .error-text i {
@@ -456,7 +456,7 @@ footer h2 {
 
   .info-box {
     border-radius: 10px;
-    border: 1px solid #ccd5ae;
+    border: 1px solid #ddd;
   }
 
   .route-result {

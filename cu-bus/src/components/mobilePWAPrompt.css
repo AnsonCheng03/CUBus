@@ -1,8 +1,8 @@
 /* Home Screen Prompt*/
 #HomeScreenPrompt {
   z-index: 9999;
-  background-color: #fefae0;
-  color: #d4a373;
+  background-color: #911f27;
+  color: #630a10;
   bottom: 0;
 
   left: 0;
@@ -26,7 +26,7 @@
 }
 
 #HomeScreenPrompt .desc button {
-  color: #d4a373;
+  color: #630a10;
   padding: 0;
   border: 0;
   background: transparent;
@@ -61,7 +61,7 @@
 #AndroidHomeScreenPrompt {
   z-index: 9999;
   background-color: #ffeaa7;
-  color: #d4a373;
+  color: #630a10;
   bottom: 0;
   left: 0;
   margin: 0 8px 10px;
@@ -96,7 +96,7 @@
 }
 
 #AndroidHomeScreenPrompt .Canceltohomebtn {
-  color: #ccd5ae;
+  color: #ddd;
   border: none;
   background: none;
   cursor: pointer;
@@ -104,5 +104,5 @@
 
 #AndroidHomeScreenPrompt a,
 #HomeScreenPrompt a {
-  color: #d4a373;
+  color: #630a10;
 }

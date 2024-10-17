@@ -9,7 +9,7 @@ ion-modal#InfoModal::part(backdrop) {
 }
 
 ion-modal#InfoModal ion-toolbar {
-  --background: #fefae0;
+  --background: #911f27;
 
   --color: #000;
 }
@@ -23,7 +23,7 @@ ion-modal#InfoModal ion-toolbar {
   display: grid;
   grid-template-columns: 5fr 1fr;
   gap: 0 10px;
-  border-bottom: 1px solid #ccd5ae;
+  border-bottom: 1px solid #ddd;
   padding: 20px 5%;
   cursor: pointer;
 }

@@ -79,8 +79,15 @@ ion-modal#GPSModal .loading-image-wrapper {
     0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
-.image-wrapper {
-  color: #911f27;
+.gpsIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gpsIcon .image-wrapper {
+  color: #4379f2;
+  font-size: 28px;
 }
 
 .GPSModalDetails {
@@ -90,8 +97,8 @@ ion-modal#GPSModal .loading-image-wrapper {
 .showdetails {
   text-align: left;
   padding: 20px 5%;
-  background-color: #d4a373;
-  border: 1px solid #d4a373;
+  background-color: #630a10;
+  border: 1px solid #630a10;
   color: #fff;
   display: flex;
   justify-content: space-between;
@@ -105,13 +112,13 @@ ion-modal#GPSModal .loading-image-wrapper {
 }
 
 /* 
-https://huemint.com/website-3/#palette=fdfefe-FEFAE0-001062-1d40b9-f4532c-fdf815
+https://huemint.com/website-3/#palette=fdfefe-911f27-001062-1d40b9-f4532c-fdf815
 #fdf815 
 #f4532c
 #1d40b9
-#D4A373
-#FEFAE0
-#CCD5AE
+#630A10
+#911f27
+#ddd
 */
 
 #detail-route-container {
@@ -147,7 +154,7 @@ https://huemint.com/website-3/#palette=fdfefe-FEFAE0-001062-1d40b9-f4532c-fdf815
   left: 10px;
   top: 40px;
   height: calc(100% - 80px);
-  background-color: #d4a373;
+  background-color: #630a10;
 }
 
 ion-modal#RouteModal {
@@ -184,7 +191,7 @@ ion-modal#RouteModal ion-toolbar {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  border: 2px solid #d4a373;
+  border: 2px solid #630a10;
   background-color: #fff;
   position: absolute;
   left: 5.5px;
