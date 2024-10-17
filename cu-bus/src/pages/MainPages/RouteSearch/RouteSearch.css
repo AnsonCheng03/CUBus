@@ -306,13 +306,6 @@ ion-modal#timeSelectorModal ion-picker {
   cursor: pointer;
 }
 
-.image-wrapper {
-  padding: 5px;
-  border: 1px solid #d4a373;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
 /* Others */
 .map-submit-btn {
   display: inline-block;

@@ -11,6 +11,7 @@ import { BusData, processBusStatus } from "../../Functions/getRealTime";
 import { useEffect, useState } from "react";
 import {
   informationCircleOutline,
+  locateOutline,
   locationOutline,
   pinOutline,
   timeOutline,
@@ -210,7 +211,7 @@ if (isset($buserrstat["suspended"]))
               <div className="locationChooserContainer">
                 <div className="locationChooser">
                   <label htmlFor="Start" id="Start-label">
-                    <IonIcon icon={pinOutline}></IonIcon>
+                    <IonIcon icon={locateOutline}></IonIcon>
                   </label>
                   <div className="locationinput">
                     <AutoComplete

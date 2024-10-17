@@ -1,14 +1,5 @@
 /* GPS location */
 
-.image-wrapper {
-  width: 23px;
-  padding: 5px;
-  border: 1px solid #d4a373;
-  border-radius: 5px;
-  cursor: pointer;
-  margin: auto;
-}
-
 /* Others */
 .map-submit-btn {
   display: inline-block;

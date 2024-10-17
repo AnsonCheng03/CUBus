@@ -6,9 +6,7 @@ import {
   IonButtons,
   IonButton,
   IonContent,
-  IonIcon,
 } from "@ionic/react";
-import { navigateOutline, pinOutline } from "ionicons/icons";
 import React, { Component, useEffect } from "react";
 
 interface routeMapProps {
@@ -53,34 +51,31 @@ export default class RouteMap extends Component<routeMapProps> {
         >
           <div id="detail-route-container">
             <div id="map-container">
-              {routeMap[0] &&
-                routeMap[0].map((station: string, index: number) => {
-                  return (
-                    <div
-                      className={
-                        "station-container-wrapper" +
-                        (index < routeMap[1] ? " completed" : "")
-                      }
-                      key={station + index}
-                      {...(routeMap[1] === index + 1
-                        ? {
-                            ref: currentStation,
-                          }
-                        : {})}
-                    >
-                      <div className="station-container">
-                        <div className="station-number">
-                          {routeMap[1] === index ? (
-                            <IonIcon icon={navigateOutline} />
-                          ) : (
-                            index + 1
-                          )}
+              <div className="map-container">
+                {routeMap[0] &&
+                  routeMap[0].map((station: string, index: number) => {
+                    return (
+                      <div
+                        className={
+                          "station-container-wrapper" +
+                          (index < routeMap[1] ? " completed" : "") +
+                          (index == routeMap[1] ? " current" : "")
+                        }
+                        key={station + index}
+                        {...(routeMap[1] === index + 1
+                          ? {
+                              ref: currentStation,
+                            }
+                          : {})}
+                      >
+                        <div className="station-container">
+                          <div className="station-number">{}</div>
+                          <div className="station-name">{station}</div>
                         </div>
-                        <div className="station-name">{station}</div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+              </div>
             </div>
           </div>
         </IonContent>
