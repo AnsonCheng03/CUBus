@@ -345,33 +345,43 @@ footer h2 {
 }
 
 /* result page */
-.route-result {
-  padding-bottom: 10px;
-}
+
 .route-result-busno {
   display: grid;
-  grid-template-columns: 70px 1fr auto;
+  grid-template-columns: 1fr 60px;
   gap: 10px;
   padding: 20px;
-  border-bottom: #ddd 1px solid;
+  box-shadow: 2px 2px 3px rgba(154, 160, 185, 0.05),
+    2px 15px 40px rgba(166, 173, 201, 0.2);
+  margin: 10px 20px;
+  border-radius: 20px;
+  align-items: center;
 }
 
 .route-result-busno:last-child {
   border-bottom: none;
 }
 
+.route-result-busno-number-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+}
+
+.route-result-busno-number-container ion-icon {
+  font-size: 1.3rem;
+  color: #630a10;
+}
+
 .route-result-busno-number {
-  font-size: 20px;
+  font-size: 1.2rem;
   font-weight: bold;
   text-align: center;
   border-radius: 10px;
   background-color: #630a10;
+  padding: 0 20px;
   color: #fff;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .route-result-busno-details {
@@ -388,9 +398,16 @@ footer h2 {
 }
 
 .route-result-busno-details-arrivaltime {
-  font-size: 0.9rem;
   color: #222;
-  font-weight: 200;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.route-result-busno-details-route {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
 }
 
 .route-result-busno-simple-route {
@@ -404,15 +421,9 @@ footer h2 {
 
 .route-result-busno-simple-route-start,
 .route-result-busno-simple-route-end {
-  border-radius: 5px;
-  font-size: 1rem;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-}
-
-.route-result-busno-simple-route-arrow {
-  color: #630a10;
 }
 
 .samestation-info {

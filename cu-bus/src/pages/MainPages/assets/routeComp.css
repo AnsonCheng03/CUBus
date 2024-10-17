@@ -142,7 +142,7 @@ https://huemint.com/website-3/#palette=fdfefe-911f27-001062-1d40b9-f4532c-fdf815
 
 .map-container {
   position: relative;
-  padding: 20px 20px;
+  padding: 0 20px;
   height: fit-content;
 }
 
@@ -150,11 +150,16 @@ https://huemint.com/website-3/#palette=fdfefe-911f27-001062-1d40b9-f4532c-fdf815
   position: absolute;
   content: " ";
   display: block;
-  width: 5px;
-  left: 10px;
+  width: 7px;
+  left: 15px;
   top: 40px;
-  height: calc(100% - 80px);
+  height: calc(100% - 70px);
   background-color: #630a10;
+}
+
+.map-container.completed::before {
+  background-color: #aaa;
+  height: calc(100%);
 }
 
 ion-modal#RouteModal {
@@ -176,26 +181,38 @@ ion-modal#RouteModal ion-toolbar {
 }
 
 .station-container-wrapper .station-name {
-  font-size: 1rem;
+  font-size: 1.15rem;
   color: #333;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   width: 100%;
-  padding: 15px 0 15px 20px;
+  padding: 25px 0 25px 35px;
+}
+
+.station-container-wrapper .bus-station-icon {
+  position: absolute;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  padding: 10px;
+  background: #630a10;
+  color: white;
+  border-radius: 50%;
+  transform: translateY(-7.5px);
 }
 
 .station-container-wrapper .station-name::before {
   content: " ";
   display: block;
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  border: 2px solid #630a10;
+  border: 3px solid #630a10;
   background-color: #fff;
   position: absolute;
-  left: 5.5px;
-  transform: translateY(25%);
+  left: 10px;
+  transform: translateY(3px);
 }
 
 .station-container-wrapper.current .station-name::before {
@@ -204,6 +221,10 @@ ion-modal#RouteModal ion-toolbar {
 
 .station-container-wrapper.completed .station-name {
   color: #aaa;
+}
+
+.station-container-wrapper.completed .station-name::before {
+  border: 3px solid #aaa;
 }
 
 .station-container-wrapper.completed::after {
