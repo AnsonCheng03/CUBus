@@ -3,11 +3,15 @@ import { getPlatforms, IonPage } from "@ionic/react";
 import "./Realtime.css";
 import "../assets/routeComp.css";
 
-import { LoadingSuspenseView } from "../../Components/newPageModal";
+import {
+  Loading,
+  LoadingImage,
+  LoadingSuspenseView,
+} from "../../Components/newPageModal";
 import RealtimeView from "./RealtimeView";
 import { getLocation } from "../../Functions/getLocation";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 const Realtime: React.FC<{
   appData: any;
@@ -17,7 +21,7 @@ const Realtime: React.FC<{
     null
   );
 
-  const getDefualtStation = async () => {
+  const getDefualtStation = useCallback(async () => {
     if (userSetRealtimeDest) {
       return userSetRealtimeDest;
     }
@@ -26,21 +30,27 @@ const Realtime: React.FC<{
     }
     const currentLocation = await getLocation(t, appData.GPS);
     if (!currentLocation || currentLocation.length === 0) return "MTR";
-    setUserSetRealtimeDest(currentLocation[0][0]);
     return currentLocation[0][0];
-  };
+  }, [userSetRealtimeDest, appData]);
+
+  // Run once on initial app load
+  useEffect(() => {
+    getDefualtStation().then((station) => {
+      setUserSetRealtimeDest(station);
+    });
+  }, [getDefualtStation]);
 
   return (
     <IonPage>
-      <LoadingSuspenseView
-        resolveFunction={getDefualtStation}
-        ViewComponent={RealtimeView}
-        propNameForResolvedValue="defaultSelectedStation"
-        otherProps={{
-          appData: appData,
-          setUserSetRealtimeDest: setUserSetRealtimeDest,
-        }}
-      />
+      {userSetRealtimeDest ? (
+        <RealtimeView
+          appData={appData}
+          setUserSetRealtimeDest={setUserSetRealtimeDest}
+          defaultSelectedStation={userSetRealtimeDest}
+        />
+      ) : (
+        <LoadingImage />
+      )}
     </IonPage>
   );
 };
