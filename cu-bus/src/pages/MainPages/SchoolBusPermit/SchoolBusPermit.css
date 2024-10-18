@@ -15,6 +15,14 @@
   margin: 10px 2.5%;
 }
 
+.cardModal {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
 ion-modal#schoolBusPermitShowModal {
   --background: transparent;
   --border-width: 0;
@@ -22,16 +30,26 @@ ion-modal#schoolBusPermitShowModal {
   --border-style: none;
   --border-radius: 0;
   --box-shadow: none;
-  --backdrop-opacity: 0.9;
+  --backdrop-opacity: 0.95;
 }
 
 ion-modal#schoolBusPermitShowModal > .ion-page {
   justify-content: space-evenly;
-  padding: 20px;
 }
 
 ion-modal#schoolBusPermitShowModal::part(backdrop) {
   background: rgba(240, 240, 240, 1);
+}
+
+ion-modal#schoolBusPermitShowModal .cardImg {
+  width: 100%;
+}
+
+@media (orientation: portrait) {
+  ion-modal#schoolBusPermitShowModal .cardsContainer {
+    width: min(90vh, calc(100vw * 414 / 306.68));
+    rotate: 90deg;
+  }
 }
 
 .cardImg {

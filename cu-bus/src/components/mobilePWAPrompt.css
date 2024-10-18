@@ -1,7 +1,8 @@
 /* Home Screen Prompt*/
 #HomeScreenPrompt {
   z-index: 9999;
-  background-color: #911f27;
+  background-color: #fff;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
   color: #630a10;
   bottom: 0;
 

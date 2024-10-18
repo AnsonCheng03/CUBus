@@ -7,6 +7,7 @@ import d_bus_img from "../../../assets/schbus_d.png";
 import l_bus_img from "../../../assets/schbus_l.png";
 import cuhk_logo from "../../../assets/cuhk_logo.png";
 import { LoadingImage } from "../../Components/newPageModal";
+import { IonModal } from "@ionic/react";
 
 const SchoolBusPermitCard: React.FC<{
   permit: any;
@@ -15,6 +16,7 @@ const SchoolBusPermitCard: React.FC<{
   const [t] = useTranslation("global");
 
   const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
 
   type BusRoutes = {
     meet_class_bus: { [key: string]: string };
@@ -22,7 +24,9 @@ const SchoolBusPermitCard: React.FC<{
   };
 
   const cardRef = useRef<HTMLDivElement>(null);
+  const cardContainerRef = useRef<HTMLDivElement>(null);
   const cardImgRef = useRef<HTMLDivElement>(null);
+  const modalContent = useRef<HTMLDivElement>(null);
 
   const busRoutes: BusRoutes = {
     meet_class_bus: {
@@ -71,109 +75,152 @@ const SchoolBusPermitCard: React.FC<{
   }, [permit, busMode]);
 
   return (
-    <div className="cardsContainer">
-      <div className="cardImg">
-        <div className="busCardImg" ref={cardImgRef} />
-        {loading ? (
-          <LoadingImage />
-        ) : (
-          <div className="busimg">
-            <img
-              src={busMode === "meet_class_bus" ? l_bus_img : d_bus_img}
-              alt="bus"
-            />
-          </div>
-        )}
-      </div>
-      <div className="originalCard">
-        <div className="card" ref={cardRef}>
-          <div className="details">
-            <div className="header">
-              <div className="logo">
-                <img src={cuhk_logo} alt="CUHK" />
-              </div>
-              <div className="schname">
-                <span>香港中文大學</span>
-                <span> The Chinese University of Hong Kong</span>
-              </div>
-              <div className="hinttxt">
-                <span>落車前請按鐘一次</span>
-                <span>To Stop Press The Bell Once</span>
-              </div>
+    <>
+      <IonModal
+        id="schoolBusPermitShowModal"
+        isOpen={modalOpen}
+        onClick={() => {
+          setModalOpen(false);
+        }}
+        onWillPresent={() => {
+          const cardContent = cardContainerRef.current?.cloneNode(true);
+          const modalContentElement = modalContent.current;
+          const loadImageToModal = (
+            modalContentElement: HTMLElement,
+            cardContent: Node
+          ) => {
+            if (modalContentElement.firstChild) {
+              modalContentElement.removeChild(modalContentElement.firstChild);
+            }
+            modalContentElement.appendChild(cardContent);
+          };
+          if (cardContent && modalContentElement) {
+            loadImageToModal(modalContentElement, cardContent);
+          } else {
+            setTimeout(() => {
+              if (cardContent && modalContentElement) {
+                loadImageToModal(modalContentElement, cardContent);
+              } else {
+                setModalOpen(false);
+              }
+            }, 500);
+          }
+        }}
+        onDidDismiss={() => setModalOpen(false)}
+      >
+        <div ref={modalContent} className="cardModal" />
+      </IonModal>
+      <div
+        className="cardsContainer"
+        ref={cardContainerRef}
+        onClick={() => {
+          if (loading) return;
+          setModalOpen(true);
+        }}
+      >
+        <div className="cardImg">
+          <div className="busCardImg" ref={cardImgRef} />
+          {loading ? (
+            <LoadingImage />
+          ) : (
+            <div className="busimg">
+              <img
+                src={busMode === "meet_class_bus" ? l_bus_img : d_bus_img}
+                alt="bus"
+              />
             </div>
-            <div className="cardname">
-              <h1>
-                {busMode === "meet_class_bus" ? "轉堂校巴證" : "穿梭校巴證"}
-              </h1>
-              <h2>
-                {busMode === "meet_class_bus"
-                  ? "Meet-Class Bus Permit"
-                  : "Shuttle Bus Permit"}
-              </h2>
-            </div>
-            <div className="routeavil">
-              <div className="desctxt">
-                <span>持證者獲交通事務處批准乘搭下列的穿梭校巴路線</span>
-                <span>
-                  The Permit Holder is allowed to ride on the following routes
-                </span>
-              </div>
-              <div className="routes">
-                {Object.keys(busRoutes[busMode as keyof BusRoutes]).map(
-                  (route) => (
-                    <span
-                      className={busMode}
-                      key={route}
-                      style={{ background: busRoutes[busMode][route] }}
-                    >
-                      {route}
-                    </span>
-                  )
-                )}
-              </div>
-            </div>
-            <div className="studatas">
-              <div className="Name">
-                <div className="desc">
-                  <span>學生姓名</span>
-                  <span>Name</span>
+          )}
+        </div>
+        <div className="originalCard">
+          <div className="card" ref={cardRef}>
+            <div className="details">
+              <div className="header">
+                <div className="logo">
+                  <img src={cuhk_logo} alt="CUHK" />
                 </div>
-                <div className="value">
-                  <span>{permit.name}</span>
+                <div className="schname">
+                  <span>香港中文大學</span>
+                  <span> The Chinese University of Hong Kong</span>
+                </div>
+                <div className="hinttxt">
+                  <span>落車前請按鐘一次</span>
+                  <span>To Stop Press The Bell Once</span>
                 </div>
               </div>
-              <div className="SID">
-                <div className="desc">
-                  <span>學生編號</span>
-                  <span>Student ID</span>
+              <div className="cardname">
+                <h1>
+                  {busMode === "meet_class_bus" ? "轉堂校巴證" : "穿梭校巴證"}
+                </h1>
+                <h2>
+                  {busMode === "meet_class_bus"
+                    ? "Meet-Class Bus Permit"
+                    : "Shuttle Bus Permit"}
+                </h2>
+              </div>
+              <div className="routeavil">
+                <div className="desctxt">
+                  <span>持證者獲交通事務處批准乘搭下列的穿梭校巴路線</span>
+                  <span>
+                    The Permit Holder is allowed to ride on the following routes
+                  </span>
                 </div>
-                <div className="value">
-                  <span>{permit.sid}</span>
+                <div className="routes">
+                  {Object.keys(busRoutes[busMode as keyof BusRoutes]).map(
+                    (route) => (
+                      <span
+                        className={busMode}
+                        key={route}
+                        style={{ background: busRoutes[busMode][route] }}
+                      >
+                        {route}
+                      </span>
+                    )
+                  )}
                 </div>
               </div>
-              <div className="Major">
-                <div className="desc">
-                  <span>主修科目</span>
-                  <span>Major</span>
+              <div className="studatas">
+                <div className="Name">
+                  <div className="desc">
+                    <span>學生姓名</span>
+                    <span>Name</span>
+                  </div>
+                  <div className="value">
+                    <span>{permit.name}</span>
+                  </div>
                 </div>
-                <div className="value">
-                  <span>{permit.major}</span>
+                <div className="SID">
+                  <div className="desc">
+                    <span>學生編號</span>
+                    <span>Student ID</span>
+                  </div>
+                  <div className="value">
+                    <span>{permit.sid}</span>
+                  </div>
                 </div>
-              </div>
-              <div className="Valid">
-                <div className="desc">
-                  <span>有效期至</span>
-                  <span>Valid Until</span>
+                <div className="Major">
+                  <div className="desc">
+                    <span>主修科目</span>
+                    <span>Major</span>
+                  </div>
+                  <div className="value">
+                    <span>{permit.major}</span>
+                  </div>
                 </div>
-                <div className="value">
-                  <span>{permit.expiry}</span>
+                <div className="Valid">
+                  <div className="desc">
+                    <span>有效期至</span>
+                    <span>Valid Until</span>
+                  </div>
+                  <div className="value">
+                    <span>{permit.expiry}</span>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
