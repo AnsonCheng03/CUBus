@@ -410,9 +410,9 @@ footer h2 {
 
 .route-result-busno {
   display: grid;
-  grid-template-columns: 1fr 60px;
+  grid-template-columns: 60px 1fr 60px;
   gap: 10px;
-  padding: 20px 20px;
+  padding: 10px 20px;
   box-shadow: 2px 2px 3px rgba(154, 160, 185, 0.05),
     2px 15px 40px rgba(166, 173, 201, 0.2);
   margin: 10px 20px;
@@ -425,25 +425,26 @@ footer h2 {
 }
 
 .route-result-busno-number-container {
+  position: relative;
   display: flex;
+  width: 100%;
   align-items: center;
-  gap: 10px;
-  padding: 5px 0;
+  justify-content: center;
 }
 
-.route-result-busno-number-container ion-icon {
-  font-size: 1.3rem;
+.route-result-busno-number-container .route-result-busno-icon {
+  font-size: 3rem;
   color: #630a10;
 }
 
 .route-result-busno-number {
+  position: absolute;
   font-size: 1.2rem;
   font-weight: bold;
   text-align: center;
   border-radius: 10px;
-  background-color: #fcf0c8;
-  padding: 0 20px;
-  color: #911f27;
+  left: 50%;
+  transform: translate(-50%, -0.25rem);
 }
 
 .route-result-busno-details {
@@ -466,8 +467,7 @@ footer h2 {
 .route-result-busno-details-arrivaltime {
   color: #222;
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
 }
 
 .route-result-busno-details-route {
@@ -477,18 +477,51 @@ footer h2 {
 }
 
 .route-result-busno-simple-route {
-  display: grid;
-  grid-template-columns: fit-content(100%) auto fit-content(100%);
-  gap: 10px;
+  display: flex;
+  flex-direction: column;
   border-radius: 10px;
-  align-items: center;
   justify-content: left;
+}
+
+.route-result-busno-simple-route ion-icon {
+  color: rgb(49, 112, 246);
+  --ionicon-stroke-width: 60px;
+}
+
+.route-result-busno-details-arrivaltime ion-icon {
+  color: rgb(212, 119, 45);
+  --ionicon-stroke-width: 60px;
 }
 
 .route-result-busno-simple-route-start,
 .route-result-busno-simple-route-end {
   text-overflow: ellipsis;
   white-space: nowrap;
+  overflow: hidden;
+}
+
+.route-result-busno-details-text-container {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  align-items: center;
+  padding: 5px 0;
+}
+
+.route-result-busno-details-text-label {
+  margin: 0;
+  color: #aaa;
+  font-size: 0.8rem;
+  padding-left: 21px;
+}
+
+.route-result-busno-details-text-detail {
+  margin: 0;
+  font-size: 1rem;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
@@ -546,5 +579,26 @@ footer h2 {
     grid-template-columns: 1fr 1fr;
     gap: 20px;
     padding: 20px 20px 0 20px;
+  }
+
+  .route-search-form-container.empty {
+    min-height: 0;
+  }
+
+  .route-search-form-container {
+    background-color: transparent;
+  }
+
+  .route-search-form-container::after {
+    height: 0;
+  }
+
+  .timeChooser {
+    color: #630a10;
+  }
+
+  .route-search-form-container.empty .route-search-form {
+    margin-top: 0;
+    transform: translateY(0);
   }
 }

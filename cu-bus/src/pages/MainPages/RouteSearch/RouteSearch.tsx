@@ -28,6 +28,7 @@ import { RouteSelect } from "../../Components/selectRouteForm";
 import { calculateRoute } from "../../Functions/getRoute";
 import LocationTimeChooser from "./RouteSearchFormTime";
 import PullToRefresh from "react-simple-pull-to-refresh";
+import { RiBusFill } from "react-icons/ri";
 
 const RouteSearch: React.FC<{
   appData: any;
@@ -310,29 +311,35 @@ if (isset($buserrstat["suspended"]))
                         setRouteMap([result.route, result.routeIndex]);
                       }}
                     >
-                      <div className="route-result-busno-details">
-                        <div className="route-result-busno-number-container">
-                          <IonIcon icon={busOutline}></IonIcon>
-                          <div className="route-result-busno-number">
-                            {result.busNo}
-                          </div>
+                      <div className="route-result-busno-number-container">
+                        <RiBusFill className="route-result-busno-icon" />
+                        <div className="route-result-busno-number">
+                          {result.busNo}
                         </div>
+                      </div>
+                      <div className="route-result-busno-details">
                         <div className="route-result-busno-details-route">
                           <div className="route-result-busno-simple-route">
-                            <IonIcon icon={locateOutline}></IonIcon>
-                            <div className="route-result-busno-simple-route-start">
-                              {result.start}
+                            <p className="route-result-busno-details-text-label">
+                              {t("bus-start-station")}
+                            </p>
+                            <div className="route-result-busno-details-text-container">
+                              <IonIcon icon={locateOutline}></IonIcon>
+                              <p className="route-result-busno-details-text-detail">
+                                {result.start}
+                              </p>
                             </div>
                           </div>
                           <div className="route-result-busno-details-arrivaltime">
-                            <IonIcon icon={timeOutline}></IonIcon>
-                            {`${t("next-bus-arrival-info")}${
-                              result.arrivalTime
-                            }`}
-                          </div>
-                          <div className="route-result-busno-details-arrivaltime">
-                            <IonIcon icon={timeSharp}></IonIcon>
-                            {`${result.timeDisplay}${t("bus-length-info")}`}
+                            <p className="route-result-busno-details-text-label">
+                              {t("next-bus-arrival-info")}
+                            </p>
+                            <div className="route-result-busno-details-text-container">
+                              <IonIcon icon={timeOutline}></IonIcon>
+                              <p className="route-result-busno-details-text-detail">
+                                {result.arrivalTime}
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
