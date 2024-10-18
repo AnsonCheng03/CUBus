@@ -6,8 +6,8 @@ import { useTranslation } from "react-i18next";
 import {
   homeOutline,
   searchOutline,
-  informationOutline,
   settingsOutline,
+  idCardOutline,
 } from "ionicons/icons";
 import { useLocation } from "react-router-dom";
 import { Helmet } from "react-helmet";
@@ -88,7 +88,7 @@ const NavBar: React.FC = () => {
         <ul>
           {navItem(homeOutline, t("NAV-Home"), "/realtime", true)}
           {navItem(searchOutline, t("NAV-StationSearch"), "/route")}
-          {navItem(informationOutline, t("NAV-Info"), "/info")}
+          {navItem(idCardOutline, t("NAV-Permit"), "/permit")}
           {navItem(settingsOutline, t("NAV-Settings"), "/settings")}
         </ul>
       </div>

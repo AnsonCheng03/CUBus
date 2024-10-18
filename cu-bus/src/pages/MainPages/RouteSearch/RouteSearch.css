@@ -34,7 +34,7 @@
   display: flex;
   flex-direction: column;
   /* border-bottom: 10px solid #dedede; */
-  padding: 10px 10px;
+  padding: 5px 10px;
   box-shadow: 0 2px 3px rgba(154, 160, 185, 0.05),
     0 15px 40px rgba(166, 173, 201, 0.2);
 }
@@ -174,7 +174,7 @@ ion-modal#timeSelectorModal ion-picker {
   display: grid;
   grid-template-columns: 1fr 50px;
   gap: 10px;
-  padding: 10px 0;
+  padding: 5px 0;
   border-top: 1px solid #630a10;
 }
 
@@ -285,7 +285,8 @@ ion-modal#timeSelectorModal ion-picker {
 }
 
 .route-search-form-container {
-  padding: 30px 3% 50px 3%;
+  padding: calc(30px + env(safe-area-inset-top)) 3% 50px 3%;
+  padding: calc(30px + constant(safe-area-inset-top)) 3% 50px 3%;
   position: relative;
   position: sticky;
   top: 0;
@@ -438,7 +439,7 @@ footer h2 {
 }
 
 .route-result-busno-number-container .route-result-busno-icon {
-  font-size: 3rem;
+  font-size: 60px;
   color: #630a10;
 }
 
@@ -447,9 +448,13 @@ footer h2 {
   font-size: 1.2rem;
   font-weight: bold;
   text-align: center;
-  border-radius: 10px;
   left: 50%;
-  transform: translate(-50%, -0.25rem);
+  transform: translate(-50%, -0.4rem);
+  width: 37.5px;
+  height: 22.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  background-color: rgb(254, 250, 183);
 }
 
 .route-result-busno-details {
@@ -460,10 +465,21 @@ footer h2 {
 
 .route-result-busno-details-totaltime {
   text-align: right;
+  white-space: nowrap;
+  display: flex;
+  flex-direction: column;
+}
+
+.route-result-busno-details-waittime-desc {
+  font-size: 0.8rem;
+  color: #aaa;
+  margin: 0;
+  text-align: right;
+  overflow: hidden;
 }
 
 .route-result-busno-details-totaltime-text {
-  font-size: 20px;
+  font-size: 1.3rem;
   font-weight: bold;
   display: inline-block;
   margin: 0;
@@ -478,7 +494,7 @@ footer h2 {
 .route-result-busno-details-route {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 5px;
 }
 
 .route-result-busno-simple-route {
@@ -491,6 +507,7 @@ footer h2 {
 .route-result-busno-simple-route ion-icon {
   color: rgb(49, 112, 246);
   --ionicon-stroke-width: 60px;
+  font-size: 18px;
 }
 
 .route-result-busno-details-arrivaltime ion-icon {
@@ -509,7 +526,7 @@ footer h2 {
   display: grid;
   grid-template-columns: 20px 1fr;
   align-items: center;
-  padding: 5px 0;
+  padding: 2px 0;
 }
 
 .route-result-busno-details-text-label {
@@ -593,6 +610,7 @@ footer h2 {
 
   .route-search-form-container {
     background-color: transparent;
+    padding: 30px 3% 50px 3%;
   }
 
   .route-search-form-container::after {

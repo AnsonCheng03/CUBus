@@ -41,7 +41,8 @@ nav ul {
   list-style-type: none;
   padding: 0;
   margin: 0 5%;
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   justify-content: right;
   align-items: center;
   gap: 5%;

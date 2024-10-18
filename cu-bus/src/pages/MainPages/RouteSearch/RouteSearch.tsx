@@ -370,10 +370,15 @@ if (isset($buserrstat["suspended"]))
                         </div>
                       </div>
                       <div className="route-result-busno-details-totaltime">
-                        <p className="route-result-busno-details-totaltime-text">
-                          {result.time > 1000 ? "N/A" : result.time}
+                        <div>
+                          <p className="route-result-busno-details-totaltime-text">
+                            {result.time > 1000 ? "N/A" : result.time}
+                          </p>
+                          {` min`}
+                        </div>
+                        <p className="route-result-busno-details-waittime-desc">
+                          {t("wait-time-desc")}
                         </p>
-                        {` min`}
                       </div>
                     </div>
                   );

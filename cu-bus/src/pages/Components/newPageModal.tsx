@@ -8,6 +8,7 @@ import {
   IonIcon,
   IonInput,
   IonItem,
+  IonLabel,
   IonModal,
   IonPage,
   IonTitle,
@@ -78,11 +79,9 @@ const ModalInput = (props: ModalProps) => {
   }
 
   return (
-    <>
-      <div className="option" onClick={() => openModal()}>
-        <div>{props.title}</div>
-      </div>
-    </>
+    <IonItem onClick={() => openModal()}>
+      <IonLabel>{props.title}</IonLabel>
+    </IonItem>
   );
 };
 

@@ -22,7 +22,7 @@ import Alert from "./components/alertBox";
 
 import Realtime from "./pages/MainPages/Realtime/Realtime";
 import RouteSearch from "./pages/MainPages/RouteSearch/RouteSearch";
-import Info from "./pages/MainPages/Info/Info";
+import SchoolBusPermit from "./pages/MainPages/Info/SchoolBusPermit";
 import Settings from "./pages/MainPages/Settings/Settings";
 import DownloadFiles from "./pages/DownloadFiles";
 
@@ -139,11 +139,15 @@ const App: React.FC<RouteComponentProps | any> = () => {
                       setAppTempData={setAppTempData}
                     />
                   </Route>
-                  <Route exact path="/info">
-                    <Info appData={appData} />
+                  <Route exact path="/permit">
+                    <SchoolBusPermit
+                      appSettings={appSettings}
+                      setAppSettings={setAppSettings}
+                    />
                   </Route>
                   <Route exact path="/settings">
                     <Settings
+                      appData={appData}
                       appSettings={appSettings}
                       setAppSettings={setAppSettings}
                     />
