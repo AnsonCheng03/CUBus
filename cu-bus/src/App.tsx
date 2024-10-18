@@ -22,7 +22,7 @@ import Alert from "./components/alertBox";
 
 import Realtime from "./pages/MainPages/Realtime/Realtime";
 import RouteSearch from "./pages/MainPages/RouteSearch/RouteSearch";
-import SchoolBusPermit from "./pages/MainPages/Info/SchoolBusPermit";
+import SchoolBusPermit from "./pages/MainPages/SchoolBusPermit/SchoolBusPermit";
 import Settings from "./pages/MainPages/Settings/Settings";
 import DownloadFiles from "./pages/DownloadFiles";
 
