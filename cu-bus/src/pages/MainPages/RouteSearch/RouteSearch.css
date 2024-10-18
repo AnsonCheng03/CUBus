@@ -277,7 +277,7 @@ ion-modal#timeSelectorModal ion-picker {
 }
 
 .route-search-page {
-  height: calc(100vh - 75px);
+  height: 100vh;
   overflow: auto;
   display: grid;
   grid-auto-rows: auto 1fr;
@@ -296,7 +296,7 @@ ion-modal#timeSelectorModal ion-picker {
 }
 
 .route-search-form-container.empty {
-  min-height: calc(100vh - 75px);
+  min-height: 100vh;
 }
 
 .route-search-form-container::after {
@@ -407,6 +407,10 @@ footer h2 {
 }
 
 /* result page */
+.routeresult {
+  padding-bottom: calc(75px + constant(safe-area-inset-bottom));
+  padding-bottom: calc(75px + env(safe-area-inset-bottom));
+}
 
 .route-result-busno {
   display: grid;
@@ -548,7 +552,8 @@ footer h2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 5%;
-    padding: 1% 5%;
+    padding: calc(85px + 1% + env(safe-area-inset-top)) 5% 0 5%;
+    padding: calc(85px + 1%+ constant(safe-area-inset-top)) 5% 0 5%;
   }
 
   .route-search-form,

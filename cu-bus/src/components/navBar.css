@@ -13,6 +13,7 @@ nav {
   height: calc(75px + env(safe-area-inset-top));
   background-color: #911f27;
 }
+
 ion-router-outlet {
   top: 0;
 }
@@ -110,7 +111,7 @@ nav ion-icon {
     height: calc(75px + env(safe-area-inset-bottom));
     width: 100%;
     padding-top: 0;
-    padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: 0;
     box-shadow: 0 2px 6px rgba(154, 160, 185, 0.5),
       0 6px 20px rgba(166, 173, 201, 0.8);
     border-radius: 15px 15px 0 0;
@@ -132,8 +133,7 @@ nav ion-icon {
 
   ion-router-outlet {
     top: 0;
-    bottom: calc(75px + env(safe-area-inset-bottom));
-    bottom: calc(75px + constant(safe-area-inset-bottom));
+    bottom: 0;
   }
 
   nav .navLink {

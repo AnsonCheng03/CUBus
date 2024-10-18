@@ -161,7 +161,7 @@ const RouteSearch: React.FC<{
   }, [routeSearchStart, routeSearchDest, departNow]);
 
   return (
-    <IonPage className="pageSafeArea">
+    <IonPage>
       {/* <?php
 
 
@@ -193,7 +193,11 @@ if (isset($buserrstat["suspended"]))
       <div className="route-search-page">
         <div
           className={`route-search-form-container ${
-            !routeResult.sortedResults ? " empty" : ""
+            routeSearchStart === "" ||
+            routeSearchDest === "" ||
+            (!routeResult.sortedResults && !routeResult.error)
+              ? " empty"
+              : ""
           }`}
         >
           <form
