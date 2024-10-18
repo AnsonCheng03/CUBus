@@ -18,7 +18,7 @@ import "../assets/routeComp.css";
 
 import { generateRouteResult, BusData } from "../../Functions/getRealTime";
 import RouteMap from "../../Components/routeMap";
-import ReactPullToRefresh from "react-pull-to-refresh";
+import PullToRefresh from "react-simple-pull-to-refresh";
 
 const Realtime: React.FC<{
   appData: any;
@@ -116,10 +116,10 @@ const Realtime: React.FC<{
       </form>
 
       <div className="realtimeresult">
-        <ReactPullToRefresh onRefresh={handleRefresh}>
-          <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
+        <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
 
-          <div className="bus-grid">
+        <div className="bus-grid">
+          <PullToRefresh onRefresh={handleRefresh} pullingContent="">
             {realtimeResult.length === 0 ? (
               <div className="no-bus">
                 <div className="no-bus-icon">
@@ -163,8 +163,8 @@ const Realtime: React.FC<{
                 );
               })
             )}
-          </div>
-        </ReactPullToRefresh>
+          </PullToRefresh>
+        </div>
       </div>
     </div>
   );

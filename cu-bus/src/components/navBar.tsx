@@ -1,7 +1,7 @@
 import "./navBar.css";
 
 import { IonIcon, IonItem } from "@ionic/react";
-import React from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   homeOutline,

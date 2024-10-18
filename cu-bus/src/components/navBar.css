@@ -13,11 +13,9 @@ nav {
   height: calc(75px + env(safe-area-inset-top));
   background-color: #911f27;
 }
-
 ion-router-outlet {
-  top: calc(75px + env(safe-area-inset-top));
+  top: 0;
 }
-
 nav h1 {
   margin: 0;
   color: #fff;
@@ -133,8 +131,7 @@ nav ion-icon {
   }
 
   ion-router-outlet {
-    top: constant(safe-area-inset-top);
-    top: env(safe-area-inset-top);
+    top: 0;
     bottom: calc(75px + env(safe-area-inset-bottom));
     bottom: calc(75px + constant(safe-area-inset-bottom));
   }

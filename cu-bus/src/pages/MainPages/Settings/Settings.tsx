@@ -39,7 +39,7 @@ const Settings: React.FC<{
     }
   }
   return (
-    <IonPage>
+    <IonPage className="pageSafeArea">
       <IonContent className="setting-content">
         <SchoolBusPermit
           appSettings={appSettings}

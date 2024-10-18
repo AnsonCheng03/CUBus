@@ -26,7 +26,7 @@ import { GPSSelectIcon } from "../../Components/gpsSelectBox";
 import { RouteSelect } from "../../Components/selectRouteForm";
 import { calculateRoute } from "../../Functions/getRoute";
 import LocationTimeChooser from "./RouteSearchFormTime";
-import ReactPullToRefresh from "react-pull-to-refresh";
+import PullToRefresh from "react-simple-pull-to-refresh";
 
 const RouteSearch: React.FC<{
   appData: any;
@@ -163,7 +163,7 @@ const RouteSearch: React.FC<{
   }, [routeSearchStart, routeSearchDest, departNow]);
 
   return (
-    <IonPage>
+    <IonPage className="pageSafeArea">
       {/* <?php
 
 
@@ -280,12 +280,12 @@ if (isset($buserrstat["suspended"]))
         )}
 
         <div className="routeresult">
-          <ReactPullToRefresh onRefresh={handleRefresh}>
-            <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
-            {routeResult.samestation && (
-              <p className="samestation-info">{t("samestation-info")}</p>
-            )}
+          <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
+          {routeResult.samestation && (
+            <p className="samestation-info">{t("samestation-info")}</p>
+          )}
 
+          <PullToRefresh onRefresh={handleRefresh} pullingContent="">
             {routeResult.sortedResults ? (
               routeResult.sortedResults.map((result: any, index: number) => {
                 return (
@@ -344,7 +344,7 @@ if (isset($buserrstat["suspended"]))
                 )}
               </div>
             )}
-          </ReactPullToRefresh>
+          </PullToRefresh>
         </div>
 
         <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />

@@ -28,7 +28,7 @@ const Info: React.FC<{ appData: any }> = ({ appData }) => {
     }
   }
   return (
-    <IonPage>
+    <IonPage className="pageSafeArea">
       <div className="option-list">
         <ModalInput
           title={t("bus_map_page")}

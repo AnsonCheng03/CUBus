@@ -11,6 +11,17 @@ body {
   color: black;
 }
 
+.pageSafeArea {
+  top: calc(75px + env(safe-area-inset-top));
+}
+
+@media (max-width: 768px) {
+  .pageSafeArea {
+    top: constant(safe-area-inset-top);
+    top: env(safe-area-inset-top);
+  }
+}
+
 select::-ms-expand {
   display: none;
 }
