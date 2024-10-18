@@ -21,8 +21,8 @@ body {
   .pageSafeArea {
     top: constant(safe-area-inset-top);
     top: env(safe-area-inset-top);
-    bottom: calc(env(safe-area-inset-bottom));
-    bottom: env(safe-area-inset-bottom);
+    bottom: calc(75px + env(safe-area-inset-bottom));
+    bottom: calc(75px + constant(safe-area-inset-bottom));
   }
 }
 

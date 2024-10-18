@@ -53,7 +53,7 @@ const SchoolBusPermitCard: React.FC<{
       }, 1000);
     }).then(() =>
       domtoimage
-        .toSvg(cardRef.current as Node, {
+        .toPng(cardRef.current as Node, {
           width: 560 * 2,
           height: 356 * 2,
           quality: 1,

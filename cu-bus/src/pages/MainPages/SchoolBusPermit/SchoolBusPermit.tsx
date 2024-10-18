@@ -9,7 +9,11 @@ import {
 } from "@ionic/react";
 import "./SchoolBusPermit.css";
 import { useTranslation } from "react-i18next";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+import { Storage } from "@ionic/storage";
+const store = new Storage();
+store.create(); // Initialize the storage
 
 import SchoolBusPermitCard from "./SchoolBusPermitCard";
 
@@ -143,6 +147,11 @@ const SchoolBusPermit: React.FC<{
       expiry: null,
     }
   );
+
+  useEffect(() => {
+    console.log("Saving appSettings to storage:", appSettings);
+    store.set("appSettings", appSettings);
+  }, [appSettings]);
 
   return (
     <IonPage className="pageSafeArea">

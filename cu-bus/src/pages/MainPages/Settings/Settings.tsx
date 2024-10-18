@@ -10,13 +10,12 @@ import {
   IonToggle,
 } from "@ionic/react";
 import "./Settings.css";
-import SchoolBusPermit from "../../AddonPages/schoolBusPermit";
 import { useTranslation } from "react-i18next";
 
-import { Storage } from "@ionic/storage";
 import { useEffect } from "react";
 import BusMap from "../../AddonPages/routeMap";
 import ModalInput from "../../Components/newPageModal";
+import { Storage } from "@ionic/storage";
 const store = new Storage();
 store.create(); // Initialize the storage
 
