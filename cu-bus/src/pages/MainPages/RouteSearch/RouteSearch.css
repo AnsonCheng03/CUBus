@@ -30,13 +30,20 @@
 }
 
 .info-box {
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 5px;
   /* border-bottom: 10px solid #dedede; */
-  padding: 20px 0 15px 0;
+  padding: 10px 10px;
   box-shadow: 0 2px 3px rgba(154, 160, 185, 0.05),
     0 15px 40px rgba(166, 173, 201, 0.2);
+}
+
+.info-box .routeDotIcon {
+  position: absolute;
+  top: 50%;
+  left: 27px;
+  transform: translateY(-50%);
 }
 
 /* Options Selector */
@@ -163,18 +170,23 @@ ion-modal#timeSelectorModal ion-picker {
   height: min-content;
 }
 
-.locationChooserContainer {
-  padding: 0 20px;
+.locationinputContainer {
+  display: grid;
+  grid-template-columns: 1fr 50px;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid #630a10;
+}
+
+.locationChooserContainer:first-child .locationinputContainer {
+  border-top: none;
 }
 
 .locationChooser {
   display: grid;
-  grid-template-columns: 50px 1fr 50px;
+  grid-template-columns: 50px 1fr;
   justify-content: center;
   align-items: center;
-  border: 1px solid #630a10;
-  border-radius: 5px;
-  margin: 3px 0;
   position: relative;
 }
 
@@ -183,8 +195,6 @@ ion-modal#timeSelectorModal ion-picker {
   grid-template-columns: 50px 1fr;
   justify-content: center;
   align-items: center;
-  border: 1px solid #630a10;
-  border-radius: 5px;
   margin: 3px 0;
 }
 
@@ -196,27 +206,32 @@ ion-modal#timeSelectorModal ion-picker {
   justify-content: center;
 }
 
+.locationChooser #Start-label ion-icon,
+.locationChooser #Dest-label ion-icon,
+.timeChooser #Time-label ion-icon {
+  font-size: 24px;
+}
+
 .locationinput {
   display: inline-block;
 }
 
 .text-box {
   width: 100%;
-  font-size: 14px;
+  font-size: 20px;
   border: none;
-  border-radius: 5px;
   outline: 0;
-  padding: 7px 15px;
+  padding: 7px 0px;
   background: transparent;
   transition: border-color 0.2s;
   -webkit-appearance: none;
 }
 
 .departTime {
-  font-size: 14px;
+  font-size: 20px;
   width: 100%;
   text-align: left;
-  padding: 8px 13px;
+  padding: 8px 0;
   -webkit-appearance: none;
   cursor: pointer;
 }
@@ -268,19 +283,66 @@ ion-modal#timeSelectorModal ion-picker {
   grid-auto-rows: auto 1fr;
 }
 
-.route-search-form {
+.route-search-form-container {
+  padding: 30px 3% 50px 3%;
+  position: relative;
   position: sticky;
-  width: 100vw;
   top: 0;
-  z-index: 999;
-  background-color: rgba(255, 255, 255, 0.98);
+  min-height: 0;
   height: min-content;
+  z-index: 999;
+  transition: min-height 0.5s ease-in-out;
+  background-color: #911f27;
+}
+
+.route-search-form-container.empty {
+  min-height: calc(100vh - 75px);
+}
+
+.route-search-form-container::after {
+  background-color: #fff;
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 25px;
+  border-radius: 25px 25px 0 0;
+  z-index: -1;
+  transition: height 0.5s ease-in-out;
+}
+
+.route-search-form-container.empty::after {
+  height: 0px;
+}
+
+.route-search-form {
+  height: min-content;
+  margin-top: 0;
+  transform: translateY(0);
+  transition: all 0.5s ease-in-out;
+}
+
+.route-search-form-container.empty .route-search-form {
+  margin-top: calc((100vh - 50px) * 0.4);
+  transform: translateY(-50%);
+}
+
+.search-boxes {
+  border-radius: 15px;
+  box-shadow: 0 1px 3px rgba(154, 160, 185, 0.1),
+    0 3px 10px rgba(166, 173, 201, 0.4);
+  background-color: rgba(255, 255, 255, 1);
 }
 
 .locationChooser .functionbuttons {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.timeChooser {
+  color: #fff;
 }
 
 .timeChooser ion-icon,
@@ -350,7 +412,7 @@ footer h2 {
   display: grid;
   grid-template-columns: 1fr 60px;
   gap: 10px;
-  padding: 20px;
+  padding: 20px 20px;
   box-shadow: 2px 2px 3px rgba(154, 160, 185, 0.05),
     2px 15px 40px rgba(166, 173, 201, 0.2);
   margin: 10px 20px;
@@ -379,15 +441,19 @@ footer h2 {
   font-weight: bold;
   text-align: center;
   border-radius: 10px;
-  background-color: #630a10;
+  background-color: #fcf0c8;
   padding: 0 20px;
-  color: #fff;
+  color: #911f27;
 }
 
 .route-result-busno-details {
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.route-result-busno-details-totaltime {
+  text-align: right;
 }
 
 .route-result-busno-details-totaltime-text {

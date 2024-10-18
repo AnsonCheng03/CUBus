@@ -18,6 +18,7 @@ import {
   timeOutline,
   timeSharp,
 } from "ionicons/icons";
+import { BsThreeDotsVertical } from "react-icons/bs";
 import { useTranslation } from "react-i18next";
 import AutoComplete from "../../Components/autoComplete";
 import { capitalizeFirstLetter } from "../../Functions/Tools";
@@ -126,10 +127,6 @@ const RouteSearch: React.FC<{
   const [routeResult, setRouteResult] = useState<any>([]);
 
   const generateRouteResult = () => {
-    if (routeSearchStart === "" || routeSearchDest === "") {
-      return;
-    }
-
     setRouteResult(
       calculateRoute(
         t,
@@ -193,157 +190,167 @@ if (isset($buserrstat["suspended"]))
 
 */}
       <div className="route-search-page">
-        <form
-          className="route-search-form"
-          name="bussearch"
-          method="post"
-          autoComplete="off"
-          onSubmit={(e) => {
-            e.preventDefault();
-            generateRouteResult();
-          }}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              generateRouteResult();
-            }
-          }}
+        <div
+          className={`route-search-form-container ${
+            !routeResult.sortedResults ? " empty" : ""
+          }`}
         >
-          <div className="search-boxes">
-            <div className="info-box optionssel">
-              <div className="locationChooserContainer">
-                <div className="locationChooser">
-                  <label htmlFor="Start" id="Start-label">
-                    <IonIcon icon={locateOutline}></IonIcon>
-                  </label>
-                  <div className="locationinput">
-                    <AutoComplete
-                      allBuildings={translatedBuildings}
-                      inputState={routeSearchStart}
-                      setInputState={setRouteSearchStart}
-                    />
-                  </div>
-                  <div className="functionbuttons">
-                    <GPSSelectIcon
-                      appData={appData}
-                      setDest={setRouteSearchStart}
-                      fullName
-                    />
+          <form
+            className="route-search-form"
+            name="bussearch"
+            method="post"
+            autoComplete="off"
+            onSubmit={(e) => {
+              e.preventDefault();
+              generateRouteResult();
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                generateRouteResult();
+              }
+            }}
+          >
+            <LocationTimeChooser
+              generateRouteResult={generateRouteResult}
+              departNow={departNow}
+              setDepartNow={setDepartNow}
+              selectWeekday={selectWeekday}
+              setSelectWeekday={setSelectWeekday}
+              selectDate={selectDate}
+              setSelectDate={setSelectDate}
+              selectHour={selectHour}
+              setSelectHour={setSelectHour}
+              selectMinute={selectMinute}
+              setSelectMinute={setSelectMinute}
+              TravelDateOptions={TravelDateOptions}
+            />
+            <div className="search-boxes">
+              <div className="info-box optionssel">
+                <div className="locationChooserContainer">
+                  <div className="locationChooser">
+                    <label htmlFor="Start" id="Start-label">
+                      <IonIcon icon={locateOutline}></IonIcon>
+                    </label>
+                    <div className="locationinputContainer">
+                      <div className="locationinput">
+                        <AutoComplete
+                          allBuildings={translatedBuildings}
+                          inputState={routeSearchStart}
+                          setInputState={setRouteSearchStart}
+                        />
+                      </div>
+                      <div className="functionbuttons">
+                        <GPSSelectIcon
+                          appData={appData}
+                          setDest={setRouteSearchStart}
+                          fullName
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="locationChooserContainer">
-                <div className="locationChooser">
-                  <label htmlFor="Dest" id="Dest-label">
-                    <IonIcon icon={locationOutline}></IonIcon>
-                  </label>
+                <div className="locationChooserContainer">
+                  <div className="locationChooser">
+                    <label htmlFor="Dest" id="Dest-label">
+                      <IonIcon icon={locationOutline}></IonIcon>
+                    </label>
 
-                  <div className="locationinput">
-                    <AutoComplete
-                      allBuildings={translatedBuildings}
-                      inputState={routeSearchDest}
-                      setInputState={setRouteSearchDest}
-                    />
-                  </div>
-                  <div className="functionbuttons">
-                    <GPSSelectIcon
-                      appData={appData}
-                      setDest={setRouteSearchDest}
-                      fullName
-                    />
+                    <div className="locationinputContainer">
+                      <div className="locationinput">
+                        <AutoComplete
+                          allBuildings={translatedBuildings}
+                          inputState={routeSearchDest}
+                          setInputState={setRouteSearchDest}
+                        />
+                      </div>
+                      <div className="functionbuttons">
+                        <GPSSelectIcon
+                          appData={appData}
+                          setDest={setRouteSearchDest}
+                          fullName
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <LocationTimeChooser
-                generateRouteResult={generateRouteResult}
-                departNow={departNow}
-                setDepartNow={setDepartNow}
-                selectWeekday={selectWeekday}
-                setSelectWeekday={setSelectWeekday}
-                selectDate={selectDate}
-                setSelectDate={setSelectDate}
-                selectHour={selectHour}
-                setSelectHour={setSelectHour}
-                selectMinute={selectMinute}
-                setSelectMinute={setSelectMinute}
-                TravelDateOptions={TravelDateOptions}
-              />
+                <div className="routeDotIcon">
+                  <BsThreeDotsVertical />
+                </div>
+              </div>
             </div>
-          </div>
-        </form>
-
-        {fetchError && (
-          <div id="time-now" className="show-time" style={{ display: "none" }}>
-            {t("fetch-error")}
-          </div>
-        )}
+          </form>
+        </div>
 
         <div className="routeresult">
           <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
+
+          {fetchError && (
+            <div
+              id="time-now"
+              className="show-time"
+              style={{ display: "none" }}
+            >
+              {t("fetch-error")}
+            </div>
+          )}
           {routeResult.samestation && (
             <p className="samestation-info">{t("samestation-info")}</p>
           )}
 
           <PullToRefresh onRefresh={handleRefresh} pullingContent="">
-            {routeResult.sortedResults ? (
-              routeResult.sortedResults.map((result: any, index: number) => {
-                return (
-                  <div
-                    className="route-result-busno"
-                    key={index}
-                    onClick={() => {
-                      setRouteMap([result.route, result.routeIndex]);
-                    }}
-                  >
-                    <div className="route-result-busno-details">
-                      <div className="route-result-busno-number-container">
-                        <IonIcon icon={busOutline}></IonIcon>
-                        <div className="route-result-busno-number">
-                          {result.busNo}
-                        </div>
-                      </div>
-                      <div className="route-result-busno-details-route">
-                        <div className="route-result-busno-simple-route">
-                          <IonIcon icon={locateOutline}></IonIcon>
-                          <div className="route-result-busno-simple-route-start">
-                            {result.start}
+            {routeResult.sortedResults
+              ? routeResult.sortedResults.map((result: any, index: number) => {
+                  return (
+                    <div
+                      className="route-result-busno"
+                      key={index}
+                      onClick={() => {
+                        setRouteMap([result.route, result.routeIndex]);
+                      }}
+                    >
+                      <div className="route-result-busno-details">
+                        <div className="route-result-busno-number-container">
+                          <IonIcon icon={busOutline}></IonIcon>
+                          <div className="route-result-busno-number">
+                            {result.busNo}
                           </div>
                         </div>
-                        <div className="route-result-busno-details-arrivaltime">
-                          <IonIcon icon={timeOutline}></IonIcon>
-                          {`${t("next-bus-arrival-info")}${result.arrivalTime}`}
-                        </div>
-                        <div className="route-result-busno-details-arrivaltime">
-                          <IonIcon icon={timeSharp}></IonIcon>
-                          {`${result.timeDisplay}${t("bus-length-info")}`}
+                        <div className="route-result-busno-details-route">
+                          <div className="route-result-busno-simple-route">
+                            <IonIcon icon={locateOutline}></IonIcon>
+                            <div className="route-result-busno-simple-route-start">
+                              {result.start}
+                            </div>
+                          </div>
+                          <div className="route-result-busno-details-arrivaltime">
+                            <IonIcon icon={timeOutline}></IonIcon>
+                            {`${t("next-bus-arrival-info")}${
+                              result.arrivalTime
+                            }`}
+                          </div>
+                          <div className="route-result-busno-details-arrivaltime">
+                            <IonIcon icon={timeSharp}></IonIcon>
+                            {`${result.timeDisplay}${t("bus-length-info")}`}
+                          </div>
                         </div>
                       </div>
+                      <div className="route-result-busno-details-totaltime">
+                        <p className="route-result-busno-details-totaltime-text">
+                          {result.time > 1000 ? "N/A" : result.time}
+                        </p>
+                        {` min`}
+                      </div>
                     </div>
-                    <div className="route-result-busno-details-totaltime">
-                      <p className="route-result-busno-details-totaltime-text">
-                        {result.time > 1000 ? "N/A" : result.time}
-                      </p>
-                      {` min`}
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <div className="error-text">
-                {routeResult.error ? (
-                  <>
+                  );
+                })
+              : routeResult.error && (
+                  <div className="error-text">
                     <IonIcon icon={informationCircleOutline}></IonIcon>
                     <p>{t(routeResult.message)}</p>
-                  </>
-                ) : (
-                  <>
-                    <IonIcon icon={informationCircleOutline}></IonIcon>
-                    <p>{t("input-text-reminder")}</p>
-                  </>
+                  </div>
                 )}
-              </div>
-            )}
           </PullToRefresh>
         </div>
 
