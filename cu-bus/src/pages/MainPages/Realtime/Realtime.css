@@ -20,6 +20,7 @@
   overflow: scroll;
   display: grid;
   grid-auto-rows: auto 1fr;
+  background-color: #fff;
 }
 
 .stopselector {

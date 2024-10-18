@@ -281,6 +281,7 @@ ion-modal#timeSelectorModal ion-picker {
   overflow: auto;
   display: grid;
   grid-auto-rows: auto 1fr;
+  background-color: #fff;
 }
 
 .route-search-form-container {

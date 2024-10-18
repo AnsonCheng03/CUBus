@@ -1,3 +1,18 @@
 .setting-content {
   --background: rgba(242, 242, 242);
 }
+
+.setting-page {
+  padding-top: calc(75px + env(safe-area-inset-top));
+  padding-top: calc(75px + constant(safe-area-inset-top));
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@media screen and (max-width: 768px) {
+  .setting-page {
+    padding-top: constant(safe-area-inset-top);
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: calc(75px + env(safe-area-inset-bottom));
+  }
+}

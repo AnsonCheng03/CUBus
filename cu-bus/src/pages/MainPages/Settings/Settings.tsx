@@ -39,62 +39,64 @@ const Settings: React.FC<{
     }
   }
   return (
-    <IonPage className="pageSafeArea">
+    <IonPage>
       <IonContent className="setting-content">
-        <SchoolBusPermit
-          appSettings={appSettings}
-          setAppSettings={setAppSettings}
-        />
+        <div className="setting-page">
+          <SchoolBusPermit
+            appSettings={appSettings}
+            setAppSettings={setAppSettings}
+          />
 
-        <IonList inset={true}>
-          <IonItem
-            onClick={async () => {
-              await i18n.changeLanguage(i18n.language === "en" ? "zh" : "en");
-              window.location.reload();
-            }}
-          >
-            <IonLabel>
-              {i18n.language === "zh" ? "Change Language" : "轉換語言"}
-            </IonLabel>
-          </IonItem>
-          <IonItem>
-            <IonToggle
-              checked={appSettings.searchSortDontIncludeWaitTime}
-              onIonChange={(e: CustomEvent) => {
-                setAppSettings({
-                  ...appSettings,
-                  searchSortDontIncludeWaitTime: e.detail.checked,
-                });
+          <IonList inset={true}>
+            <IonItem
+              onClick={async () => {
+                await i18n.changeLanguage(i18n.language === "en" ? "zh" : "en");
+                window.location.reload();
               }}
             >
-              <IonLabel>{t("routeNoWaitTimeT")}</IonLabel>
-              <IonNote color="medium">{t("routeNoWaitTimeD")}</IonNote>
-            </IonToggle>
-          </IonItem>
-          <IonItem
-            onClick={async () => {
-              await store.clear();
-              window.location.reload();
-            }}
-          >
-            <IonLabel>{t("Delete-Storage")}</IonLabel>
-          </IonItem>
-        </IonList>
-        <IonList inset={true}>
-          <IonItem onClick={() => window.open("https://payme.hsbc/anson03")}>
-            <IonLabel>{t("Support-btn")}</IonLabel>
-          </IonItem>
-          <IonItem
-            onClick={() => window.open("https://github.com/AnsonCheng03")}
-          >
-            <IonLabel>{t("About-btn")}</IonLabel>
-          </IonItem>
-          <IonItem
-            onClick={() => window.open("https://www.instagram.com/01.0720/")}
-          >
-            <IonLabel>{t("Designer-Abt-btn")}</IonLabel>
-          </IonItem>
-        </IonList>
+              <IonLabel>
+                {i18n.language === "zh" ? "Change Language" : "轉換語言"}
+              </IonLabel>
+            </IonItem>
+            <IonItem>
+              <IonToggle
+                checked={appSettings.searchSortDontIncludeWaitTime}
+                onIonChange={(e: CustomEvent) => {
+                  setAppSettings({
+                    ...appSettings,
+                    searchSortDontIncludeWaitTime: e.detail.checked,
+                  });
+                }}
+              >
+                <IonLabel>{t("routeNoWaitTimeT")}</IonLabel>
+                <IonNote color="medium">{t("routeNoWaitTimeD")}</IonNote>
+              </IonToggle>
+            </IonItem>
+            <IonItem
+              onClick={async () => {
+                await store.clear();
+                window.location.reload();
+              }}
+            >
+              <IonLabel>{t("Delete-Storage")}</IonLabel>
+            </IonItem>
+          </IonList>
+          <IonList inset={true}>
+            <IonItem onClick={() => window.open("https://payme.hsbc/anson03")}>
+              <IonLabel>{t("Support-btn")}</IonLabel>
+            </IonItem>
+            <IonItem
+              onClick={() => window.open("https://github.com/AnsonCheng03")}
+            >
+              <IonLabel>{t("About-btn")}</IonLabel>
+            </IonItem>
+            <IonItem
+              onClick={() => window.open("https://www.instagram.com/01.0720/")}
+            >
+              <IonLabel>{t("Designer-Abt-btn")}</IonLabel>
+            </IonItem>
+          </IonList>
+        </div>
       </IonContent>
     </IonPage>
   );

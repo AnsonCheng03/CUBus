@@ -1,6 +1,6 @@
 import "./navBar.css";
 
-import { IonIcon, IonItem } from "@ionic/react";
+import { createAnimation, IonIcon, IonItem } from "@ionic/react";
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -24,7 +24,12 @@ const NavBar: React.FC = () => {
   ) => {
     return (
       <li>
-        <IonItem routerLink={link} routerDirection="none" detail={false}>
+        <IonItem
+          routerLink={link}
+          routerDirection="forward"
+          detail={false}
+          // routerAnimation={createAnimation().duration(1000).addAnimation()}
+        >
           <div
             className={`navLink
                ${
