@@ -19,15 +19,16 @@ const Realtime: React.FC<{
   setAppTempData: any;
 }> = ({ appData, appTempData, setAppTempData }) => {
   const [t] = useTranslation("global");
+  const [userSetRealtimeDest, setUserSetRealtimeDest] = useState<string | null>(
+    null
+  );
 
   const setRealtimeStation = (station: string) => {
     setAppTempData("realTimeStation", station);
+    setUserSetRealtimeDest(station);
   };
 
   const getDefualtStation = async () => {
-    if (appTempData.realTimeStation) {
-      return appTempData.realTimeStation;
-    }
     if (!getPlatforms().includes("hybrid")) {
       return "MTR";
     }
@@ -38,6 +39,11 @@ const Realtime: React.FC<{
 
   // Run once on initial app load
   useEffect(() => {
+    if (appTempData.realTimeStation) {
+      setUserSetRealtimeDest(appTempData.realTimeStation);
+      return;
+    }
+
     getDefualtStation().then((station) => {
       setRealtimeStation(station);
     });
@@ -45,11 +51,11 @@ const Realtime: React.FC<{
 
   return (
     <IonPage>
-      {appTempData.realTimeStation ? (
+      {userSetRealtimeDest ? (
         <RealtimeView
           appData={appData}
           setUserSetRealtimeDest={setRealtimeStation}
-          defaultSelectedStation={appTempData.realTimeStation}
+          defaultSelectedStation={userSetRealtimeDest}
         />
       ) : (
         <LoadingImage />

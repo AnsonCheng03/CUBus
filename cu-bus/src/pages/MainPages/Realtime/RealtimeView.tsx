@@ -57,15 +57,13 @@ const Realtime: React.FC<{
   };
 
   useEffect(() => {
+    setUserSetRealtimeDest(realtimeDest);
+
     generateResult(realtimeDest);
   }, [realtimeDest]);
 
   useEffect(() => {
     generateResult(defaultSelectedStation);
-
-    return () => {
-      setUserSetRealtimeDest(realtimeDest);
-    };
   }, []);
 
   async function handleRefresh(): Promise<void> {
