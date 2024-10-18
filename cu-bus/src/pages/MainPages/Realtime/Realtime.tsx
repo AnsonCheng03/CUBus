@@ -15,15 +15,18 @@ import { useCallback, useEffect, useState } from "react";
 
 const Realtime: React.FC<{
   appData: any;
-}> = ({ appData }) => {
+  appTempData: any;
+  setAppTempData: any;
+}> = ({ appData, appTempData, setAppTempData }) => {
   const [t] = useTranslation("global");
-  const [userSetRealtimeDest, setUserSetRealtimeDest] = useState<string | null>(
-    null
-  );
 
-  const getDefualtStation = useCallback(async () => {
-    if (userSetRealtimeDest) {
-      return userSetRealtimeDest;
+  const setRealtimeStation = (station: string) => {
+    setAppTempData("realTimeStation", station);
+  };
+
+  const getDefualtStation = async () => {
+    if (appTempData.realTimeStation) {
+      return appTempData.realTimeStation;
     }
     if (!getPlatforms().includes("hybrid")) {
       return "MTR";
@@ -31,22 +34,22 @@ const Realtime: React.FC<{
     const currentLocation = await getLocation(t, appData.GPS);
     if (!currentLocation || currentLocation.length === 0) return "MTR";
     return currentLocation[0][0];
-  }, [userSetRealtimeDest, appData]);
+  };
 
   // Run once on initial app load
   useEffect(() => {
     getDefualtStation().then((station) => {
-      setUserSetRealtimeDest(station);
+      setRealtimeStation(station);
     });
-  }, [getDefualtStation]);
+  }, []);
 
   return (
     <IonPage>
-      {userSetRealtimeDest ? (
+      {appTempData.realTimeStation ? (
         <RealtimeView
           appData={appData}
-          setUserSetRealtimeDest={setUserSetRealtimeDest}
-          defaultSelectedStation={userSetRealtimeDest}
+          setUserSetRealtimeDest={setRealtimeStation}
+          defaultSelectedStation={appTempData.realTimeStation}
         />
       ) : (
         <LoadingImage />

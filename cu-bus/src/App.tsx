@@ -94,6 +94,17 @@ const App: React.FC<RouteComponentProps | any> = () => {
   const [appSettings, setAppSettings] = useState<any>({});
   const [networkError, setNetworkError] = useState(true);
 
+  const [appTempData, setRawAppTempData] = useState<any>({
+    realTimeStation: null,
+    searchStation: null,
+  });
+
+  const setAppTempData = (key: string, data: any) => {
+    setRawAppTempData((prev: any) => {
+      return { ...prev, [key]: data };
+    });
+  };
+
   const checkDownloadData = () => {
     const dataToBeChecked = ["timetable.json", "Status.json", "bus"];
     for (const data of dataToBeChecked) {
@@ -114,10 +125,19 @@ const App: React.FC<RouteComponentProps | any> = () => {
                 <Alert notice={appData.notice} networkError={networkError} />
                 <IonRouterOutlet>
                   <Route exact path="/realtime">
-                    <Realtime appData={appData} />
+                    <Realtime
+                      appData={appData}
+                      appTempData={appTempData}
+                      setAppTempData={setAppTempData}
+                    />
                   </Route>
                   <Route exact path="/route">
-                    <RouteSearch appData={appData} appSettings={appSettings} />
+                    <RouteSearch
+                      appData={appData}
+                      appSettings={appSettings}
+                      appTempData={appTempData}
+                      setAppTempData={setAppTempData}
+                    />
                   </Route>
                   <Route exact path="/info">
                     <Info appData={appData} />
@@ -129,7 +149,11 @@ const App: React.FC<RouteComponentProps | any> = () => {
                     />
                   </Route>
                   <Route>
-                    <Realtime appData={appData} />
+                    <Realtime
+                      appData={appData}
+                      appTempData={appTempData}
+                      setAppTempData={setAppTempData}
+                    />
                   </Route>
                 </IonRouterOutlet>
                 <NavBar />

@@ -33,7 +33,9 @@ import { RiBusFill } from "react-icons/ri";
 const RouteSearch: React.FC<{
   appData: any;
   appSettings: any;
-}> = ({ appData, appSettings }) => {
+  appTempData: any;
+  setAppTempData: any;
+}> = ({ appData, appSettings, appTempData, setAppTempData }) => {
   const [routeMap, setRouteMap] = useState<any>([]);
   const [t] = useTranslation("global");
 
@@ -102,32 +104,52 @@ const RouteSearch: React.FC<{
     )
   ).filter((date) => (date ? !date.includes(",") : []));
 
-  const [routeSearchStart, setRouteSearchStart] = useState<string>("");
-  const [routeSearchDest, setRouteSearchDest] = useState<string>("");
-  const [departNow, setDepartNow] = useState<boolean>(true);
+  const [routeSearchStart, setRouteSearchStart] = useState<string>(
+    appTempData.searchStation?.routeSearchStart ?? ""
+  );
+  const [routeSearchDest, setRouteSearchDest] = useState<string>(
+    appTempData.searchStation?.routeSearchDest ?? ""
+  );
+  const [departNow, setDepartNow] = useState<boolean>(
+    appTempData.searchStation?.departNow ?? true
+  );
   const [selectWeekday, setSelectWeekday] = useState<string>(
-    "WK-" +
-      capitalizeFirstLetter(
-        new Date().toLocaleDateString("en-US", { weekday: "short" })
-      )
+    appTempData.searchStation?.selectWeekday ??
+      "WK-" +
+        capitalizeFirstLetter(
+          new Date().toLocaleDateString("en-US", { weekday: "short" })
+        )
   );
   const [selectDate, setSelectDate] = useState<string>(
-    new Date().getDay() === 0
-      ? "HD"
-      : TravelDateOptions && TravelDateOptions[0]
-      ? TravelDateOptions[0]
-      : ""
+    appTempData.searchStation?.selectDate ??
+      (new Date().getDay() === 0
+        ? "HD"
+        : TravelDateOptions && TravelDateOptions[0]
+        ? TravelDateOptions[0]
+        : "")
   );
   const [selectHour, setSelectHour] = useState<string>(
-    new Date().getHours().toString().padStart(2, "0")
+    appTempData.searchStation?.selectHour ??
+      new Date().getHours().toString().padStart(2, "0")
   );
   const [selectMinute, setSelectMinute] = useState<string>(
-    (Math.floor(new Date().getMinutes() / 5) * 5).toString().padStart(2, "0")
+    appTempData.searchStation?.selectMinute ??
+      (Math.floor(new Date().getMinutes() / 5) * 5).toString().padStart(2, "0")
   );
 
   const [routeResult, setRouteResult] = useState<any>([]);
 
   const generateRouteResult = () => {
+    setAppTempData("searchStation", {
+      routeSearchStart,
+      routeSearchDest,
+      departNow,
+      selectWeekday,
+      selectDate,
+      selectHour,
+      selectMinute,
+    });
+
     setRouteResult(
       calculateRoute(
         t,

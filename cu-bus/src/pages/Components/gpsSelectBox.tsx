@@ -47,7 +47,7 @@ class SelectIcon extends Component<gpsSelectIconProps> {
 
     return (
       <>
-        <div class="gpsIcon">
+        <div className="gpsIcon">
           <LuLocateFixed
             className="image-wrapper"
             id="Dest-GPS-box"

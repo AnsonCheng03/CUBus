@@ -24,12 +24,7 @@ const NavBar: React.FC = () => {
   ) => {
     return (
       <li>
-        <IonItem
-          routerLink={link}
-          routerDirection="forward"
-          detail={false}
-          // routerAnimation={createAnimation().duration(1000).addAnimation()}
-        >
+        <IonItem routerLink={link} routerDirection="root" detail={false}>
           <div
             className={`navLink
                ${
