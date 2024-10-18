@@ -554,7 +554,7 @@ footer h2 {
     grid-template-columns: 1fr 1fr;
     gap: 5%;
     padding: calc(85px + 1% + env(safe-area-inset-top)) 5% 0 5%;
-    padding: calc(85px + 1%+ constant(safe-area-inset-top)) 5% 0 5%;
+    padding: calc(85px + 1% + constant(safe-area-inset-top)) 5% 0 5%;
   }
 
   .route-search-form,
