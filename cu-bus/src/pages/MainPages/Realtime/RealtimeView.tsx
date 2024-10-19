@@ -32,10 +32,9 @@ const Realtime: React.FC<{
   const [realtimeResult, setRealtimeResult] = useState<any>([]);
   const [routeMap, setRouteMap] = useState<any>([]);
 
-  const bus: BusData = appData?.bus;
   let allBusStop: string[] = [];
   try {
-    const stops = Object.values(bus).flatMap((busData) =>
+    const stops = Object.values(appData?.bus as BusData).flatMap((busData) =>
       busData.stations?.name.filter((stop) => stop !== undefined)
     );
     allBusStop = Array.from(
@@ -49,7 +48,13 @@ const Realtime: React.FC<{
     stationName: string = realtimeDest,
     log = true
   ) => {
-    await generateRouteResult(t, bus, appData, stationName, setRealtimeResult);
+    await generateRouteResult(
+      t,
+      appData?.bus,
+      appData,
+      stationName,
+      setRealtimeResult
+    );
 
     if (log) {
       console.log("Realtime request for", stationName);
@@ -63,17 +68,12 @@ const Realtime: React.FC<{
   }, [realtimeDest]);
 
   useEffect(() => {
+    generateResult(realtimeDest);
+  }, [appData]);
+
+  useEffect(() => {
     generateResult(defaultSelectedStation);
   }, []);
-
-  async function handleRefresh(): Promise<void> {
-    await generateResult(realtimeDest);
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(void 0);
-      }, 1000);
-    });
-  }
 
   return (
     <div className="realtime-page">
@@ -117,51 +117,49 @@ const Realtime: React.FC<{
         <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
 
         <div className="bus-grid">
-          <PullToRefresh onRefresh={handleRefresh} pullingContent="">
-            {realtimeResult.length === 0 ? (
-              <div className="no-bus">
-                <div className="no-bus-icon">
-                  <i className="fa-solid fa-ban"></i>
-                </div>
-                <p>{t("No-bus-time")}</p>
+          {realtimeResult.length === 0 ? (
+            <div className="no-bus">
+              <div className="no-bus-icon">
+                <i className="fa-solid fa-ban"></i>
               </div>
-            ) : (
-              realtimeResult.slice(0, 10).map((bus: any) => {
-                return (
-                  <div
-                    className={"bus-row" + (bus.arrived ? " arrived" : "")}
-                    onClick={() => {
-                      setRouteMap([
-                        bus.nextStation.route,
-                        bus.nextStation.startIndex,
-                      ]);
-                    }}
-                    key={bus.busno + bus.time}
-                  >
-                    <div className="bus-info">
-                      <span className="bus-name">{bus.busno}</span>
-                      <span className="direction">{bus.direction}</span>
-                    </div>
-                    <div className="next-station-display">
-                      <p className="next-station-text">{t("next-station")}</p>
-                      {bus.nextStation && (
-                        <p className="next-station">
-                          {t(bus.nextStation.stationName)}
-                        </p>
-                      )}
-                      {bus.warning && (
-                        <>
-                          <span></span>
-                          <span className="warning">{t(bus.warning)}</span>
-                        </>
-                      )}
-                    </div>
-                    <div className="arrival-time">{bus.time}</div>
+              <p>{t("No-bus-time")}</p>
+            </div>
+          ) : (
+            realtimeResult.slice(0, 10).map((bus: any) => {
+              return (
+                <div
+                  className={"bus-row" + (bus.arrived ? " arrived" : "")}
+                  onClick={() => {
+                    setRouteMap([
+                      bus.nextStation.route,
+                      bus.nextStation.startIndex,
+                    ]);
+                  }}
+                  key={bus.busno + bus.time}
+                >
+                  <div className="bus-info">
+                    <span className="bus-name">{bus.busno}</span>
+                    <span className="direction">{bus.direction}</span>
                   </div>
-                );
-              })
-            )}
-          </PullToRefresh>
+                  <div className="next-station-display">
+                    <p className="next-station-text">{t("next-station")}</p>
+                    {bus.nextStation && (
+                      <p className="next-station">
+                        {t(bus.nextStation.stationName)}
+                      </p>
+                    )}
+                    {bus.warning && (
+                      <>
+                        <span></span>
+                        <span className="warning">{t(bus.warning)}</span>
+                      </>
+                    )}
+                  </div>
+                  <div className="arrival-time">{bus.time}</div>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
     </div>
