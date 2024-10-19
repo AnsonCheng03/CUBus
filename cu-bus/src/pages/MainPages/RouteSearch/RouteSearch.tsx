@@ -39,38 +39,14 @@ const RouteSearch: React.FC<{
   const [routeMap, setRouteMap] = useState<any>([]);
   const [t] = useTranslation("global");
 
-  const bus: BusData = appData?.bus;
-  const busSchedule = appData["timetable.json"];
-  const busServices = appData["Status.json"];
-
-  const busServiceKeys = Object.keys(busServices);
-  const currentBusServices =
-    busServiceKeys.length > 0
-      ? busServices[busServiceKeys[busServiceKeys.length - 1]]
-      : [];
-  const thirtyMinBusService =
-    busServiceKeys.length >= 60
-      ? busServices[busServiceKeys[busServiceKeys.length - 60]]
-      : [];
-
   // need double check realtime side
   let fetchError = false;
-  let filteredBus = { ...bus };
-  if (busServices["ERROR"]) {
-    fetchError = true;
-  } else {
-    filteredBus = processBusStatus(
-      currentBusServices,
-      thirtyMinBusService,
-      filteredBus
-    );
-  }
 
   let allBuildings: string[] = [];
   let translatedBuildings: string[] = [];
 
   try {
-    const stops = Object.values(bus).flatMap((busData) =>
+    const stops = Object.values(appData?.bus as BusData).flatMap((busData) =>
       busData.stations?.name.filter((stop) => stop !== undefined)
     );
     const buildings = Object.values(appData.station).flatMap((building: any) =>
@@ -98,7 +74,7 @@ const RouteSearch: React.FC<{
 
   const TravelDateOptions = Array.from(
     new Set(
-      Object.values(bus)
+      Object.values(appData.bus as BusData)
         .map((b) => b.schedule?.[3])
         .filter(Boolean)
     )
@@ -150,6 +126,28 @@ const RouteSearch: React.FC<{
       selectMinute,
     });
 
+    const busServices = appData["Status.json"];
+    const busServiceKeys = Object.keys(busServices);
+    const currentBusServices =
+      busServiceKeys.length > 0
+        ? busServices[busServiceKeys[busServiceKeys.length - 1]]
+        : [];
+    const thirtyMinBusService =
+      busServiceKeys.length >= 60
+        ? busServices[busServiceKeys[busServiceKeys.length - 60]]
+        : [];
+
+    let filteredBus = { ...appData.bus };
+    if (busServices["ERROR"]) {
+      fetchError = true;
+    } else {
+      filteredBus = processBusStatus(
+        currentBusServices,
+        thirtyMinBusService,
+        filteredBus
+      );
+    }
+
     setRouteResult(
       calculateRoute(
         t,
@@ -163,7 +161,7 @@ const RouteSearch: React.FC<{
         departNow,
         filteredBus,
         appData?.station,
-        busSchedule,
+        appData["timetable.json"],
         appSettings
       )
     );

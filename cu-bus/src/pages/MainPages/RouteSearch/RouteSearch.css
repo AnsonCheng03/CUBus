@@ -610,7 +610,7 @@ footer h2 {
 
   .route-search-form-container {
     background-color: transparent;
-    padding: 30px 3% 50px 3%;
+    padding: 0 3% 50px 3%;
   }
 
   .route-search-form-container::after {
