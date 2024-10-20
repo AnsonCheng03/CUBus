@@ -30,7 +30,7 @@ interface DownloadFilesProps {
 }
 
 const baseUrl =
-  "https://beta.cu-bus.online/Essential/functions/getClientData.php";
+  "https://cu-bus.online/api/Essential/functions/getClientData.php";
 // "http://localhost:8080/Essential/functions/getClientData.php";
 
 interface ServerResponse {
