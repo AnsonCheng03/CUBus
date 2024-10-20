@@ -15,7 +15,7 @@
     "dev:mobile": "ionic capacitor sync && ionic capacitor open",
     "dev:iOS": "ionic capacitor sync && open ios/App/App.xcworkspace",
     "dev:android": "ionic capacitor sync && ionic capacitor open android",
-    "gh-pages": "tsc && vite build && gh-pages -d build"
+    "gh-pages": "tsc && vite build && gh-pages -d dist"
   },
   "dependencies": {
     "@capacitor/android": "6.1.2",

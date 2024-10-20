@@ -26,8 +26,6 @@ jobs:
           cache: "npm"
       - name: Install Packages
         run: npm ci
-      - name: Make Build Directory
-        run: mkdir build
       - name: Build
         run: npm run gh-pages
       #- name: Test
