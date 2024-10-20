@@ -63,6 +63,7 @@ ion-modal#schoolBusPermitShowModal .cardImg {
   display: flex;
   justify-content: center;
   align-items: center;
+  max-width: calc(700px / 395 * 622 * 0.8);
 }
 
 .cardImg img {

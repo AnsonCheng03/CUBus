@@ -105,6 +105,17 @@ ion-modal#GPSModal .loading-image-wrapper {
   align-items: center;
 }
 
+.bus-offline {
+  background-color: #ddd;
+  margin: 10px 20px;
+  padding: 10px;
+  border-radius: 5px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
 #details-box-heading {
   display: inline;
   color: #fff;

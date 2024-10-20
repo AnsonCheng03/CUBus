@@ -129,6 +129,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
                       appData={appData}
                       appTempData={appTempData}
                       setAppTempData={setAppTempData}
+                      networkError={networkError}
                     />
                   </Route>
                   <Route exact path="/route">
@@ -137,6 +138,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
                       appSettings={appSettings}
                       appTempData={appTempData}
                       setAppTempData={setAppTempData}
+                      networkError={networkError}
                     />
                   </Route>
                   <Route exact path="/permit">
@@ -157,6 +159,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
                       appData={appData}
                       appTempData={appTempData}
                       setAppTempData={setAppTempData}
+                      networkError={networkError}
                     />
                   </Route>
                 </IonRouterOutlet>

@@ -30,8 +30,8 @@ interface DownloadFilesProps {
 }
 
 const baseUrl =
-  "https://beta.cu-bus.online/Essential/functions/getClientData.php";
-// "http://localhost:8080/Essential/functions/getClientData.php";
+  // "https://beta.cu-bus.online/Essential/functions/getClientData.php";
+  "http://localhost:8080/Essential/functions/getClientData.php";
 
 interface ServerResponse {
   bus?: any;
@@ -145,6 +145,10 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
               timeout: 10000,
             });
 
+      if (!networkError) {
+        setNetworkError(false);
+      }
+
       // Process all data, whether it's newly downloaded or existing
       let translateHandled = false;
       for (let table in serverDates) {
@@ -206,7 +210,6 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
 
         // Process and store the data
         if (tableData) {
-          setNetworkError(false);
           await processTableData(table, tableData, networkError);
         }
       }

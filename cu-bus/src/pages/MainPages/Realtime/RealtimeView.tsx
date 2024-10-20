@@ -19,12 +19,20 @@ import "../assets/routeComp.css";
 import { generateRouteResult, BusData } from "../../Functions/getRealTime";
 import RouteMap from "../../Components/routeMap";
 import PullToRefresh from "react-simple-pull-to-refresh";
+import { alertOutline, alertSharp } from "ionicons/icons";
+import { RiAlertFill } from "react-icons/ri";
 
 const Realtime: React.FC<{
   appData: any;
   setUserSetRealtimeDest: any;
   defaultSelectedStation: string;
-}> = ({ appData, setUserSetRealtimeDest, defaultSelectedStation }) => {
+  networkError: boolean;
+}> = ({
+  appData,
+  setUserSetRealtimeDest,
+  defaultSelectedStation,
+  networkError,
+}) => {
   const [t, i18n] = useTranslation("global");
   const [realtimeDest, setRealtimeDest] = useState<string>(
     defaultSelectedStation
@@ -116,6 +124,12 @@ const Realtime: React.FC<{
       <div className="realtimeresult">
         <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
 
+        {networkError === true && (
+          <div className="bus-offline">
+            <RiAlertFill className="bus-offline-icon" />
+            {t("internet_offline")}
+          </div>
+        )}
         <div className="bus-grid">
           {realtimeResult.length === 0 ? (
             <div className="no-bus">

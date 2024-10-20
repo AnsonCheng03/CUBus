@@ -28,14 +28,15 @@ import { RouteSelect } from "../../Components/selectRouteForm";
 import { calculateRoute } from "../../Functions/getRoute";
 import LocationTimeChooser from "./RouteSearchFormTime";
 import PullToRefresh from "react-simple-pull-to-refresh";
-import { RiBusFill } from "react-icons/ri";
+import { RiAlertFill, RiBusFill } from "react-icons/ri";
 
 const RouteSearch: React.FC<{
   appData: any;
   appSettings: any;
   appTempData: any;
   setAppTempData: any;
-}> = ({ appData, appSettings, appTempData, setAppTempData }) => {
+  networkError: boolean;
+}> = ({ appData, appSettings, appTempData, setAppTempData, networkError }) => {
   const [routeMap, setRouteMap] = useState<any>([]);
   const [t] = useTranslation("global");
 
@@ -311,6 +312,12 @@ if (isset($buserrstat["suspended"]))
         <div className="routeresult">
           <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
 
+          {networkError === true && (
+            <div className="bus-offline">
+              <RiAlertFill className="bus-offline-icon" />
+              {t("internet_offline")}
+            </div>
+          )}
           {fetchError && (
             <div
               id="time-now"
@@ -321,7 +328,10 @@ if (isset($buserrstat["suspended"]))
             </div>
           )}
           {routeResult.samestation && (
-            <p className="samestation-info">{t("samestation-info")}</p>
+            <div className="bus-offline">
+              <RiAlertFill className="bus-offline-icon" />
+              {t("samestation-info")}
+            </div>
           )}
 
           <PullToRefresh onRefresh={handleRefresh} pullingContent="">

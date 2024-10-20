@@ -17,7 +17,8 @@ const Realtime: React.FC<{
   appData: any;
   appTempData: any;
   setAppTempData: any;
-}> = ({ appData, appTempData, setAppTempData }) => {
+  networkError: boolean;
+}> = ({ appData, appTempData, setAppTempData, networkError }) => {
   const [t] = useTranslation("global");
   const [userSetRealtimeDest, setUserSetRealtimeDest] = useState<string | null>(
     null
@@ -56,6 +57,7 @@ const Realtime: React.FC<{
           appData={appData}
           setUserSetRealtimeDest={setRealtimeStation}
           defaultSelectedStation={userSetRealtimeDest}
+          networkError={networkError}
         />
       ) : (
         <LoadingImage />
