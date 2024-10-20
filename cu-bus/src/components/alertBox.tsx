@@ -76,8 +76,7 @@ const AlertToast: React.FC<{
 
 const AlertBox: React.FC<{
   notice: any;
-  networkError: boolean;
-}> = ({ notice, networkError }) => {
+}> = ({ notice }) => {
   // instead return the first notice
   const { i18n } = useTranslation("global");
   const lang = i18n.language === "zh" ? 0 : 1;
@@ -116,19 +115,6 @@ const AlertBox: React.FC<{
             />
           ))
         : null}
-
-      {/* <AlertToast
-        Index={-1}
-        NoticeIndex={networkError ? 0 : -1}
-        content={
-          lang === 0
-            ? "網絡錯誤，無法取得實時資料，請檢查網絡連接。"
-            : "Network error, realtime feature is not available. Please check your network connection."
-        }
-        position="bottom"
-        type="warning"
-        dismissButton={false}
-      /> */}
     </>
   );
 };
