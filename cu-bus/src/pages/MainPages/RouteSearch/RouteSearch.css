@@ -252,7 +252,7 @@ ion-modal#timeSelectorModal ion-picker {
   top: 100%;
   left: 0;
   right: 0;
-  max-height: 50vh;
+  max-height: calc((100vh - 50px) * 0.4 - 75px);
   overflow: scroll;
 }
 

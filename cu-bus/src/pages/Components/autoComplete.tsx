@@ -99,6 +99,9 @@ class AutoComplete extends Component<AutoCompleteProps> {
 
   componentDidMount() {
     if (this.inputRef.current) {
+      // const priorityStationsFiltered = allBuildings.filter((value) =>
+      //   priorityStations.includes(value)
+      // );
       // Initialize the autocomplete function when the component mounts
       autocomplete(this.inputRef.current, this.props.allBuildings, this.props);
     }

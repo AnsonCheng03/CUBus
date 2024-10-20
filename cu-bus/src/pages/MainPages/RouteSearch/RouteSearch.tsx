@@ -56,10 +56,12 @@ const RouteSearch: React.FC<{
 
     allBuildings = Array.from(
       new Set([
-        ...stops.filter((stop): stop is string => stop !== undefined),
-        ...buildings.filter((stop): stop is string => stop !== undefined),
+        ...stops.filter((stop): stop is string => stop !== undefined).sort(),
+        ...buildings
+          .filter((stop): stop is string => stop !== undefined)
+          .sort(),
       ])
-    ).sort();
+    );
 
     translatedBuildings = allBuildings
       .map((building) => {
