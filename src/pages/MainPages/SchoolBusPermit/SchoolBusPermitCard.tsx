@@ -170,6 +170,7 @@ const SchoolBusPermitCard: React.FC<{
                       <span
                         className={busMode}
                         key={route}
+                        // @ts-ignore
                         style={{ background: busRoutes[busMode][route] }}
                       >
                         {route}

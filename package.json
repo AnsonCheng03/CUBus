@@ -12,7 +12,8 @@
     "lint": "eslint",
     "gen": "ionic generate",
     "dev:mobile": "ionic capacitor sync && ionic capacitor open",
-    "dev:iOS": "ionic capacitor sync && open ios/App/App.xcworkspace"
+    "dev:iOS": "ionic capacitor sync && open ios/App/App.xcworkspace",
+    "dev:android": "ionic capacitor sync && ionic capacitor open android"
   },
   "dependencies": {
     "@capacitor/android": "6.1.2",
