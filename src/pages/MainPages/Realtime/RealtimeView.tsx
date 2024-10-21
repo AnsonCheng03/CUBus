@@ -8,7 +8,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import { GPSSelectIcon } from "../../Components/gpsSelectBox";
-import busMoving from "../../../assets/busMoving.gif";
+import BusMovingImage from "../../Components/busMovingImage";
 
 import { FaBus } from "react-icons/fa";
 import { IconoirProvider, BusStop } from "iconoir-react";
@@ -86,9 +86,7 @@ const Realtime: React.FC<{
   return (
     <div className="realtime-page">
       <form className="stopselector" method="POST">
-        <div className="busMovingImageRoute">
-          <img src={busMoving} alt="bus" />
-        </div>
+        <BusMovingImage />
         <div className="searchStopSelector">
           <span>
             <IconoirProvider
