@@ -101,9 +101,9 @@ const Settings: React.FC<{
           </IonList>
 
           <IonList inset={true}>
-            <IonItem onClick={() => window.open("https://payme.hsbc/anson03")}>
+            {/* <IonItem onClick={() => window.open("https://payme.hsbc/anson03")}>
               <IonLabel>{t("Support-btn")}</IonLabel>
-            </IonItem>
+            </IonItem> */}
             <IonItem
               onClick={() => window.open("https://github.com/AnsonCheng03")}
             >
