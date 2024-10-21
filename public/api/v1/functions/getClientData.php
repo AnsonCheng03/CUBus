@@ -129,12 +129,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     if (in_array('station', $outdatedTables)) {
         $station = array();
-        $stmt = $conn->prepare("SELECT * FROM station");
+
+        // Updated SQL query with the new logic
+        $stmt = $conn->prepare("
+        SELECT s.建築物, 
+        CASE 
+            WHEN s.Area IS NOT NULL THEN gs.Station
+            ELSE s.最近之車站
+        END AS 最近之車站
+        FROM station s
+        LEFT JOIN groupedStation gs
+        ON s.Area = gs.Area
+    ");
+
         $stmt->execute();
         $result = $stmt->get_result();
         while ($row = $result->fetch_assoc()) {
+            // Store data in the array, same as before
             $station[$row['最近之車站']][] = $row['建築物'];
         }
+
+        // Save the output
         $output['station'] = $station;
     }
 

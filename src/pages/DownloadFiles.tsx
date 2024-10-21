@@ -30,8 +30,8 @@ interface DownloadFilesProps {
 }
 
 const baseUrl =
-  "https://cu-bus.online/api/Essential/functions/getClientData.php";
-// "http://localhost:8080/Essential/functions/getClientData.php";
+  // "http://localhost:8080/api/v1/functions/getClientData.php";
+  "https://cu-bus.online/api/v1/functions/getClientData.php";
 
 interface ServerResponse {
   bus?: any;
@@ -101,7 +101,11 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
       console.error(error);
       // check error type if its network error or server error
       if (
+        error.code === "ERR_BAD_REQUEST" ||
+        error.code === "ECONNREFUSED" ||
+        error.code === "ECONNRESET" ||
         error.message === "Network Error" ||
+        error.code === "ECONNABORTED" ||
         error.message.includes("timeout")
       ) {
         // use fallback data

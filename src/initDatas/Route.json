@@ -1,4 +1,60 @@
 {
+  "1A": {
+    "schedule": [
+      "07:30",
+      "18:40",
+      "20, 40",
+      "TD,NT",
+      "WK-Mon,WK-Tue,WK-Wed,WK-Thu,WK-Fri,WK-Sat",
+      ""
+    ],
+    "colorCode": "rgb(225,222,73)",
+    "stations": {
+      "name": ["MTR", "SPORTC", "SHAWHALL", "UADM", "SHHC", "MTR"],
+      "attr": ["NULL", "NULL", "NULL", "NULL", "NULL", "NULL"],
+      "time": [
+        111.007334, 108.7644112, 106.038633597876, 143.910911310229,
+        109.9029142, 0
+      ]
+    }
+  },
+  "1B": {
+    "schedule": [
+      "08:00",
+      "18:00",
+      "00",
+      "TD,NT",
+      "WK-Mon,WK-Tue,WK-Wed,WK-Thu,WK-Fri,WK-Sat",
+      ""
+    ],
+    "colorCode": "rgb(225,222,73)",
+    "stations": {
+      "name": [
+        "MTR",
+        "JCPH",
+        "SPORTC",
+        "SHAWHALL",
+        "UADM",
+        "SHHC",
+        "JCPH",
+        "MTR"
+      ],
+      "attr": [
+        "NULL",
+        "UPPERST",
+        "NULL",
+        "NULL",
+        "NULL",
+        "NULL",
+        "DOWNST",
+        "NULL"
+      ],
+      "time": [
+        130.075935260388, 98.06716891, 109.5625311, 106.387098134767,
+        146.0061792, 97.0736078282444, 140.7337043, 0
+      ]
+    }
+  },
   "2": {
     "schedule": [
       "07:45",
@@ -8,6 +64,7 @@
       "WK-Mon,WK-Tue,WK-Wed,WK-Thu,WK-Fri,WK-Sat",
       ""
     ],
+    "colorCode": "rgb(235,112,201)",
     "stations": {
       "name": [
         "MTRP",
@@ -37,6 +94,47 @@
       ]
     }
   },
+  "2#": {
+    "schedule": [
+      "07:45",
+      "18:45",
+      "00, 45",
+      "TD,NT",
+      "WK-Mon,WK-Tue,WK-Wed,WK-Thu,WK-Fri,WK-Sat",
+      ""
+    ],
+    "colorCode": "rgb(235,112,201)",
+    "stations": {
+      "name": [
+        "MTRP",
+        "SPORTC",
+        "SHAWHALL",
+        "FKHB",
+        "UC",
+        "NAC",
+        "UC",
+        "UADM",
+        "SHHC",
+        "MTR"
+      ],
+      "attr": [
+        "NULL",
+        "NULL",
+        "NULL",
+        "NULL",
+        "UPPERST",
+        "NULL",
+        "DOWNST",
+        "NULL",
+        "NULL",
+        "NULL"
+      ],
+      "time": [
+        162.511899867848, 120.6658979, 90.03217167, 218.8077325, 84.08508945,
+        66.4929646, 92.55796198, 152.4176838, 105.243766500931, 0
+      ]
+    }
+  },
   "3": {
     "schedule": [
       "09:00",
@@ -46,6 +144,7 @@
       "WK-Mon,WK-Tue,WK-Wed,WK-Thu,WK-Fri,WK-Sat",
       ""
     ],
+    "colorCode": "rgb(162,184,99)",
     "stations": {
       "name": [
         "YIAP",
@@ -97,6 +196,7 @@
       "WK-Mon,WK-Tue,WK-Wed,WK-Thu,WK-Fri,WK-Sat",
       ""
     ],
+    "colorCode": "rgb(231,155,89)",
     "stations": {
       "name": [
         "YIAP",
@@ -148,6 +248,7 @@
       "WK-Mon,WK-Tue,WK-Wed,WK-Thu,WK-Fri,WK-Sat",
       ""
     ],
+    "colorCode": "rgb(188,216,226)",
     "stations": {
       "name": [
         "CCTEA",
@@ -177,6 +278,65 @@
       ]
     }
   },
+  "6A": {
+    "schedule": [
+      "09:10",
+      "17:10",
+      "10",
+      "TD",
+      "WK-Mon,WK-Tue,WK-Wed,WK-Thu,WK-Fri,WK-Sat",
+      ""
+    ],
+    "colorCode": "rgb(124,145,73)",
+    "stations": {
+      "name": [
+        "CWCC",
+        "UCSR",
+        "CCHH",
+        "RESI34",
+        "NAC",
+        "UC",
+        "UADM",
+        "SHHC",
+        "MTRP",
+        "CCTEA"
+      ],
+      "attr": [
+        "DOWNST",
+        "NULL",
+        "NULL",
+        "DOWNST",
+        "NULL",
+        "DOWNST",
+        "NULL",
+        "NULL",
+        "NULL",
+        "NULL"
+      ],
+      "time": [
+        79.15145914, 59.46052583, 60.83817292, 84.9123004, 72.77838558,
+        104.955181, 130.4824355, 141.03864395, 53.77101378, 0
+      ]
+    }
+  },
+  "6B": {
+    "schedule": [
+      "12:20",
+      "17:20",
+      "20",
+      "TD",
+      "WK-Mon,WK-Tue,WK-Wed,WK-Thu,WK-Fri",
+      ""
+    ],
+    "colorCode": "rgb(132,167,217)",
+    "stations": {
+      "name": ["NAC", "UC", "UADM", "SHHC", "MTRP", "CCTEA"],
+      "attr": ["NULL", "DOWNST", "NULL", "NULL", "NULL", "NULL"],
+      "time": [
+        72.87519861, 105.3187312, 130.081619, 140.6760357, 69.61871424, 0
+      ]
+    }
+  },
   "7": {
     "schedule": [
       "08:18",
@@ -186,6 +346,7 @@
       "WK-Mon,WK-Tue,WK-Wed,WK-Thu,WK-Fri,WK-Sat",
       ""
     ],
+    "colorCode": "rgb(191,191,191)",
     "stations": {
       "name": ["SHAWC", "RESI34", "NAC", "UC", "UADM", "SHHC", "MTRP", "CCTEA"],
       "attr": [
@@ -213,6 +374,7 @@
       "WK-Mon,WK-Tue,WK-Wed,WK-Thu,WK-Fri,WK-Sat",
       "只有教學日 Teaching Days only"
     ],
+    "colorCode": "rgb(245,191,90)",
     "stations": {
       "name": [
         "AREA39",
@@ -257,157 +419,6 @@
       ]
     }
   },
-  "1A": {
-    "schedule": [
-      "07:30",
-      "18:40",
-      "20, 40",
-      "TD,NT",
-      "WK-Mon,WK-Tue,WK-Wed,WK-Thu,WK-Fri,WK-Sat",
-      ""
-    ],
-    "stations": {
-      "name": ["MTR", "SPORTC", "SHAWHALL", "UADM", "SHHC", "MTR"],
-      "attr": ["NULL", "NULL", "NULL", "NULL", "NULL", "NULL"],
-      "time": [
-        111.007334, 108.7644112, 106.038633597876, 143.910911310229,
-        109.9029142, 0
-      ]
-    }
-  },
-  "1B": {
-    "schedule": [
-      "08:00",
-      "18:00",
-      "00",
-      "TD,NT",
-      "WK-Mon,WK-Tue,WK-Wed,WK-Thu,WK-Fri,WK-Sat",
-      ""
-    ],
-    "stations": {
-      "name": [
-        "MTR",
-        "JCPH",
-        "SPORTC",
-        "SHAWHALL",
-        "UADM",
-        "SHHC",
-        "JCPH",
-        "MTR"
-      ],
-      "attr": [
-        "NULL",
-        "UPPERST",
-        "NULL",
-        "NULL",
-        "NULL",
-        "NULL",
-        "DOWNST",
-        "NULL"
-      ],
-      "time": [
-        130.075935260388, 98.06716891, 109.5625311, 106.387098134767,
-        146.0061792, 97.0736078282444, 140.7337043, 0
-      ]
-    }
-  },
-  "2#": {
-    "schedule": [
-      "07:45",
-      "18:45",
-      "00, 45",
-      "TD,NT",
-      "WK-Mon,WK-Tue,WK-Wed,WK-Thu,WK-Fri,WK-Sat",
-      ""
-    ],
-    "stations": {
-      "name": [
-        "MTRP",
-        "SPORTC",
-        "SHAWHALL",
-        "FKHB",
-        "UC",
-        "NAC",
-        "UC",
-        "UADM",
-        "SHHC",
-        "MTR"
-      ],
-      "attr": [
-        "NULL",
-        "NULL",
-        "NULL",
-        "NULL",
-        "UPPERST",
-        "NULL",
-        "DOWNST",
-        "NULL",
-        "NULL",
-        "NULL"
-      ],
-      "time": [
-        162.511899867848, 120.6658979, 90.03217167, 218.8077325, 84.08508945,
-        66.4929646, 92.55796198, 152.4176838, 105.243766500931, 0
-      ]
-    }
-  },
-  "6A": {
-    "schedule": [
-      "09:10",
-      "17:10",
-      "10",
-      "TD",
-      "WK-Mon,WK-Tue,WK-Wed,WK-Thu,WK-Fri,WK-Sat",
-      ""
-    ],
-    "stations": {
-      "name": [
-        "CWCC",
-        "UCSR",
-        "CCHH",
-        "RESI34",
-        "NAC",
-        "UC",
-        "UADM",
-        "SHHC",
-        "MTRP",
-        "CCTEA"
-      ],
-      "attr": [
-        "DOWNST",
-        "NULL",
-        "NULL",
-        "DOWNST",
-        "NULL",
-        "DOWNST",
-        "NULL",
-        "NULL",
-        "NULL",
-        "NULL"
-      ],
-      "time": [
-        79.15145914, 59.46052583, 60.83817292, 84.9123004, 72.77838558,
-        104.955181, 130.4824355, 141.03864395, 53.77101378, 0
-      ]
-    }
-  },
-  "6B": {
-    "schedule": [
-      "12:20",
-      "17:20",
-      "20",
-      "TD",
-      "WK-Mon,WK-Tue,WK-Wed,WK-Thu,WK-Fri",
-      ""
-    ],
-    "stations": {
-      "name": ["NAC", "UC", "UADM", "SHHC", "MTRP", "CCTEA"],
-      "attr": ["NULL", "DOWNST", "NULL", "NULL", "NULL", "NULL"],
-      "time": [
-        72.87519861, 105.3187312, 130.081619, 140.6760357, 69.61871424, 0
-      ]
-    }
-  },
   "8#": {
     "schedule": [
       "07:40",
@@ -417,6 +428,7 @@
       "WK-Mon,WK-Tue,WK-Wed,WK-Thu,WK-Fri,WK-Sat",
       "只有非教學日 Non-Teaching days only"
     ],
+    "colorCode": "rgb(245,191,90)",
     "stations": {
       "name": [
         "AREA39",
@@ -473,6 +485,7 @@
       "WK-Mon,WK-Tue,WK-Wed,WK-Thu,WK-Fri,WK-Sat,WK-Sun",
       ""
     ],
+    "colorCode": "rgb(140,27,149)",
     "stations": {
       "name": [
         "MTR",
@@ -533,6 +546,7 @@
       "WK-Mon,WK-Tue,WK-Wed,WK-Thu,WK-Fri,WK-Sat,WK-Sun",
       ""
     ],
+    "colorCode": "rgb(140,27,149)",
     "stations": {
       "name": [
         "MTR",
@@ -600,6 +614,7 @@
       "WK-Mon,WK-Tue,WK-Wed,WK-Thu,WK-Fri,WK-Sat",
       ""
     ],
+    "colorCode": "rgb(174,162,195)",
     "stations": {
       "name": [
         "MTR",
@@ -660,6 +675,7 @@
       "WK-Mon,WK-Tue,WK-Wed,WK-Thu,WK-Fri,WK-Sat",
       ""
     ],
+    "colorCode": "rgb(174,162,195)",
     "stations": {
       "name": [
         "MTR",

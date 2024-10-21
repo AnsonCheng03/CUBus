@@ -487,7 +487,8 @@ footer h2 {
   color: #aaa;
   margin: 0;
   text-align: right;
-  overflow: hidden;
+  display: flex;
+  justify-content: end;
 }
 
 .route-result-busno-details-totaltime-text {

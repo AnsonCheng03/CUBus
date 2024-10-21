@@ -75,6 +75,8 @@ const RouteSearch: React.FC<{
     console.error(e);
   }
 
+  console.log(appData);
+
   const TravelDateOptions = Array.from(
     new Set(
       Object.values(appData.bus as BusData)
