@@ -450,6 +450,7 @@ export const calculateRoute = (
             timeDisplay: busArray.timeused,
             routeIndex: busArray.routeIndex,
             arrivalTime: busArray.arrivalTime,
+            config: busData.config || {},
           });
         });
       }

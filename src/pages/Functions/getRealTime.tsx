@@ -20,6 +20,7 @@ export interface BusData {
       prevstatus: string | null;
     };
     warning?: string;
+    colorCode?: string;
   };
 }
 
@@ -88,7 +89,8 @@ const getScheduledTimes = (
   currtime: string,
   nowtime: string,
   warning: string | false,
-  nextStation: any
+  nextStation: any,
+  config: { colorCode: string }
 ) => {
   const scheduledTimes = [];
   for (const time of timetable) {
@@ -100,6 +102,7 @@ const getScheduledTimes = (
         arrived: time <= nowtime,
         warning,
         nextStation,
+        config,
       });
     }
   }
@@ -189,6 +192,7 @@ export const processAndSortBuses = (
           bus[busno]["stations"] ?? { name: [], attr: [] },
           stationname
         );
+
         allBuses.push(
           ...getScheduledTimes(
             t,
@@ -198,7 +202,10 @@ export const processAndSortBuses = (
             currtime,
             nowtime,
             warning,
-            nextStation
+            nextStation,
+            {
+              colorCode: bus[busno]["colorCode"] ?? "rgb(254, 250, 183)",
+            }
           )
         );
       }

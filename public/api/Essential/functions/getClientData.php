@@ -87,6 +87,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         while ($row = $result->fetch_assoc()) {
             $busno = $row['BUSNO'];
             $bus[$busno]["schedule"] = array($row['StartTime'], $row['EndTime'], $row['Period'], $row['Days'], $row['Weekdays'], $row['Warning']);
+            $bus[$busno]['colorCode'] = $row['colorCode'] ?? "rgb(254, 250, 183)";
             $stations = json_decode($row['Route'], true);
             foreach ($stations as $station) {
                 $bus[$busno]["stations"]["name"][] = $station[0];
