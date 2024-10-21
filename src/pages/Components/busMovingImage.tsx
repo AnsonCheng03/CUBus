@@ -28,6 +28,7 @@ export default class BusMovingImage extends Component<{}> {
     },
     disabled: false,
     animated: true,
+    intervalId: null as null | ReturnType<typeof setInterval>,
   };
 
   onStart = () => {
@@ -98,7 +99,7 @@ export default class BusMovingImage extends Component<{}> {
     let runningPercentage = 0;
     let totalRunningTime = 12;
     let interval = 250;
-    setInterval(() => {
+    this.state.intervalId = setInterval(() => {
       if (this.state.activeDrags > 0) {
         return;
       }
@@ -162,6 +163,12 @@ export default class BusMovingImage extends Component<{}> {
         runningPercentage = 0;
       }
     }, interval);
+  }
+
+  componentWillUnmount(): void {
+    if (this.state.intervalId) {
+      clearInterval(this.state.intervalId);
+    }
   }
 
   render() {
