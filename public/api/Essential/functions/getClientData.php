@@ -166,6 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         while ($row = $result->fetch_assoc()) {
             $GPS[$row['Location']]["Lat"] = $row['Lat'];
             $GPS[$row['Location']]["Lng"] = $row['Lng'];
+            $GPS[$row['Location']]["ImportantStation"] = $row['ImportantStation'];
         }
         $output['gps'] = $GPS;
     }

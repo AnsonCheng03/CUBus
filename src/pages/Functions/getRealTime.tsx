@@ -112,20 +112,28 @@ const getScheduledTimes = (
 const getNextStation = (
   t: TFunction,
   stations: { name: string[]; attr: string[] },
-  currentStation: string
+  currentStation: string,
+  importantStations?: string[]
 ) => {
   const [currentStationName, currentStationAttr] = currentStation.split("|");
+  const importantStationAfter: string[] = [];
   let foundIndex = -1;
 
   if (stations.name) {
     for (const [index, name] of stations.name.entries()) {
-      if (
-        name === currentStationName &&
-        (currentStationAttr == "" ||
-          stations.attr[index] === currentStationAttr)
-      ) {
-        foundIndex = index;
-        break;
+      if (foundIndex === -1) {
+        if (
+          name === currentStationName &&
+          (currentStationAttr == "" ||
+            stations.attr[index] === currentStationAttr)
+        ) {
+          foundIndex = index;
+        }
+      } else if (importantStations && importantStations.includes(name)) {
+        if (importantStationAfter.includes(name)) {
+          continue;
+        }
+        importantStationAfter.push(name);
       }
     }
   }
@@ -143,10 +151,15 @@ const getNextStation = (
     );
   });
 
+  for (const [index, name] of importantStationAfter.entries()) {
+    importantStationAfter[index] = t(name);
+  }
+
   return {
     route,
     stationName: stations.name[foundIndex + 1],
     startIndex: foundIndex,
+    importantStationAfter,
   };
 };
 
@@ -190,7 +203,8 @@ export const processAndSortBuses = (
         const nextStation = getNextStation(
           t,
           bus[busno]["stations"] ?? { name: [], attr: [] },
-          stationname
+          stationname,
+          pref?.importantStations
         );
 
         allBuses.push(
@@ -229,7 +243,8 @@ export const generateRouteResult = (
   bus: BusData,
   appData: any,
   searchStation: String | null = null,
-  setRealtimeResult: any
+  setRealtimeResult: any,
+  importantStations: string[]
 ) => {
   const busSchedule = appData["timetable.json"];
   const busServices = appData["Status.json"];
@@ -262,7 +277,9 @@ export const generateRouteResult = (
     )
   );
 
-  const allBuses = processAndSortBuses(t, outputSchedule, filteredBus);
+  const allBuses = processAndSortBuses(t, outputSchedule, filteredBus, {
+    importantStations,
+  });
   setRealtimeResult(allBuses);
   return allBuses;
 };

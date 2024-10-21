@@ -52,6 +52,10 @@ const Realtime: React.FC<{
     console.error(e);
   }
 
+  const importantStations = Object.keys(appData.GPS).filter(
+    (key) => appData.GPS[key].ImportantStation !== null
+  );
+
   const generateResult = async (
     stationName: string = realtimeDest,
     log = true
@@ -61,7 +65,8 @@ const Realtime: React.FC<{
       appData?.bus,
       appData,
       stationName,
-      setRealtimeResult
+      setRealtimeResult,
+      importantStations
     );
 
     if (log) {
@@ -154,12 +159,27 @@ const Realtime: React.FC<{
                     <span className="direction">{bus.direction}</span>
                   </div>
                   <div className="next-station-display">
-                    <p className="next-station-text">{t("next-station")}</p>
-                    {bus.nextStation && (
-                      <p className="next-station">
-                        {t(bus.nextStation.stationName)}
-                      </p>
-                    )}
+                    {bus.nextStation &&
+                      (bus.nextStation.importantStationAfter &&
+                      bus.nextStation.importantStationAfter.length > 0 ? (
+                        <>
+                          <p className="next-station-text">
+                            {t("next-important-station")}
+                          </p>
+                          <p className="next-station">
+                            {bus.nextStation.importantStationAfter.join(", ")}
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="next-station-text">
+                            {t("next-station")}
+                          </p>
+                          <p className="next-station">
+                            {t(bus.nextStation.stationName)}
+                          </p>
+                        </>
+                      ))}
                     {bus.warning && (
                       <>
                         <span></span>
