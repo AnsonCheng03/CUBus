@@ -167,7 +167,7 @@ const Realtime: React.FC<{
                             {t("next-important-station")}
                           </p>
                           <p className="next-station">
-                            {bus.nextStation.importantStationAfter.join(", ")}
+                            {bus.nextStation.importantStationAfter[0]}
                           </p>
                         </>
                       ) : (
