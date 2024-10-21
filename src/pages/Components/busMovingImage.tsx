@@ -182,7 +182,6 @@ export default class BusMovingImage extends Component<{}> {
             disabled={this.state.disabled}
             bounds={"parent"}
             position={controlledPosition}
-            grid={[10, 10]}
           >
             <div>
               <img src={busMoving} alt="bus" />
