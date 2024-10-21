@@ -79,9 +79,12 @@
 }
 
 .busMovingImageRoute div {
-  transition: transform 0.5s linear;
   width: fit-content;
   height: fit-content;
+}
+
+.busMovingImageRoute.animated div {
+  transition: transform 0.5s linear;
 }
 
 .busMovingImageRoute img {
@@ -94,6 +97,10 @@
   -moz-user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none;
+  transition: transform 0.1s ease-in-out;
+}
+
+.busMovingImageRoute.animated img {
   transition: transform 0.5s linear;
 }
 

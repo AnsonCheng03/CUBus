@@ -27,15 +27,20 @@ export default class BusMovingImage extends Component<{}> {
       rotated: null,
     },
     disabled: false,
+    animated: true,
   };
 
   onStart = () => {
-    this.setState({ activeDrags: ++this.state.activeDrags });
+    this.setState({
+      activeDrags: ++this.state.activeDrags,
+      animated: false,
+    });
   };
 
   onStopAsync = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     this.setState({
+      animated: true,
       controlledPosition: {
         x: this.state.originalPosition.x,
         y: this.state.originalPosition.y,
@@ -43,7 +48,7 @@ export default class BusMovingImage extends Component<{}> {
     });
     console.log(this.state.originalPosition.rotated, this.state.rotated);
     if (this.state.originalPosition.rotated !== this.state.rotated) {
-      await new Promise((resolve) => setTimeout(resolve, 700));
+      await new Promise((resolve) => setTimeout(resolve, 500));
       this.setState({
         rotated: !this.state.rotated,
       });
@@ -55,7 +60,7 @@ export default class BusMovingImage extends Component<{}> {
         rotated: null,
       },
     });
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
     this.setState({
       activeDrags: --this.state.activeDrags,
       disabled: false,
@@ -92,7 +97,7 @@ export default class BusMovingImage extends Component<{}> {
     // keep the bus moving
     let runningPercentage = 0;
     let totalRunningTime = 12;
-    let interval = 100;
+    let interval = 250;
     setInterval(() => {
       if (this.state.activeDrags > 0) {
         return;
@@ -166,7 +171,8 @@ export default class BusMovingImage extends Component<{}> {
         <div
           className={`busMovingImageRoute ${
             this.state.rotated ? "rotated" : ""
-          }`}
+          } ${this.state.animated ? "animated" : ""}
+            `}
         >
           <Draggable
             axis="x"
@@ -176,6 +182,7 @@ export default class BusMovingImage extends Component<{}> {
             disabled={this.state.disabled}
             bounds={"parent"}
             position={controlledPosition}
+            grid={[10, 10]}
           >
             <div>
               <img src={busMoving} alt="bus" />
