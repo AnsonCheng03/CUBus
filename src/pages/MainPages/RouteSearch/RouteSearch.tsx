@@ -378,6 +378,7 @@ if (isset($buserrstat["suspended"]))
                               dominantBaseline="middle"
                               textAnchor="middle"
                               fontSize="7"
+                              fontWeight={600}
                               fill="black"
                             >
                               {result.busNo}
