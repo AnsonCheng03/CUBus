@@ -344,7 +344,8 @@
     "WK-Sun": "Sunday",
     "WK-Thu": "Thursday",
     "WK-Tue": "Tuesday",
-    "WK-Wed": "Wednesday"
+    "WK-Wed": "Wednesday",
+    "Permit_Input_All": "Please fill in all the information"
   },
   "zh": {
     "AREA39": "39區",
@@ -691,6 +692,7 @@
     "WK-Sun": "星期日",
     "WK-Thu": "星期四",
     "WK-Tue": "星期二",
-    "WK-Wed": "星期三"
+    "WK-Wed": "星期三",
+    "Permit_Input_All": "請填寫所有資料"
   }
 }

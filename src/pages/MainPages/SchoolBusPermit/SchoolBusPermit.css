@@ -15,6 +15,11 @@
   margin: 10px 2.5%;
 }
 
+.busPermitInputModalDescPermit {
+  font-size: 14px;
+  margin: 20px 10%;
+}
+
 .cardModal {
   display: flex;
   flex-direction: column;
