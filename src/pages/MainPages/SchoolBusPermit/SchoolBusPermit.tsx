@@ -10,6 +10,7 @@ import {
 import "./SchoolBusPermit.css";
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState } from "react";
+import { Keyboard } from "@capacitor/keyboard";
 
 import { Storage } from "@ionic/storage";
 const store = new Storage();
@@ -47,7 +48,14 @@ const SchoolBusPermitInput: React.FC<{
           labelPlacement="stacked"
           ref={ref}
           type={type}
+          {...(type === "number" ? { inputmode: "numeric" } : {})}
           value={value}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              console.log("Enter pressed");
+              Keyboard.hide();
+            }
+          }}
         />
       </IonItem>
     );
@@ -152,6 +160,14 @@ const SchoolBusPermit: React.FC<{
     console.log("Saving appSettings to storage:", appSettings);
     store.set("appSettings", appSettings);
   }, [appSettings]);
+
+  useEffect(() => {
+    Keyboard.setAccessoryBarVisible({ isVisible: true });
+
+    return () => {
+      Keyboard.setAccessoryBarVisible({ isVisible: false });
+    };
+  }, []);
 
   return (
     <IonPage className="pageSafeArea">
