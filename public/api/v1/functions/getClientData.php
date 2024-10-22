@@ -80,19 +80,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     // Fetch data for outdated tables
     if (in_array('Route', $outdatedTables)) {
-        $bus = array();
-        $stmt = $conn->prepare("SELECT * FROM Route");
+        $stmt = $conn->prepare("
+            SELECT r.BUSNO, r.StartTime, r.EndTime, r.Period, r.Days, r.Weekdays, r.Warning, r.colorCode,
+                rs.Location, rs.Direction, rs.TravelTime
+            FROM Route r
+            LEFT JOIN RouteStops rs ON r.BUSNO = rs.BUSNO
+            ORDER BY r.BUSNO, rs.StopOrder
+        ");
         $stmt->execute();
         $result = $stmt->get_result();
+
+        $bus = array();
         while ($row = $result->fetch_assoc()) {
             $busno = $row['BUSNO'];
-            $bus[$busno]["schedule"] = array($row['StartTime'], $row['EndTime'], $row['Period'], $row['Days'], $row['Weekdays'], $row['Warning']);
-            $bus[$busno]['colorCode'] = $row['colorCode'] ?? "rgb(254, 250, 183)";
-            $stations = json_decode($row['Route'], true);
-            foreach ($stations as $station) {
-                $bus[$busno]["stations"]["name"][] = $station[0];
-                $bus[$busno]["stations"]["attr"][] = $station[1] ?? "NULL";
-                $bus[$busno]["stations"]["time"][] = floatval($station[2] ?? "0");
+
+            // Initialize bus info if not already done
+            if (!isset($bus[$busno])) {
+                $bus[$busno]["schedule"] = array($row['StartTime'], $row['EndTime'], $row['Period'], $row['Days'], $row['Weekdays'], $row['Warning']);
+                $bus[$busno]['colorCode'] = $row['colorCode'] ?? "rgb(254, 250, 183)";
+                $bus[$busno]["stations"] = [
+                    "name" => [],
+                    "attr" => [],
+                    "time" => []
+                ];
+            }
+
+            // Fetch station details
+            if ($row['Location']) {
+                $bus[$busno]["stations"]["name"][] = $row['Location'];
+                $bus[$busno]["stations"]["attr"][] = $row['Direction'] ?? "NULL";
+                $bus[$busno]["stations"]["time"][] = floatval($row['TravelTime'] ?? "0");
             }
         }
         $output['Route'] = $bus;

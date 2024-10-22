@@ -106,7 +106,15 @@ const App: React.FC<RouteComponentProps | any> = () => {
   };
 
   const checkDownloadData = () => {
-    const dataToBeChecked = ["timetable.json", "Status.json", "bus"];
+    const dataToBeChecked = [
+      "timetable.json",
+      "Status.json",
+      "bus",
+      "notice",
+      "station",
+      "GPS",
+      "WebsiteLinks",
+    ];
     for (const data of dataToBeChecked) {
       if (!appData[data]) {
         return false;

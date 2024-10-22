@@ -8,7 +8,7 @@ import {
   IonContent,
   IonIcon,
 } from "@ionic/react";
-import { busOutline } from "ionicons/icons";
+import { busOutline, flagOutline, flagSharp } from "ionicons/icons";
 import React, { Component, useEffect } from "react";
 
 interface routeMapProps {
@@ -47,8 +47,12 @@ export default class RouteMap extends Component<routeMapProps> {
         >
           <div className="station-container">
             <div className="station-name">
-              {index == routeMap[1] && (
+              {index == routeMap[1] ? (
                 <IonIcon className="bus-station-icon" icon={busOutline} />
+              ) : (
+                index === routeMap[0].length - 1 && (
+                  <IonIcon className="bus-station-icon" icon={flagSharp} />
+                )
               )}
               {station}
             </div>

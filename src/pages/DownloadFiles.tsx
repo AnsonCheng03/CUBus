@@ -104,7 +104,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
         error.code === "ERR_BAD_REQUEST" ||
         error.code === "ECONNREFUSED" ||
         error.code === "ECONNRESET" ||
-        error.message === "Network Error" ||
+        error.code === "ERR_NETWORK" ||
         error.code === "ECONNABORTED" ||
         error.message.includes("timeout")
       ) {
