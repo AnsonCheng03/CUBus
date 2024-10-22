@@ -364,8 +364,6 @@ export const calculateRoute = (
 
   const routeGroupResult = searchRoutes(startStation, destStation, bus, t);
 
-  console.log("routeGroupResult", routeGroupResult);
-
   if (routeGroupResult.routeResult.length === 0) {
     return {
       error: true,
@@ -374,7 +372,8 @@ export const calculateRoute = (
   }
 
   // $sortedResults = [];
-  const sortedResults: any[] = [];
+  let sortedResults: any[] = [];
+  let maxTimeWithoutWarning = 0;
 
   routeGroupResult.routeResult.forEach((start: any) => {
     for (const [startStation, temp] of Object.entries(start)) {
@@ -416,6 +415,12 @@ export const calculateRoute = (
             hour12: false,
           });
 
+          if (
+            waitTimeInt > maxTimeWithoutWarning &&
+            busData.warning !== "No-bus-available"
+          )
+            maxTimeWithoutWarning = waitTimeInt > 60 ? 60 : waitTimeInt;
+
           if (time + waitTimeInt > 60) return;
 
           const outputTotalTime =
@@ -426,6 +431,7 @@ export const calculateRoute = (
           sortedResults.push({
             time: outputTotalTime,
             outputTime: time,
+            waitTime: waitTimeInt,
             busNo,
             start: busArray.start.translatedName,
             end: busArray.end,
@@ -439,6 +445,12 @@ export const calculateRoute = (
         });
       }
     }
+  });
+
+  sortedResults = sortedResults.filter((bus) => {
+    if (bus.warning !== "No-bus-available") return true;
+    if (bus.waitTime > maxTimeWithoutWarning) return true;
+    return false;
   });
 
   sortedResults.sort((a, b) => {
