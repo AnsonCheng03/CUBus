@@ -58,9 +58,8 @@ const filterBus = (
           `${selectHour}:${selectMinute}`
         ).getTime();
         if (!busData.schedule) return false;
-        const startTime = outputDate(busData.schedule[0]).getTime();
         const endTime = outputDate(busData.schedule[1]).getTime();
-        if (currentTime < startTime || currentTime > endTime) {
+        if (currentTime > endTime) {
           return false;
         }
 
@@ -79,24 +78,7 @@ const filterBus = (
       })
     );
   } else {
-    return Object.fromEntries(
-      Object.entries(bus).filter(([busNumber, busData]) => {
-        if (
-          busData.stats &&
-          busData.stats.status === "no" &&
-          busData.stats.prevstatus !== "normal"
-        ) {
-          return false;
-        } else if (
-          busData.stats &&
-          busData.stats.status === "suspended" &&
-          busData.stats.prevstatus !== "normal"
-        ) {
-          return false;
-        }
-        return true;
-      })
-    );
+    return { ...bus };
   }
 };
 
@@ -382,6 +364,8 @@ export const calculateRoute = (
 
   const routeGroupResult = searchRoutes(startStation, destStation, bus, t);
 
+  console.log("routeGroupResult", routeGroupResult);
+
   if (routeGroupResult.routeResult.length === 0) {
     return {
       error: true,
@@ -426,15 +410,13 @@ export const calculateRoute = (
             60000;
           const waitTimeInt = waitTime < 0 ? 0 : Math.floor(waitTime);
 
-          if (waitTimeInt > 30) {
-            return;
-          }
-
           busArray.arrivalTime = new Date(busTime).toLocaleTimeString("en-US", {
             hour: "numeric",
             minute: "numeric",
             hour12: false,
           });
+
+          if (time + waitTimeInt > 60) return;
 
           const outputTotalTime =
             appSettings.searchSortDontIncludeWaitTime === true
@@ -443,6 +425,7 @@ export const calculateRoute = (
 
           sortedResults.push({
             time: outputTotalTime,
+            outputTime: time,
             busNo,
             start: busArray.start.translatedName,
             end: busArray.end,
@@ -451,6 +434,7 @@ export const calculateRoute = (
             routeIndex: busArray.routeIndex,
             arrivalTime: busArray.arrivalTime,
             config: busData.config || {},
+            warning: departNow && busData.warning,
           });
         });
       }

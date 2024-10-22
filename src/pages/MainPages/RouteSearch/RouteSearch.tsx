@@ -17,6 +17,7 @@ import {
   pinOutline,
   timeOutline,
   timeSharp,
+  warningOutline,
 } from "ionicons/icons";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useTranslation } from "react-i18next";
@@ -406,12 +407,22 @@ if (isset($buserrstat["suspended"]))
                               </p>
                             </div>
                           </div>
+                          {result.warning && (
+                            <div className="route-result-busno-details-text-container">
+                              <IonIcon icon={warningOutline}></IonIcon>
+                              <p className="route-result-busno-details-text-detail">
+                                {t(result.warning)}
+                              </p>
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className="route-result-busno-details-totaltime">
                         <div className="route-result-busno-details-totaltime-container">
                           <p className="route-result-busno-details-totaltime-text">
-                            {result.time > 1000 ? "N/A" : result.time}
+                            {result.outputTime > 1000
+                              ? "N/A"
+                              : result.outputTime}
                           </p>
                           {` min`}
                         </div>
