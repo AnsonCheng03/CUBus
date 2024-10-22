@@ -252,3 +252,30 @@ ion-modal#RouteModal ion-toolbar {
 .station-container-wrapper:last-child::after {
   display: none;
 }
+
+.route-result-busno-number-container {
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.route-result-busno-number-container .route-result-busno-icon {
+  font-size: 60px;
+  color: #630a10;
+}
+
+.route-result-busno-number {
+  position: absolute;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  left: 50%;
+  transform: translate(-50%, -0.4rem);
+  width: 37.5px;
+  height: 22.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  background-color: rgb(254, 250, 183);
+}

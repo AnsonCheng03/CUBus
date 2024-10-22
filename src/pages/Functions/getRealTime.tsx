@@ -97,7 +97,7 @@ const getScheduledTimes = (
     if (time >= currtime) {
       scheduledTimes.push({
         busno,
-        direction: t(stationname.split("|")[1]) ?? t("mode-realtime"),
+        direction: stationname.split("|")[1] ?? "mode-realtime",
         time: time.slice(0, -3),
         arrived: time <= nowtime,
         warning,

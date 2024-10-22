@@ -257,13 +257,14 @@
 
 .bus-row {
   display: grid;
-  grid-template-columns: 30px 1fr 80px;
+  grid-template-columns: 50px 1fr 80px;
   align-items: center;
   padding: 5px 7%;
   border-top: 1px solid #ddd;
   gap: 7%;
   cursor: pointer;
   min-height: 65px;
+  position: relative;
 }
 
 .bus-row:first-child {
@@ -275,15 +276,24 @@
 }
 
 .bus-info .direction {
-  font-size: 0.75rem;
+  font-size: 1rem;
   overflow: hidden;
   text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 1; /* number of lines to show */
-  line-clamp: 1;
-  -webkit-box-orient: vertical;
   width: fit-content;
-  max-width: calc(5vw + 30px);
+  position: absolute;
+  bottom: 0;
+  left: 30px;
+  line-height: 0.5rem;
+  overflow: visible;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px;
+  border-radius: 10px;
+  background-color: #fff;
 }
 
 .arrival-info {

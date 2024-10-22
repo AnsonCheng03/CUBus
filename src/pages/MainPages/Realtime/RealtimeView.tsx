@@ -19,7 +19,12 @@ import "../assets/routeComp.css";
 import { generateRouteResult, BusData } from "../../Functions/getRealTime";
 import RouteMap from "../../Components/routeMap";
 import PullToRefresh from "react-simple-pull-to-refresh";
-import { alertOutline, alertSharp } from "ionicons/icons";
+import {
+  alertOutline,
+  alertSharp,
+  caretDownCircleOutline,
+  caretUpCircleOutline,
+} from "ionicons/icons";
 import { RiAlertFill } from "react-icons/ri";
 
 const Realtime: React.FC<{
@@ -88,6 +93,20 @@ const Realtime: React.FC<{
     generateResult(defaultSelectedStation);
   }, []);
 
+  function getTextColor(rgb: string) {
+    // Extract red, green, and blue values from the rgb(xxx,xxx,xxx) string
+    const [r, g, b] = rgb
+      .replace(/[^\d,]/g, "") // Remove everything except digits and commas
+      .split(",")
+      .map(Number); // Convert the values to numbers
+
+    // Calculate brightness using the formula
+    const brightness = r * 0.299 + g * 0.587 + b * 0.114;
+
+    // Return black (#000000) or white (#ffffff) based on brightness
+    return brightness > 160 ? "#000000" : "#ffffff";
+  }
+
   return (
     <div className="realtime-page">
       <form className="stopselector" method="POST">
@@ -155,8 +174,49 @@ const Realtime: React.FC<{
                   key={bus.busno + bus.time}
                 >
                   <div className="bus-info">
-                    <span className="bus-name">{bus.busno}</span>
-                    <span className="direction">{bus.direction}</span>
+                    <div className="route-result-busno-number-container">
+                      <svg
+                        stroke="currentColor"
+                        fill="currentColor"
+                        strokeWidth="0"
+                        viewBox="0 0 24 24"
+                        height="1em"
+                        width="1em"
+                        className="route-result-busno-icon"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M17 20H7V21C7 21.5523 6.55228 22 6 22H5C4.44772 22 4 21.5523 4 21V20H3V12H2V8H3V5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V8H22V12H21V20H20V21C20 21.5523 19.5523 22 19 22H18C17.4477 22 17 21.5523 17 21V20ZM5 5V14H19V5H5ZM5 16V18H9V16H5ZM15 16V18H19V16H15Z"></path>
+
+                        <g>
+                          <rect
+                            x="5"
+                            y="5"
+                            width="14"
+                            height="9"
+                            fill={bus.config?.colorCode}
+                          ></rect>
+                          <text
+                            x="50%"
+                            y="10px"
+                            dominantBaseline="middle"
+                            textAnchor="middle"
+                            fontSize="7"
+                            // fontWeight={600}
+                            fill={getTextColor(bus.config?.colorCode)}
+                          >
+                            {bus.busno}
+                          </text>
+                        </g>
+                      </svg>
+                      <span className="direction">
+                        {bus.direction &&
+                          (bus.direction === "DOWNST" ? (
+                            <IonIcon icon={caretDownCircleOutline} />
+                          ) : (
+                            <IonIcon icon={caretUpCircleOutline} />
+                          ))}
+                      </span>
+                    </div>
                   </div>
                   <div className="next-station-display">
                     {bus.nextStation &&
