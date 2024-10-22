@@ -413,7 +413,7 @@ if (isset($buserrstat["suspended"]))
                         </div>
                       </div>
                       <div className="route-result-busno-details-totaltime">
-                        <div>
+                        <div className="route-result-busno-details-totaltime-container">
                           <p className="route-result-busno-details-totaltime-text">
                             {result.time > 1000 ? "N/A" : result.time}
                           </p>

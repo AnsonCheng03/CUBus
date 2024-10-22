@@ -51,7 +51,7 @@ export default class RouteMap extends Component<routeMapProps> {
                 <IonIcon className="bus-station-icon" icon={busOutline} />
               ) : (
                 index === routeMap[0].length - 1 && (
-                  <IonIcon className="bus-station-icon" icon={flagSharp} />
+                  <IonIcon className="bus-station-flag" icon={flagSharp} />
                 )
               )}
               {station}

@@ -436,6 +436,7 @@ footer h2 {
   margin: 10px 20px;
   border-radius: 20px;
   align-items: center;
+  background-color: #fff;
 }
 
 .route-result-busno:last-child {
@@ -491,6 +492,11 @@ footer h2 {
   justify-content: end;
 }
 
+.route-result-busno-details-totaltime-container {
+  line-height: 1rem;
+  overflow: visible;
+}
+
 .route-result-busno-details-totaltime-text {
   font-size: 1.3rem;
   font-weight: bold;
@@ -539,7 +545,9 @@ footer h2 {
   display: grid;
   grid-template-columns: 20px 1fr;
   align-items: center;
-  padding: 2px 0;
+  line-height: 1rem;
+  overflow: visible;
+  padding-bottom: 3px;
 }
 
 .route-result-busno-details-text-label {
