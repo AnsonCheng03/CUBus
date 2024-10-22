@@ -47,7 +47,6 @@ export default class BusMovingImage extends Component<{}> {
         y: this.state.originalPosition.y,
       },
     });
-    console.log(this.state.originalPosition.rotated, this.state.rotated);
     if (this.state.originalPosition.rotated !== this.state.rotated) {
       await new Promise((resolve) => setTimeout(resolve, 500));
       this.setState({

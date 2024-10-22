@@ -75,8 +75,6 @@ const RouteSearch: React.FC<{
     console.error(e);
   }
 
-  console.log(appData);
-
   const TravelDateOptions = Array.from(
     new Set(
       Object.values(appData.bus as BusData)
@@ -171,8 +169,6 @@ const RouteSearch: React.FC<{
       )
     );
   };
-
-  console.log(routeResult);
 
   async function handleRefresh(): Promise<void> {
     await generateRouteResult();

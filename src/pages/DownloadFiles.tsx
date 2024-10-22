@@ -109,7 +109,6 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
         error.message.includes("timeout")
       ) {
         // use fallback data
-        console.log(error.message);
         setNetworkError(true);
         // const serverDates = lastModifiedDates;
         const localStoredDates = JSON.parse(

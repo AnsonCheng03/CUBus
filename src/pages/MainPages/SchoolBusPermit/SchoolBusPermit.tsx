@@ -60,7 +60,6 @@ const SchoolBusPermitInput: React.FC<{
           placeholder={placeholder}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              console.log("Enter pressed");
               Keyboard.hide();
             }
           }}

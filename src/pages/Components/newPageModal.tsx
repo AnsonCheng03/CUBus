@@ -150,7 +150,6 @@ const ModalShown = ({
   dismiss: (data?: string | null | undefined | number, role?: string) => void;
   passedProps: ModalProps;
 }) => {
-  console.log(passedProps);
   return (
     <IonPage>
       <IonHeader>
