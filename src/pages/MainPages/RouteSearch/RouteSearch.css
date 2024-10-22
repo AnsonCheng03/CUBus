@@ -35,6 +35,7 @@
   flex-direction: column;
   /* border-bottom: 10px solid #dedede; */
   padding: 0 10px;
+  transition: padding 0.5s ease-in-out;
 }
 
 .route-search-form-container.empty .info-box {

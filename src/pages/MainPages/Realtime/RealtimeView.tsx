@@ -27,6 +27,7 @@ import {
   caretUpCircleOutline,
 } from "ionicons/icons";
 import { RiAlertFill } from "react-icons/ri";
+import { getTextColor } from "../../Functions/Tools";
 
 const Realtime: React.FC<{
   appData: any;
@@ -96,20 +97,6 @@ const Realtime: React.FC<{
   useEffect(() => {
     generateResult(defaultSelectedStation);
   }, []);
-
-  function getTextColor(rgb: string) {
-    // Extract red, green, and blue values from the rgb(xxx,xxx,xxx) string
-    const [r, g, b] = rgb
-      .replace(/[^\d,]/g, "") // Remove everything except digits and commas
-      .split(",")
-      .map(Number); // Convert the values to numbers
-
-    // Calculate brightness using the formula
-    const brightness = r * 0.299 + g * 0.587 + b * 0.114;
-
-    // Return black (#000000) or white (#ffffff) based on brightness
-    return brightness > 160 ? "#000000" : "#ffffff";
-  }
 
   return (
     <div className="realtime-page">

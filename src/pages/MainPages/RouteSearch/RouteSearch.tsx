@@ -22,7 +22,7 @@ import {
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { useTranslation } from "react-i18next";
 import AutoComplete from "../../Components/autoComplete";
-import { capitalizeFirstLetter } from "../../Functions/Tools";
+import { capitalizeFirstLetter, getTextColor } from "../../Functions/Tools";
 import RouteMap from "../../Components/routeMap";
 import { GPSSelectIcon } from "../../Components/gpsSelectBox";
 import { RouteSelect } from "../../Components/selectRouteForm";
@@ -378,7 +378,7 @@ if (isset($buserrstat["suspended"]))
                                 textAnchor="middle"
                                 fontSize="7"
                                 fontWeight={600}
-                                fill="black"
+                                fill={getTextColor(result.config?.colorCode)}
                               >
                                 {result.busNo}
                               </text>
