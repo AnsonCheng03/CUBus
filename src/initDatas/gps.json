@@ -1,6 +1,6 @@
 {
   "AREA39": {
-    "Lat": "22.42753",
+    "Lat": "22.427530",
     "Lng": "114.204374",
     "ImportantStation": null
   },
@@ -15,8 +15,8 @@
     "ImportantStation": null
   },
   "CCHH": {
-    "Lat": "22.421940382",
-    "Lng": "114.20476512",
+    "Lat": "22.421940",
+    "Lng": "114.204765",
     "ImportantStation": null
   },
   "CCTEA": {
@@ -27,22 +27,22 @@
   "CWCC": {
     "Lat": "22.425613",
     "Lng": "114.206182",
-    "ImportantStation": 1
+    "ImportantStation": "1"
   },
   "FKHB": {
-    "Lat": "22.419880139",
-    "Lng": "114.20307439",
+    "Lat": "22.419880",
+    "Lng": "114.203074",
     "ImportantStation": null
   },
   "JCPH": {
     "Lat": "22.420465",
     "Lng": "114.212188",
-    "ImportantStation": 1
+    "ImportantStation": "1"
   },
   "MTR": {
     "Lat": "22.414523",
     "Lng": "114.210223",
-    "ImportantStation": 0
+    "ImportantStation": "0"
   },
   "MTRP": {
     "Lat": "22.413901",
@@ -50,9 +50,9 @@
     "ImportantStation": null
   },
   "NAC": {
-    "Lat": "22.421414961",
-    "Lng": "114.20748402",
-    "ImportantStation": 1
+    "Lat": "22.421415",
+    "Lng": "114.207484",
+    "ImportantStation": "1"
   },
   "RESI10": {
     "Lat": "22.424494",
@@ -70,28 +70,28 @@
     "ImportantStation": null
   },
   "SCIC": {
-    "Lat": "22.4198696",
-    "Lng": "114.2072691",
-    "ImportantStation": 1
+    "Lat": "22.419870",
+    "Lng": "114.207269",
+    "ImportantStation": "1"
   },
   "SHAWC": {
-    "Lat": "22.422502417",
-    "Lng": "114.20128042",
-    "ImportantStation": 1
+    "Lat": "22.422502",
+    "Lng": "114.201280",
+    "ImportantStation": "1"
   },
   "SHAWHALL": {
-    "Lat": "22.419882697",
-    "Lng": "114.20690732",
-    "ImportantStation": 1
+    "Lat": "22.419883",
+    "Lng": "114.206907",
+    "ImportantStation": "1"
   },
   "SHHC": {
     "Lat": "22.418020",
     "Lng": "114.209896",
-    "ImportantStation": 1
+    "ImportantStation": "1"
   },
   "SPORTC": {
-    "Lat": "22.417801286",
-    "Lng": "114.21058186",
+    "Lat": "22.417801",
+    "Lng": "114.210582",
     "ImportantStation": null
   },
   "UADM": {
@@ -102,7 +102,7 @@
   "UC": {
     "Lat": "22.420406",
     "Lng": "114.205178",
-    "ImportantStation": 1
+    "ImportantStation": "0"
   },
   "UCSR": {
     "Lat": "22.423261",

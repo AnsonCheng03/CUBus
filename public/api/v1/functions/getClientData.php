@@ -29,7 +29,9 @@ $tables = ['Route', 'translateroute', 'translatewebsite', 'translatebuilding', '
 $dataFiles = ['Status.json', 'timetable.json'];
 $translationTables = ['translateroute', 'translatewebsite', 'translatebuilding', 'translateattribute'];
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+if (
+    $_SERVER['REQUEST_METHOD'] === 'GET' && empty($_GET)
+) {
     // Handle initial GET request
     $modificationDates = array();
     foreach ($tables as $table) {
@@ -42,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
     header('Content-Type: application/json');
     echo json_encode($modificationDates);
-} elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+} else if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['force'])) {
     // Handle POST request
     $clientDates = json_decode(file_get_contents('php://input'), true);
 
@@ -237,10 +239,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $output['fetchTime'] = date("Y-m-d H:i:s");
 
     // Set the content type to JSON
-    header('Content-Type: application/json');
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        header('Content-Type: application/json');
 
-    // Output the JSON
-    echo json_encode($output, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        // Output the JSON
+        echo json_encode($output, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    } else {
+        // Download as separate files
+        foreach ($output as $key => $value) {
+            echo '<body><script>
+                var a = document.createElement("a");    
+                a.href = "data:application/json;charset=utf-8,' . rawurlencode(json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) . '";
+                a.download = "' . $key . '";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            </script></body>';
+
+        }
+    }
 }
 
 $conn->close();
