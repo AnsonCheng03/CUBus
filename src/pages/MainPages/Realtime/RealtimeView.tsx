@@ -20,6 +20,7 @@ import { generateRouteResult, BusData } from "../../Functions/getRealTime";
 import RouteMap from "../../Components/routeMap";
 import PullToRefresh from "react-simple-pull-to-refresh";
 import {
+  alertCircleOutline,
   alertOutline,
   alertSharp,
   caretDownCircleOutline,
@@ -61,6 +62,8 @@ const Realtime: React.FC<{
     (key) => appData.GPS[key].ImportantStation !== null
   );
 
+  const displayAllBus = true;
+
   const generateResult = async (
     stationName: string = realtimeDest,
     log = true
@@ -71,7 +74,8 @@ const Realtime: React.FC<{
       appData,
       stationName,
       setRealtimeResult,
-      importantStations
+      importantStations,
+      displayAllBus
     );
 
     if (log) {
@@ -155,13 +159,11 @@ const Realtime: React.FC<{
         <div className="bus-grid">
           {realtimeResult.length === 0 ? (
             <div className="no-bus">
-              <div className="no-bus-icon">
-                <i className="fa-solid fa-ban"></i>
-              </div>
+              <IonIcon icon={alertCircleOutline} />
               <p>{t("No-bus-time")}</p>
             </div>
           ) : (
-            realtimeResult.slice(0, 10).map((bus: any) => {
+            realtimeResult.map((bus: any) => {
               return (
                 <div
                   className={"bus-row" + (bus.arrived ? " arrived" : "")}
@@ -211,9 +213,19 @@ const Realtime: React.FC<{
                       <span className="direction">
                         {bus.direction &&
                           (bus.direction === "DOWNST" ? (
-                            <IonIcon icon={caretDownCircleOutline} />
+                            <IonIcon
+                              icon={caretDownCircleOutline}
+                              style={{
+                                color: "rgb(234, 72, 64)",
+                              }}
+                            />
                           ) : (
-                            <IonIcon icon={caretUpCircleOutline} />
+                            <IonIcon
+                              icon={caretUpCircleOutline}
+                              style={{
+                                color: "green",
+                              }}
+                            />
                           ))}
                       </span>
                     </div>

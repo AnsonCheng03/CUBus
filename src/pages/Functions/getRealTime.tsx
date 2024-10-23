@@ -1,4 +1,5 @@
 import { TFunction } from "i18next";
+import { outputDate } from "./Tools";
 
 export interface BusData {
   [busNumber: string]: {
@@ -73,7 +74,14 @@ export const processBusStatus = (
       busArr["stats"]["status"] === "no" &&
       busArr["stats"]["prevstatus"] !== "normal"
     ) {
-      busArr["warning"] = "No-bus-available";
+      if (
+        busArr["schedule"] &&
+        busArr["schedule"][0] &&
+        outputDate(busArr["schedule"][0] as string).getTime() >
+          new Date().getTime()
+      ) {
+        busArr["warning"] = "First-bus-not-start";
+      } else busArr["warning"] = "No-bus-available";
     } else if (busArr["stats"] && busArr["stats"]["status"] !== "normal") {
       busArr["warning"] = "Bus-status-unusual";
     }
@@ -244,7 +252,8 @@ export const generateRouteResult = (
   appData: any,
   searchStation: String | null = null,
   setRealtimeResult: any,
-  importantStations: string[]
+  importantStations: string[],
+  displayAllBus: boolean
 ) => {
   const busSchedule = appData["timetable.json"];
   const busServices = appData["Status.json"];
@@ -280,6 +289,20 @@ export const generateRouteResult = (
   const allBuses = processAndSortBuses(t, outputSchedule, filteredBus, {
     importantStations,
   });
-  setRealtimeResult(allBuses);
+
+  const allBusWithoutWarning = allBuses.filter((bus) => bus.warning === false);
+
+  const lastBusWithoutWarningTime =
+    allBusWithoutWarning.length === 0
+      ? ""
+      : allBusWithoutWarning[allBusWithoutWarning.length - 1].time;
+
+  // remove all buses with warning if < lastBusWithoutWarningTime
+  const finalAllBuses = allBuses.filter((bus) => {
+    if (bus.warning !== "No-bus-available") return true;
+    if (displayAllBus) return bus.time > lastBusWithoutWarningTime;
+  });
+
+  setRealtimeResult(finalAllBuses.slice(0, 10));
   return allBuses;
 };

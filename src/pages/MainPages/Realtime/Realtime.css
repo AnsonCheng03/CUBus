@@ -292,7 +292,7 @@
   justify-content: center;
   align-items: center;
   padding: 5px;
-  border-radius: 10px;
+  border-radius: 50%;
   background-color: #fff;
 }
 
@@ -372,12 +372,7 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
-}
-
-.no-bus i {
-  font-size: 10rem;
-  margin-bottom: 20px;
-  color: #bbb;
+  padding: 20px;
 }
 
 @media screen and (max-width: 768px) {
