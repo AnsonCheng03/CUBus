@@ -74,7 +74,6 @@ export const processBusStatus = (
       busArr["stats"]["status"] === "no" &&
       busArr["stats"]["prevstatus"] !== "normal"
     ) {
-      console.log(busNumber, busArr);
       if (
         busArr["schedule"] &&
         busArr["schedule"][0] &&
@@ -293,16 +292,21 @@ export const generateRouteResult = (
     importantStations,
   });
 
-  const allBusWithoutWarning = allBuses.filter((bus) => bus.warning === false);
+  const allBusWithoutWarning = allBuses.filter(
+    (bus) => bus.warning !== "No-bus-available"
+  );
 
   const lastBusWithoutWarningTime =
     allBusWithoutWarning.length === 0
-      ? ""
+      ? 0
       : allBusWithoutWarning[allBusWithoutWarning.length - 1].time;
+
+  console.log(allBusWithoutWarning, lastBusWithoutWarningTime);
 
   // remove all buses with warning if < lastBusWithoutWarningTime
   const finalAllBuses = allBuses.filter((bus) => {
     if (bus.warning !== "No-bus-available") return true;
+    if (allBusWithoutWarning.length === 0) return true;
     if (displayAllBus) return bus.time > lastBusWithoutWarningTime;
   });
 
