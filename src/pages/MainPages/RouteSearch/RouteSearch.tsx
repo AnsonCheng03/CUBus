@@ -409,14 +409,6 @@ if (isset($buserrstat["suspended"]))
                                 </p>
                               </div>
                             </div>
-                            {result.warning && (
-                              <div className="route-result-busno-details-text-container">
-                                <IonIcon icon={warningOutline}></IonIcon>
-                                <p className="route-result-busno-details-text-detail">
-                                  {t(result.warning)}
-                                </p>
-                              </div>
-                            )}
                           </div>
                         </div>
                         <div className="route-result-busno-details-totaltime">
@@ -432,6 +424,14 @@ if (isset($buserrstat["suspended"]))
                             {t("wait-time-desc")}
                           </p>
                         </div>
+                        {result.warning && (
+                          <div className="route-result-busno-details-warning-container">
+                            <IonIcon icon={warningOutline}></IonIcon>
+                            <p className="route-result-busno-details-text-detail">
+                              {t(result.warning)}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     );
                   })

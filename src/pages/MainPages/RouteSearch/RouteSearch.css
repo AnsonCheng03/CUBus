@@ -515,13 +515,20 @@ footer h2 {
   overflow: hidden;
 }
 
-.route-result-busno-details-text-container {
+.route-result-busno-details-text-container,
+.route-result-busno-details-warning-container {
   display: grid;
   grid-template-columns: 20px 1fr;
   align-items: center;
   line-height: 1rem;
   overflow: visible;
   padding-bottom: 3px;
+  font-size: 1rem;
+}
+
+.route-result-busno-details-warning-container {
+  grid-column: 1 / -1;
+  font-size: 0.8rem;
 }
 
 .route-result-busno-details-text-label {
@@ -533,7 +540,6 @@ footer h2 {
 
 .route-result-busno-details-text-detail {
   margin: 0;
-  font-size: 1rem;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 1;
