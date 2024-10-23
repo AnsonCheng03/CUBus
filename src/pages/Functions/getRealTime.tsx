@@ -74,6 +74,7 @@ export const processBusStatus = (
       busArr["stats"]["status"] === "no" &&
       busArr["stats"]["prevstatus"] !== "normal"
     ) {
+      console.log(busNumber, busArr);
       if (
         busArr["schedule"] &&
         busArr["schedule"][0] &&
@@ -84,6 +85,8 @@ export const processBusStatus = (
       } else busArr["warning"] = "No-bus-available";
     } else if (busArr["stats"] && busArr["stats"]["status"] !== "normal") {
       busArr["warning"] = "Bus-status-unusual";
+    } else {
+      busArr["warning"] = (busArr["schedule"] && busArr["schedule"][5]) ?? "";
     }
   }
   return bus;
