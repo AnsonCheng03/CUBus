@@ -53,7 +53,8 @@ export const filterBusesBySchedule = (bus: BusData) => {
 export const processBusStatus = (
   currentBusServices: any,
   thirtyMinBusService: any,
-  bus: BusData
+  bus: BusData,
+  setFetchError?: any
 ) => {
   for (const [busNumber, busStatus] of Object.entries(currentBusServices)) {
     if (!bus[busNumber]) {
@@ -88,6 +89,12 @@ export const processBusStatus = (
       busArr["warning"] = (busArr["schedule"] && busArr["schedule"][5]) ?? "";
     }
   }
+
+  if (setFetchError)
+    setFetchError(
+      currentBusServices && currentBusServices["ERROR"] === "fetch"
+    );
+
   return bus;
 };
 
@@ -255,7 +262,8 @@ export const generateRouteResult = (
   searchStation: String | null = null,
   setRealtimeResult: any,
   importantStations: string[],
-  displayAllBus: boolean
+  displayAllBus: boolean,
+  setFetchError: any
 ) => {
   const busSchedule = appData["timetable.json"];
   const busServices = appData["Status.json"];
@@ -278,9 +286,12 @@ export const generateRouteResult = (
     filteredBus = processBusStatus(
       currentBusServices,
       thirtyMinBusService,
-      filteredBus
+      filteredBus,
+      setFetchError
     );
   }
+
+  console.log(filteredBus);
 
   const outputSchedule = Object.fromEntries(
     Object.entries(busSchedule).filter(
@@ -300,8 +311,6 @@ export const generateRouteResult = (
     allBusWithoutWarning.length === 0
       ? 0
       : allBusWithoutWarning[allBusWithoutWarning.length - 1].time;
-
-  console.log(allBusWithoutWarning, lastBusWithoutWarningTime);
 
   // remove all buses with warning if < lastBusWithoutWarningTime
   const finalAllBuses = allBuses.filter((bus) => {

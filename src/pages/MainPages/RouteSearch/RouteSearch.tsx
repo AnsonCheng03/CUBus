@@ -42,7 +42,7 @@ const RouteSearch: React.FC<{
   const [t] = useTranslation("global");
 
   // need double check realtime side
-  let fetchError = false;
+  const [fetchError, setFetchError] = useState(false);
 
   let allBuildings: string[] = [];
   let translatedBuildings: string[] = [];
@@ -142,15 +142,12 @@ const RouteSearch: React.FC<{
         : [];
 
     let filteredBus = { ...appData.bus };
-    if (busServices["ERROR"]) {
-      fetchError = true;
-    } else {
-      filteredBus = processBusStatus(
-        currentBusServices,
-        thirtyMinBusService,
-        filteredBus
-      );
-    }
+    filteredBus = processBusStatus(
+      currentBusServices,
+      thirtyMinBusService,
+      filteredBus,
+      setFetchError
+    );
 
     setRouteResult(
       calculateRoute(
@@ -321,12 +318,9 @@ if (isset($buserrstat["suspended"]))
               {t("internet_offline")}
             </div>
           )}
-          {fetchError && (
-            <div
-              id="time-now"
-              className="show-time"
-              style={{ display: "none" }}
-            >
+          {fetchError === true && (
+            <div className="bus-offline">
+              <RiAlertFill className="bus-offline-icon" />
               {t("fetch-error")}
             </div>
           )}

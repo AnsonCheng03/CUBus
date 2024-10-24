@@ -46,6 +46,7 @@ const Realtime: React.FC<{
   );
   const [realtimeResult, setRealtimeResult] = useState<any>([]);
   const [routeMap, setRouteMap] = useState<any>([]);
+  const [fetchError, setFetchError] = useState<boolean>(false);
 
   let allBusStop: string[] = [];
   try {
@@ -76,7 +77,8 @@ const Realtime: React.FC<{
       stationName,
       setRealtimeResult,
       importantStations,
-      displayAllBus
+      displayAllBus,
+      setFetchError
     );
 
     if (log) {
@@ -141,6 +143,12 @@ const Realtime: React.FC<{
           <div className="bus-offline">
             <RiAlertFill className="bus-offline-icon" />
             {t("internet_offline")}
+          </div>
+        )}
+        {fetchError === true && (
+          <div className="bus-offline">
+            <RiAlertFill className="bus-offline-icon" />
+            {t("fetch-error")}
           </div>
         )}
         <div className="bus-grid">
