@@ -84,7 +84,11 @@ export const processBusStatus = (
         busArr["warning"] = "First-bus-not-start";
       } else busArr["warning"] = "No-bus-available";
     } else if (busArr["stats"] && busArr["stats"]["status"] !== "normal") {
-      busArr["warning"] = "Bus-status-unusual";
+      if (busArr["stats"] && busArr["stats"]["status"] === "delay")
+        busArr["warning"] = "Bus-delayed";
+      else if (busArr["stats"] && busArr["stats"]["status"] === "suspended")
+        busArr["warning"] = "Bus-suspended";
+      else busArr["warning"] = "Bus-status-unusual";
     } else {
       busArr["warning"] = (busArr["schedule"] && busArr["schedule"][5]) ?? "";
     }

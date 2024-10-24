@@ -29,7 +29,6 @@ function autocomplete(inp: HTMLInputElement, arr: string[], props: any): void {
               this.getElementsByTagName("input")[0] as HTMLInputElement
             ).value;
             props.setInputState(inp.value);
-            // autoSubmitForm();
           } catch (e) {
             console.log(e);
           } finally {
