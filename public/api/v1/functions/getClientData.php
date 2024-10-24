@@ -3,7 +3,18 @@
 include_once(__DIR__ . '/loadenv.php');
 
 // CORS to allow requests from any origin
-header("Access-Control-Allow-Origin: *");
+
+$http_origin = $_SERVER['HTTP_ORIGIN'];
+$allowed_http_origins = array(
+    'capacitor://cu-bus.online',
+    'ionic://cu-bus.online',
+    "http://localhost:5173",
+);
+if (in_array($http_origin, $allowed_http_origins)) {
+    @header("Access-Control-Allow-Origin: " . $http_origin);
+}
+
+header("Access-Control-Allow-Credentials: true");
 header("Access-Control-Allow-Methods: GET, POST");
 header("Access-Control-Allow-Headers: Content-Type");
 
@@ -11,6 +22,30 @@ $conn = new mysqli(getenv('DB_HOST'), getenv('DB_USER'), getenv('DB_PASS'), gete
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
+
+
+// start session
+session_start();
+
+// check if session is set
+if (!isset($_SESSION['visit']) && !isset($_GET['force']) && $_SERVER['REQUEST_METHOD'] === 'GET') {
+    // log current visit
+    $stmt = $conn->prepare("INSERT INTO `logs` (`Time`, `Webpage`, `Lang`)
+        VALUES (?, 'appOpen', ?);");
+    $Time = (new DateTime())->format('Y-m-d H:i:s');
+    if (isset($_GET['lang'])) {
+        $lang = $_GET['lang'];
+    } else {
+        $lang = "null";
+    }
+    $stmt->bind_param("ss", $Time, $lang);
+    $stmt->execute();
+    $stmt->close();
+
+    $_SESSION['visit'] = true;
+    $_SESSION['token'] = bin2hex(random_bytes(32));
+}
+
 
 // Function to get last modification date of a table
 function getTableDate($conn, $table)
@@ -237,6 +272,12 @@ if (
     }
 
     $output['fetchTime'] = date("Y-m-d H:i:s");
+    if (!isset($_SESSION['token'])) {
+        session_destroy();
+        session_start();
+        $_SESSION['token'] = bin2hex(random_bytes(32));
+    }
+    $output['token'] = $_SESSION['token'];
 
     // Set the content type to JSON
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {

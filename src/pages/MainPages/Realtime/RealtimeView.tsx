@@ -28,6 +28,7 @@ import {
 } from "ionicons/icons";
 import { RiAlertFill } from "react-icons/ri";
 import { getTextColor } from "../../Functions/Tools";
+import axios from "axios";
 
 const Realtime: React.FC<{
   appData: any;
@@ -40,7 +41,7 @@ const Realtime: React.FC<{
   defaultSelectedStation,
   networkError,
 }) => {
-  const [t, i18n] = useTranslation("global");
+  const { t, i18n } = useTranslation("global");
   const [realtimeDest, setRealtimeDest] = useState<string>(
     defaultSelectedStation
   );
@@ -68,7 +69,7 @@ const Realtime: React.FC<{
 
   const generateResult = async (
     stationName: string = realtimeDest,
-    log = true
+    log = false
   ) => {
     await generateRouteResult(
       t,
@@ -82,14 +83,30 @@ const Realtime: React.FC<{
     );
 
     if (log) {
-      console.log("Realtime request for", stationName);
+      try {
+        await axios.post<{}>(
+          (import.meta.env.VITE_BASE_URL ??
+            "https://cu-bus.online/api/v1/functions") + "/logData.php",
+          {
+            type: "realtime",
+            Dest: stationName,
+            Lang: i18n.language,
+            Token: appData.token ?? "",
+          },
+          {
+            timeout: 10000,
+          }
+        );
+      } catch (e) {
+        console.error(e);
+      }
     }
   };
 
   useEffect(() => {
     setUserSetRealtimeDest(realtimeDest);
 
-    generateResult(realtimeDest);
+    generateResult(realtimeDest, true);
   }, [realtimeDest]);
 
   useEffect(() => {

@@ -30,6 +30,7 @@ import { calculateRoute } from "../../Functions/getRoute";
 import LocationTimeChooser from "./RouteSearchFormTime";
 import PullToRefresh from "react-simple-pull-to-refresh";
 import { RiAlertFill, RiBusFill } from "react-icons/ri";
+import axios from "axios";
 
 const RouteSearch: React.FC<{
   appData: any;
@@ -39,7 +40,7 @@ const RouteSearch: React.FC<{
   networkError: boolean;
 }> = ({ appData, appSettings, appTempData, setAppTempData, networkError }) => {
   const [routeMap, setRouteMap] = useState<any>([]);
-  const [t] = useTranslation("global");
+  const { t, i18n } = useTranslation("global");
 
   // need double check realtime side
   const [fetchError, setFetchError] = useState(false);
@@ -163,7 +164,8 @@ const RouteSearch: React.FC<{
         filteredBus,
         appData?.station,
         appData["timetable.json"],
-        appSettings
+        appSettings,
+        logRequest
       )
     );
   };
@@ -177,40 +179,41 @@ const RouteSearch: React.FC<{
     });
   }
 
+  const logRequest = async (
+    routeSearchStart: string,
+    routeSearchDest: string,
+    departNow: boolean
+  ) => {
+    console.log("Logging search request", routeSearchStart, routeSearchDest);
+    if (!routeSearchStart || !routeSearchDest) return;
+    try {
+      await axios.post<{}>(
+        (import.meta.env.VITE_BASE_URL ??
+          "https://cu-bus.online/api/v1/functions") + "/logData.php",
+        {
+          type: "search",
+          Start: routeSearchStart,
+          Dest: routeSearchDest,
+          Departnow: departNow,
+          Lang: i18n.language,
+          Token: appData.token ?? "",
+        },
+        {
+          timeout: 10000,
+        }
+      );
+      console.log("Logged search request");
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
     generateRouteResult();
   }, [routeSearchStart, routeSearchDest, departNow]);
 
   return (
     <IonPage>
-      {/* <?php
-
-
-//Alert Delay Bus
-foreach ($bus as $busnum => $busline) {
-
-  if ($busline["stats"]["status"] == "no" && $busline["stats"]["prevstatus"] == "normal")
-    $buserrstat["justeos"][] = $busnum;
-
-  if ($busline["stats"]["status"] == "delay")
-    $buserrstat["delay"][] = $busnum;
-  if ($busline["stats"]["status"] == "suspended")
-    $buserrstat["suspended"][] = $busnum;
-}
-
-$finalerrbus = "";
-if (isset($buserrstat["delay"]))
-  $finalerrbus = $finalerrbus . $translation["delay-alert"][$lang] . implode(", ", $buserrstat["delay"]);
-if (isset($buserrstat["delay"]) && isset($buserrstat["suspended"]))
-  $finalerrbus = $finalerrbus . "<br>";
-if (isset($buserrstat["suspended"]))
-  $finalerrbus = $finalerrbus . $translation["suspended-alert"][$lang] . implode(", ", $buserrstat["suspended"]);
-// if ($finalerrbus !== "")
-//   alert("alert", $finalerrbus);
-
-?>
-
-*/}
       <div className="route-search-page">
         <div
           className={`route-search-form-container ${

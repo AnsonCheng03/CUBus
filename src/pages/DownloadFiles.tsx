@@ -29,10 +29,6 @@ interface DownloadFilesProps {
   setNetworkError: any;
 }
 
-const baseUrl =
-  // "http://localhost:8080/api/v1/functions/getClientData.php";
-  "https://cu-bus.online/api/v1/functions/getClientData.php";
-
 interface ServerResponse {
   bus?: any;
   translation?: {
@@ -87,9 +83,13 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
   ) => {
     try {
       setDownloadHint(t("DownloadFiles-Downloading"));
-      const response = await axios.get<ModificationDates>(baseUrl, {
-        timeout: 5000,
-      });
+      const response = await axios.get<ModificationDates>(
+        (import.meta.env.VITE_BASE_URL ??
+          "https://cu-bus.online/api/v1/functions") + "/getClientData.php",
+        {
+          timeout: 5000,
+        }
+      );
       const serverDates = response.data;
 
       // Fetch and process all data, regardless of update status
@@ -144,9 +144,15 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
                 lastModifiedDates,
               },
             }
-          : await axios.post<ServerResponse>(baseUrl, currentDates, {
-              timeout: 10000,
-            });
+          : await axios.post<ServerResponse>(
+              (import.meta.env.VITE_BASE_URL ??
+                "https://cu-bus.online/api/v1/functions") +
+                "/getClientData.php",
+              currentDates,
+              {
+                timeout: 10000,
+              }
+            );
 
       if (!networkError) {
         setNetworkError(false);
@@ -215,6 +221,10 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
         if (tableData) {
           await processTableData(table, tableData, networkError);
         }
+      }
+
+      if ("token" in response.data) {
+        await processTableData("token", response.data.token, networkError);
       }
 
       // Update local storage with new modification dates
@@ -288,6 +298,14 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
           };
         });
         break;
+      case "token":
+        setAppData((prev: any) => {
+          return {
+            ...prev,
+            ["token"]: data,
+          };
+        });
+        break;
       default:
         console.log(`Unknown table: ${table}`);
     }
@@ -322,6 +340,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
   };
 
   useEffect(() => {
+    axios.defaults.withCredentials = true;
     initializeData();
   }, []);
 

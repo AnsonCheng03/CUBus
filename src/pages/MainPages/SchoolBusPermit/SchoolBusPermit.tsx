@@ -108,7 +108,9 @@ const SchoolBusPermitInput: React.FC<{
             const permit = {
               name: busPermitNameRef.current?.value,
               sid: busPermitSIDRef.current?.value,
-              major: busPermitMajorRef.current?.value?.toUpperCase(),
+              major: (
+                busPermitMajorRef.current?.value as string
+              )?.toUpperCase(),
               expiry: busPermitExpRef.current?.value,
             };
             if (

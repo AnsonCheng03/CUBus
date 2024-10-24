@@ -295,8 +295,6 @@ export const generateRouteResult = (
     );
   }
 
-  console.log(filteredBus);
-
   const outputSchedule = Object.fromEntries(
     Object.entries(busSchedule).filter(
       ([key]) => key.split("|")[0] === searchStation

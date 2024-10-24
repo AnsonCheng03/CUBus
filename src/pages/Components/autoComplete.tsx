@@ -116,6 +116,9 @@ class AutoComplete extends Component<AutoCompleteProps> {
           id="Startbd"
           name="Startbd"
           autoComplete="off"
+          autoCapitalize="off"
+          autoCorrect="off"
+          spellCheck="false"
           value={this.props.inputState}
           onChange={(e) => {
             this.props.setInputState(e.target.value);

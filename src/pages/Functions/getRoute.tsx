@@ -25,24 +25,6 @@ export interface BusData {
   };
 }
 
-const logRequest = () => {
-  // try {
-  //     $conn = new mysqli(getenv('DB_HOST'), getenv('DB_USER'), getenv('DB_PASS'), getenv('DB_NAME'));
-  //     if ($conn->connect_error)
-  //         die("Connection failed: " . $conn->connect_error);
-  //     $stmt = $conn->prepare("INSERT INTO `logs` (`Time`, `Webpage`, `Start`, `Dest`, `Mode`, `Departnow`, `Lang`)
-  //         VALUES (?, 'routesearch', ?, ?, ?, ?, ?);");
-  //     $stmt->bind_param("ssssss", $Time, $Startsql, $Destsql, $searchMode, $departNow, $lang);
-  //     $Time = (new DateTime())->format('Y-m-d H:i:s');
-  //     $Startsql = $searchMode == "building" ? $_POST['Startbd'] : $_POST['Start'];
-  //     $Destsql = $searchMode == "building" ? $_POST['Destbd'] : $_POST['Dest'];
-  //     $stmt->execute();
-  //     $stmt->close();
-  //     $conn->close();
-  // } catch (Exception $e) {
-  // }
-};
-
 const filterBus = (
   bus: BusData,
   selectWeekday: string,
@@ -328,7 +310,8 @@ export const calculateRoute = (
   originalBus: BusData,
   station: { [key: string]: string[] },
   busSchedule: any,
-  appSettings: any
+  appSettings: any,
+  logRequest?: any
 ) => {
   let routeCount = 0;
   let bus = filterBus(
@@ -369,6 +352,10 @@ export const calculateRoute = (
       error: true,
       message: "No-BUS",
     };
+  }
+
+  if (logRequest) {
+    logRequest(routeSearchStart, routeSearchDest, departNow);
   }
 
   // $sortedResults = [];
