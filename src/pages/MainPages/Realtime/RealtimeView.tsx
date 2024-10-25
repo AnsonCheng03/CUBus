@@ -183,6 +183,11 @@ const Realtime: React.FC<{
                     setRouteMap([
                       bus.nextStation.route,
                       bus.nextStation.startIndex,
+                      {
+                        busNo: bus.busno,
+                        stationIndex: bus.nextStation.startIndex,
+                        token: appData.token,
+                      },
                     ]);
                   }}
                   key={bus.busno + bus.time}
