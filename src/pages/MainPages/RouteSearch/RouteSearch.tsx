@@ -344,7 +344,15 @@ const RouteSearch: React.FC<{
                         className="route-result-busno"
                         key={index}
                         onClick={() => {
-                          setRouteMap([result.route, result.routeIndex]);
+                          setRouteMap([
+                            result.route,
+                            result.routeIndex,
+                            {
+                              busNo: result.busNo,
+                              stationIndex: result.routeIndex,
+                              token: appData.token,
+                            },
+                          ]);
                         }}
                       >
                         <div className="route-result-busno-number-container">

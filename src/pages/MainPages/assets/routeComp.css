@@ -135,7 +135,7 @@ https://huemint.com/website-3/#palette=fdfefe-911f27-001062-1d40b9-f4532c-fdf815
 #detail-route-container {
   width: 100%;
   background-color: white;
-  padding: 20px;
+  padding: 0 20px 20px 20px;
 }
 
 #close-button {
@@ -148,7 +148,7 @@ https://huemint.com/website-3/#palette=fdfefe-911f27-001062-1d40b9-f4532c-fdf815
 #map-container {
   flex-grow: 1;
   overflow-y: auto;
-  max-height: calc(50vh - 40px);
+  max-height: calc(50vh - 70px - 1.5rem);
 }
 
 .map-container {
@@ -186,6 +186,34 @@ ion-modal#RouteModal::part(backdrop) {
 ion-modal#RouteModal ion-toolbar {
   --background: rgb(14 116 144);
   --color: white;
+}
+
+ion-modal#RouteModal .mapModalHeader {
+  padding: 20px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+ion-modal#RouteModal .mapModalHeader .mapModalHeaderButton {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+ion-modal#RouteModal .mapModalHeader .mapModalHeaderButton button {
+  font-size: 1rem;
+  padding: 6px 20px;
+  border-radius: 30px;
+  background-color: #911f27;
+  color: #fff;
+}
+
+ion-modal#RouteModal h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0;
+  text-align: left;
 }
 
 .station-container {

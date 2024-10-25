@@ -7,7 +7,9 @@ import {
   IonButton,
   IonContent,
   IonIcon,
+  IonLabel,
 } from "@ionic/react";
+import axios from "axios";
 import { busOutline, flagOutline, flagSharp } from "ionicons/icons";
 import React, { Component, useEffect } from "react";
 
@@ -61,6 +63,25 @@ export default class RouteMap extends Component<routeMapProps> {
       );
     };
 
+    const reportArrival = async () => {
+      try {
+        await axios.post<{}>(
+          (import.meta.env.VITE_BASE_URL ??
+            "https://cu-bus.online/api/v1/functions") + "/logData.php",
+          {
+            type: "reportArrival",
+            Details: routeMap[2],
+            token: (routeMap[2] && routeMap.token) ?? "",
+          },
+          {
+            timeout: 10000,
+          }
+        );
+      } catch (e) {
+        window.alert("Error: " + e);
+      }
+    };
+
     return (
       <IonModal
         initialBreakpoint={0.5}
@@ -82,6 +103,15 @@ export default class RouteMap extends Component<routeMapProps> {
             e.stopPropagation();
           }}
         >
+          <div className="mapModalHeader">
+            <div>
+              <h2>路線</h2>
+            </div>
+            <div className="mapModalHeaderButton">
+              <button onClick={reportArrival}>有校巴到</button>
+              <IonLabel>ABCDEFG</IonLabel>
+            </div>
+          </div>
           <div id="detail-route-container">
             <div id="map-container">
               <div className="map-container completed">

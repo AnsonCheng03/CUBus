@@ -69,6 +69,13 @@ VALUES (?, 'realtime', ?, ?);");
             $stmt->execute();
             $stmt->close();
             break;
+        case 'reportArrival':
+            if (!isset($_POST['Details']) || !isset($_POST['Details']['busNo']) || !isset($_POST['Details']['stationIndex'])) {
+                throw new Exception('Missing parameters');
+            }
+
+
+            break;
         default:
             throw new Exception('Invalid type');
     }
