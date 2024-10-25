@@ -23,6 +23,7 @@ export interface BusData {
     warning?: string;
     colorCode?: string;
     scheduleType?: string;
+    scheduleConfig?: {};
   };
 }
 
@@ -105,23 +106,27 @@ export const processBusStatus = (
 
 const getScheduledTimes = (
   t: TFunction,
-  timetable: string[],
+  timetable: (string | { [key: string]: string })[],
   busno: string,
   stationname: string,
   currtime: string,
   nowtime: string,
   warning: string | false,
   nextStation: any,
-  config: { colorCode: string; scheduleType?: string }
+  config: { colorCode: string; scheduleType?: string; scheduleConfig?: {} }
 ) => {
   const scheduledTimes = [];
   for (const time of timetable) {
-    if (time >= currtime) {
+    const timeTmp =
+      config?.scheduleType === "reported" && typeof time === "object"
+        ? time["average_time"]
+        : (time as string);
+    if (timeTmp >= currtime) {
       scheduledTimes.push({
         busno,
         direction: stationname.split("|")[1] ?? "mode-realtime",
-        time: time.slice(0, -3),
-        arrived: time <= nowtime,
+        time: timeTmp.slice(0, -3),
+        arrived: timeTmp <= nowtime,
         warning,
         nextStation,
         config,
@@ -198,7 +203,11 @@ export const processAndSortBuses = (
     arrived: boolean;
     warning: string | false;
     nextStation: any;
-    config: { colorCode: string; scheduleType?: string };
+    config: {
+      colorCode: string;
+      scheduleType?: string;
+      scheduleConfig?: {};
+    };
   }[] = [];
   const nowtime = new Date().toLocaleTimeString("en-GB", {
     hour: "2-digit",
@@ -251,6 +260,7 @@ export const processAndSortBuses = (
               {
                 colorCode: bus[busno]["colorCode"] ?? "rgb(254, 250, 183)",
                 scheduleType: scheduleType === 1 ? "reported" : undefined,
+                scheduleConfig: scheduleType === 1 ? timetable : undefined,
               }
             )
           );

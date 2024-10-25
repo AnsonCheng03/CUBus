@@ -1,6 +1,8 @@
 <?php
 
 include_once(__DIR__ . '/loadenv.php');
+include_once(__DIR__ . '/functions.php');
+date_default_timezone_set("Asia/Hong_Kong");
 
 // CORS to allow requests from any origin
 
@@ -261,13 +263,7 @@ if (
         $output['timetable.json'] = json_decode(file_get_contents(__DIR__ . "/../../Data/timetable.json"), true);
     }
 
-    try {
-        if (!file_exists(__DIR__ . "/../../Data/reportedTime.json"))
-            throw new Exception("File not found");
-        $output['reportedTime.json'] = json_decode(file_get_contents(__DIR__ . "/../../Data/reportedTime.json"), true);
-    } catch (Exception $e) {
-        $output['reportedTime.json'] = array();
-    }
+    $output['reportedTime.json'] = renderTimetableReport();
 
     // Add modification dates to the output
     $output['modificationDates'] = array();
