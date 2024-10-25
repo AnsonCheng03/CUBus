@@ -61,7 +61,7 @@ function getTableDate($conn, $table)
 
 // Tables to check
 $tables = ['Route', 'translateroute', 'translatewebsite', 'translatebuilding', 'translateattribute', 'station', 'notice', 'gps', 'website'];
-$dataFiles = ['Status.json', 'timetable.json'];
+$dataFiles = ['Status.json', 'timetable.json', 'reportedTime.json'];
 $translationTables = ['translateroute', 'translatewebsite', 'translatebuilding', 'translateattribute'];
 
 if (
@@ -259,6 +259,14 @@ if (
 
     if (in_array('timetable.json', $outdatedTables)) {
         $output['timetable.json'] = json_decode(file_get_contents(__DIR__ . "/../../Data/timetable.json"), true);
+    }
+
+    try {
+        if (!file_exists(__DIR__ . "/../../Data/reportedTime.json"))
+            throw new Exception("File not found");
+        $output['reportedTime.json'] = json_decode(file_get_contents(__DIR__ . "/../../Data/reportedTime.json"), true);
+    } catch (Exception $e) {
+        $output['reportedTime.json'] = array();
     }
 
     // Add modification dates to the output

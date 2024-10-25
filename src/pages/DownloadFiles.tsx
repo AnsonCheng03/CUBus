@@ -61,23 +61,6 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
     t("DownloadFiles-Initializing")
   );
 
-  const compareModificationDates = (
-    localDates: ModificationDates | null,
-    serverDates: ModificationDates
-  ): boolean => {
-    if (!localDates) return true;
-
-    for (const table in serverDates) {
-      if (
-        serverDates[table] &&
-        (!localDates[table] || localDates[table] < serverDates[table])
-      ) {
-        return true;
-      }
-    }
-    return false;
-  };
-
   const fetchDatabaseLastUpdated = async (
     currentDates: ModificationDates | null
   ) => {
@@ -154,6 +137,8 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
               }
             );
 
+      console.log(response.data);
+
       if (!networkError) {
         setNetworkError(false);
       }
@@ -210,6 +195,9 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
                 break;
               case "timetable.json":
                 tableData = timetable;
+                break;
+              case "reportedTime.json":
+                tableData = {};
                 break;
               default:
                 console.log(`Unknown table: ${table}`);
@@ -291,6 +279,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
         break;
       case "Status.json":
       case "timetable.json":
+      case "reportedTime.json":
         setAppData((prev: any) => {
           return {
             ...prev,

@@ -11,7 +11,10 @@ import { BusData, processBusStatus } from "../../Functions/getRealTime";
 import { useEffect, useState } from "react";
 import {
   busOutline,
+  informationCircle,
   informationCircleOutline,
+  informationCircleSharp,
+  informationOutline,
   locateOutline,
   locationOutline,
   pinOutline,
@@ -164,6 +167,7 @@ const RouteSearch: React.FC<{
         filteredBus,
         appData?.station,
         appData["timetable.json"],
+        appData["reportedTime.json"],
         appSettings,
         logRequest
       )
@@ -184,7 +188,6 @@ const RouteSearch: React.FC<{
     routeSearchDest: string,
     departNow: boolean
   ) => {
-    console.log("Logging search request", routeSearchStart, routeSearchDest);
     if (!routeSearchStart || !routeSearchDest) return;
     try {
       await axios.post<{}>(
@@ -202,7 +205,6 @@ const RouteSearch: React.FC<{
           timeout: 10000,
         }
       );
-      console.log("Logged search request");
     } catch (e) {
       console.error(e);
     }
@@ -429,6 +431,14 @@ const RouteSearch: React.FC<{
                             {t("wait-time-desc")}
                           </p>
                         </div>
+                        {result.config?.scheduleType === "reported" && (
+                          <div className="route-result-busno-details-warning-container">
+                            <IonIcon icon={informationCircleOutline}></IonIcon>
+                            <p className="route-result-busno-details-text-detail">
+                              {t("bus-reported-by-user")}
+                            </p>
+                          </div>
+                        )}
                         {result.warning && (
                           <div className="route-result-busno-details-warning-container">
                             <IonIcon icon={warningOutline}></IonIcon>
