@@ -175,7 +175,7 @@ const Realtime: React.FC<{
               <p>{t("No-bus-time")}</p>
             </div>
           ) : (
-            realtimeResult.map((bus: any) => {
+            realtimeResult.map((bus: any, index: number) => {
               return (
                 <div
                   className={"bus-row" + (bus.arrived ? " arrived" : "")}
@@ -190,7 +190,7 @@ const Realtime: React.FC<{
                       },
                     ]);
                   }}
-                  key={bus.busno + bus.time}
+                  key={bus.busno + bus.time + index}
                 >
                   <div className="bus-info">
                     <div className="route-result-busno-number-container">
@@ -269,13 +269,14 @@ const Realtime: React.FC<{
                           </p>
                         </>
                       ))}
-                    {(bus.warning ||
-                      bus.config?.scheduleType === "reported") && (
+                    {(bus.warning || bus.config?.scheduleType) && (
                       <>
                         <span></span>
                         {bus.config?.scheduleType === "reported" ? (
                           <span className="info">
-                            {t("bus-reported-by-user")}
+                            {`${bus.config?.scheduleConfig?.count ?? 1} ${t(
+                              "bus-reported-by-user"
+                            )}`}
                           </span>
                         ) : (
                           <span className="warning">{t(bus.warning)}</span>

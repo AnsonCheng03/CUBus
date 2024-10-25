@@ -12,15 +12,17 @@ import {
 import axios from "axios";
 import { busOutline, flagOutline, flagSharp } from "ionicons/icons";
 import React, { Component, useEffect } from "react";
+import { withTranslation } from "react-i18next";
 
 interface routeMapProps {
   routeMap: any;
   setRouteMap: any;
+  t: any;
 }
 
-export default class RouteMap extends Component<routeMapProps> {
+export class RouteMap extends Component<routeMapProps> {
   render() {
-    const { routeMap, setRouteMap } = this.props;
+    const { routeMap, setRouteMap, t } = this.props;
 
     const currentStation = React.createRef<HTMLDivElement>();
 
@@ -65,7 +67,7 @@ export default class RouteMap extends Component<routeMapProps> {
 
     const reportArrival = async () => {
       try {
-        await axios.post<{}>(
+        const response = await axios.post<{}>(
           (import.meta.env.VITE_BASE_URL ??
             "https://cu-bus.online/api/v1/functions") + "/logData.php",
           {
@@ -77,6 +79,7 @@ export default class RouteMap extends Component<routeMapProps> {
             timeout: 10000,
           }
         );
+        console.log(response.data);
       } catch (e) {
         window.alert("Error: " + e);
       }
@@ -105,11 +108,11 @@ export default class RouteMap extends Component<routeMapProps> {
         >
           <div className="mapModalHeader">
             <div>
-              <h2>路線</h2>
+              <h2>{t("modal-map-title")}</h2>
             </div>
             <div className="mapModalHeaderButton">
-              <button onClick={reportArrival}>有校巴到</button>
-              <IonLabel>ABCDEFG</IonLabel>
+              <button onClick={reportArrival}>{t("modal-map-button")}</button>
+              <IonLabel>{t("modal-map-desc")}</IonLabel>
             </div>
           </div>
           <div id="detail-route-container">
@@ -138,3 +141,5 @@ export default class RouteMap extends Component<routeMapProps> {
     );
   }
 }
+
+export default withTranslation("global")(RouteMap);

@@ -148,7 +148,7 @@ https://huemint.com/website-3/#palette=fdfefe-911f27-001062-1d40b9-f4532c-fdf815
 #map-container {
   flex-grow: 1;
   overflow-y: auto;
-  max-height: calc(50vh - 70px - 1.5rem);
+  max-height: calc(50vh - 70px - 2.3rem);
 }
 
 .map-container {
@@ -207,6 +207,11 @@ ion-modal#RouteModal .mapModalHeader .mapModalHeaderButton button {
   border-radius: 30px;
   background-color: #911f27;
   color: #fff;
+}
+
+ion-modal#RouteModal .mapModalHeader .mapModalHeaderButton ion-label {
+  font-size: 0.8rem;
+  color: #333;
 }
 
 ion-modal#RouteModal h2 {
