@@ -167,7 +167,7 @@ const RouteSearch: React.FC<{
         filteredBus,
         appData?.station,
         appData["timetable.json"],
-        appData["reportedTime.json"],
+        appData["reportedTime.json"] ?? {},
         appSettings,
         logRequest
       )

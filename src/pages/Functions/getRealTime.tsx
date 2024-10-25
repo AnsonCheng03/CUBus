@@ -282,7 +282,7 @@ export const generateRouteResult = (
   setFetchError: any
 ) => {
   const busSchedule = appData["timetable.json"];
-  const busReportedSchedule = appData["reportedTime.json"];
+  const busReportedSchedule = appData["reportedTime.json"] ?? {};
   const busServices = appData["Status.json"];
 
   const busServiceKeys = Object.keys(busServices);
