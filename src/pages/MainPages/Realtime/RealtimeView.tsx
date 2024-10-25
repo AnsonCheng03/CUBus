@@ -269,10 +269,17 @@ const Realtime: React.FC<{
                           </p>
                         </>
                       ))}
-                    {bus.warning && (
+                    {(bus.warning ||
+                      bus.config?.scheduleType === "reported") && (
                       <>
                         <span></span>
-                        <span className="warning">{t(bus.warning)}</span>
+                        {bus.config?.scheduleType === "reported" ? (
+                          <span className="info">
+                            {t("bus-reported-by-user")}
+                          </span>
+                        ) : (
+                          <span className="warning">{t(bus.warning)}</span>
+                        )}
                       </>
                     )}
                   </div>

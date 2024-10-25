@@ -310,6 +310,7 @@ export const calculateRoute = (
   originalBus: BusData,
   station: { [key: string]: string[] },
   busSchedule: any,
+  busReportedSchedule: any,
   appSettings: any,
   logRequest?: any
 ) => {
@@ -370,6 +371,12 @@ export const calculateRoute = (
         )
       );
 
+      const reportedSchedule = Object.fromEntries(
+        Object.entries(busReportedSchedule).filter(
+          ([key]) => key.split("|")[0] === startStation
+        )
+      );
+
       for (const [busNo, busArray] of Object.entries(
         temp as { [key: string]: any }
       )) {
@@ -378,12 +385,17 @@ export const calculateRoute = (
           time = Number.MAX_SAFE_INTEGER;
         }
 
-        const allBuses = processAndSortBuses(t, outputSchedule, bus, {
-          busno: busNo,
-          currtime: departNow
-            ? null
-            : outputDate(`${selectHour}:${selectMinute}`).toISOString(),
-        });
+        const allBuses = processAndSortBuses(
+          t,
+          [outputSchedule, reportedSchedule],
+          bus,
+          {
+            busno: busNo,
+            currtime: departNow
+              ? null
+              : outputDate(`${selectHour}:${selectMinute}`).toISOString(),
+          }
+        );
 
         allBuses.forEach((busData: any) => {
           const busTime = outputDate(busData.time).getTime();

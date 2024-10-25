@@ -22,6 +22,7 @@ export interface BusData {
     };
     warning?: string;
     colorCode?: string;
+    scheduleType?: string;
   };
 }
 
@@ -111,7 +112,7 @@ const getScheduledTimes = (
   nowtime: string,
   warning: string | false,
   nextStation: any,
-  config: { colorCode: string }
+  config: { colorCode: string; scheduleType?: string }
 ) => {
   const scheduledTimes = [];
   for (const time of timetable) {
@@ -190,7 +191,15 @@ export const processAndSortBuses = (
   bus: BusData,
   pref: any = null
 ) => {
-  const allBuses = [];
+  const allBuses: {
+    busno: string;
+    direction: string;
+    time: string;
+    arrived: boolean;
+    warning: string | false;
+    nextStation: any;
+    config: { colorCode: string; scheduleType?: string };
+  }[] = [];
   const nowtime = new Date().toLocaleTimeString("en-GB", {
     hour: "2-digit",
     minute: "2-digit",
@@ -211,41 +220,44 @@ export const processAndSortBuses = (
         }
       );
 
-  for (const [stationname, schedule] of Object.entries(outputSchedule)) {
-    for (const [busno, timetable] of Object.entries(
-      schedule as { [key: string]: any }
-    )) {
-      if (pref?.busno && busno !== pref.busno) {
-        continue;
-      }
+  outputSchedule.forEach((scheduleValue: any, scheduleType: number) => {
+    for (const [stationname, schedule] of Object.entries(scheduleValue)) {
+      for (const [busno, timetable] of Object.entries(
+        schedule as { [key: string]: any }
+      )) {
+        if (pref?.busno && busno !== pref.busno) {
+          continue;
+        }
 
-      if (bus[busno] && timetable) {
-        const warning = bus[busno]["warning"] ?? false;
-        const nextStation = getNextStation(
-          t,
-          bus[busno]["stations"] ?? { name: [], attr: [] },
-          stationname,
-          pref?.importantStations
-        );
-
-        allBuses.push(
-          ...getScheduledTimes(
+        if (bus[busno] && timetable) {
+          const warning = bus[busno]["warning"] ?? false;
+          const nextStation = getNextStation(
             t,
-            timetable,
-            busno,
+            bus[busno]["stations"] ?? { name: [], attr: [] },
             stationname,
-            currtime,
-            nowtime,
-            warning,
-            nextStation,
-            {
-              colorCode: bus[busno]["colorCode"] ?? "rgb(254, 250, 183)",
-            }
-          )
-        );
+            pref?.importantStations
+          );
+
+          allBuses.push(
+            ...getScheduledTimes(
+              t,
+              timetable,
+              busno,
+              stationname,
+              currtime,
+              nowtime,
+              warning,
+              nextStation,
+              {
+                colorCode: bus[busno]["colorCode"] ?? "rgb(254, 250, 183)",
+                scheduleType: scheduleType === 1 ? "reported" : undefined,
+              }
+            )
+          );
+        }
       }
     }
-  }
+  });
 
   allBuses.sort((a, b) => {
     if (a.arrived && !b.arrived) {
@@ -270,6 +282,7 @@ export const generateRouteResult = (
   setFetchError: any
 ) => {
   const busSchedule = appData["timetable.json"];
+  const busReportedSchedule = appData["reportedTime.json"];
   const busServices = appData["Status.json"];
 
   const busServiceKeys = Object.keys(busServices);
@@ -301,9 +314,20 @@ export const generateRouteResult = (
     )
   );
 
-  const allBuses = processAndSortBuses(t, outputSchedule, filteredBus, {
-    importantStations,
-  });
+  const reportedSchedule = Object.fromEntries(
+    Object.entries(busReportedSchedule).filter(
+      ([key]) => key.split("|")[0] === searchStation
+    )
+  );
+
+  const allBuses = processAndSortBuses(
+    t,
+    [outputSchedule, reportedSchedule],
+    filteredBus,
+    {
+      importantStations,
+    }
+  );
 
   const allBusWithoutWarning = allBuses.filter(
     (bus) => bus.warning !== "No-bus-available"
