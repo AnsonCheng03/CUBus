@@ -357,6 +357,16 @@ const RouteSearch: React.FC<{
                           ]);
                         }}
                       >
+                        {result.config?.scheduleType === "reported" && (
+                          <div className="route-result-busno-details-warning-container">
+                            <IonIcon icon={informationCircleOutline}></IonIcon>
+                            <p className="route-result-busno-details-text-detail">
+                              {`${
+                                result.config?.scheduleConfig?.count ?? 1
+                              } ${t("bus-reported-by-user")}`}
+                            </p>
+                          </div>
+                        )}
                         <div className="route-result-busno-number-container">
                           <svg
                             stroke="currentColor"
@@ -431,14 +441,7 @@ const RouteSearch: React.FC<{
                             {t("wait-time-desc")}
                           </p>
                         </div>
-                        {result.config?.scheduleType === "reported" && (
-                          <div className="route-result-busno-details-warning-container">
-                            <IonIcon icon={informationCircleOutline}></IonIcon>
-                            <p className="route-result-busno-details-text-detail">
-                              {t("bus-reported-by-user")}
-                            </p>
-                          </div>
-                        )}
+
                         {result.warning && (
                           <div className="route-result-busno-details-warning-container">
                             <IonIcon icon={warningOutline}></IonIcon>

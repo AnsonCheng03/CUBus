@@ -79,7 +79,6 @@ export class RouteMap extends Component<routeMapProps> {
             timeout: 10000,
           }
         );
-        console.log(response.data);
       } catch (e) {
         window.alert("Error: " + e);
       }

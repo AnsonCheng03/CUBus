@@ -10,6 +10,7 @@ export const outputDate = (MinuteHour: string) => {
 
 export function getTextColor(rgb: string) {
   // Extract red, green, and blue values from the rgb(xxx,xxx,xxx) string
+  if (!rgb) return "#fff";
   const [r, g, b] = rgb
     .replace(/[^\d,]/g, "") // Remove everything except digits and commas
     .split(",")

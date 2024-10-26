@@ -121,6 +121,16 @@ const getScheduledTimes = (
       config?.scheduleType === "reported" && typeof time === "object"
         ? time["average_time"]
         : (time as string);
+    const configTmp =
+      config?.scheduleType === "reported"
+        ? {
+            ...config,
+            scheduleConfig: {
+              count: typeof time === "object" ? time["count"] : undefined,
+            },
+          }
+        : config;
+
     if (timeTmp >= currtime) {
       scheduledTimes.push({
         busno,
@@ -129,7 +139,7 @@ const getScheduledTimes = (
         arrived: timeTmp <= nowtime,
         warning,
         nextStation,
-        config,
+        config: configTmp,
       });
     }
   }
@@ -260,7 +270,6 @@ export const processAndSortBuses = (
               {
                 colorCode: bus[busno]["colorCode"] ?? "rgb(254, 250, 183)",
                 scheduleType: scheduleType === 1 ? "reported" : undefined,
-                scheduleConfig: scheduleType === 1 ? timetable : undefined,
               }
             )
           );
