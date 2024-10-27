@@ -76,7 +76,9 @@ VALUES (?, 'realtime', ?, ?);");
                 throw new Exception('Missing parameters');
             }
 
-            if ($_SESSION['reporting'] === true) {
+            if (
+                isset($_SESSION['reporting']) && $_SESSION['reporting'] === true
+            ) {
                 throw new Exception('reporting-in-progress');
             }
             $_SESSION['reporting'] = true;
@@ -188,13 +190,15 @@ VALUES (?, 'realtime', ?, ?);");
             }
             $_SESSION['lastReportedTime'] = time();
             echo "reported-arrival-time";
-            $_SESSION['reporting'] = false;
+            if (isset($_SESSION['reporting']))
+                $_SESSION['reporting'] = false;
             break;
         default:
             throw new Exception('Invalid type');
     }
 } catch (Exception $e) {
-    $_SESSION['reporting'] = false;
+    if (isset($_SESSION['reporting']))
+        $_SESSION['reporting'] = false;
     echo $e->getMessage();
     // throw new Exception('Failed to log data' . $e->getMessage() . "|" . print_r($_POST, true));
 } finally {
