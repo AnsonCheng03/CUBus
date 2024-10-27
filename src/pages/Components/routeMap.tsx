@@ -115,14 +115,14 @@ export class RouteMap extends Component<routeMapProps> {
               <h2>{t("modal-map-title")}</h2>
             </div>
             <div className="mapModalHeaderButton">
-              {routeMap[2] && routeMap[2].token && (
+              {/* {routeMap[2] && routeMap[2].token && (
                 <>
                   <button onClick={reportArrival}>
                     {t("modal-map-button")}
                   </button>
                   <IonLabel>{t("modal-map-desc")}</IonLabel>
                 </>
-              )}
+              )} */}
             </div>
           </div>
           <div id="detail-route-container">
