@@ -28,6 +28,7 @@ $_POST = json_decode(file_get_contents("php://input"), true);
 
 session_start();
 
+
 if (
     isset($_POST['Token']) && $_POST['Token'] !== $_SESSION['token'] && $_POST['Token'] !== ""
 ) {
@@ -71,11 +72,57 @@ VALUES (?, 'realtime', ?, ?);");
             $stmt->close();
             break;
         case 'reportArrival':
-            if (!isset($_POST['Details']) || !isset($_POST['Details']['busNo']) || !isset($_POST['Details']['stationIndex'])) {
+            if (!isset($_POST['Details']) || !isset($_POST['Details']['busNo']) || !isset($_POST['Details']['stationIndex']) || !isset($_POST['position'])) {
                 throw new Exception('Missing parameters');
             }
 
-            $Time = new DateTime();
+            if ($_SESSION['reporting'] === true) {
+                throw new Exception('reporting-in-progress');
+            }
+            $_SESSION['reporting'] = true;
+            if (isset($_SESSION['lastReportedTime']) && time() - $_SESSION['lastReportedTime'] < 300) {
+                throw new Exception('request-within-5mins');
+            }
+
+            $timestamp = $_POST['position']['timestamp'];
+            $Time = new DateTime("@$timestamp");
+            $now = new DateTime();
+            $diff = $now->getTimestamp() - $Time->getTimestamp();
+            if ($diff > 60) {
+                throw new Exception('report-invalid-time');
+            }
+
+            $newStationIndex = $_POST['Details']['stationIndex'] + 1;
+            $stmt = $conn->prepare("SELECT 
+                gps.Lat, 
+                gps.Lng
+            FROM 
+                RouteStops
+            JOIN 
+                gps 
+            ON 
+                RouteStops.Location = gps.Location
+            WHERE 
+                RouteStops.BUSNO = ? AND RouteStops.StopOrder = ?
+            LIMIT 1;");
+            $stmt->bind_param("si", $_POST['Details']['busNo'], $newStationIndex);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows == 0) {
+                throw new Exception('report-invalid-station');
+            }
+            $row = $result->fetch_assoc();
+            $stmt->close();
+
+            // check if the reported location is within 100m of the station
+            $lat = $row['Lat'];
+            $lng = $row['Lng'];
+            $position = $_POST['position']['coords'];
+            $distance = sqrt(pow($lat - $position['latitude'], 2) + pow($lng - $position['longitude'], 2));
+            if ($distance > 100 / 100000) {
+                throw new Exception('report-invalid-distance');
+            }
+
             $BusNo = $_POST['Details']['busNo'];
             $StationIndex = $_POST['Details']['stationIndex'] + 1;
 
@@ -141,11 +188,15 @@ VALUES (?, 'realtime', ?, ?);");
                 $stmt->execute();
                 $stmt->close();
             }
+            $_SESSION['lastReportedTime'] = time();
+            echo "reported-arrival-time";
+            $_SESSION['reporting'] = false;
             break;
         default:
             throw new Exception('Invalid type');
     }
 } catch (Exception $e) {
+    $_SESSION['reporting'] = false;
     echo $e->getMessage();
     // throw new Exception('Failed to log data' . $e->getMessage() . "|" . print_r($_POST, true));
 } finally {

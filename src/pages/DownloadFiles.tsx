@@ -75,6 +75,9 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
 
       const serverData = response.data;
       setRealtimeData(serverData);
+      setNetworkError((prev: any) => {
+        return { ...prev, realtime: false };
+      });
     } catch (error: any) {
       console.error(error);
       setNetworkError((prev: any) => {
