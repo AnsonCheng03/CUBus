@@ -126,8 +126,6 @@ VALUES (?, 'realtime', ?, ?);");
             $BusNo = $_POST['Details']['busNo'];
             $StationIndex = $_POST['Details']['stationIndex'] + 1;
 
-            echo "BusNo: $BusNo, StationIndex: $StationIndex";
-
             $stmt = $conn->prepare("SELECT * FROM RouteStops WHERE BUSNO = ? AND StopOrder >= ?");
             $stmt->bind_param("si", $BusNo, $StationIndex);
             $stmt->execute();
