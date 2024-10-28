@@ -32,11 +32,13 @@ import axios from "axios";
 
 const Realtime: React.FC<{
   appData: any;
+  realtimeData: any;
   setUserSetRealtimeDest: any;
   defaultSelectedStation: string;
-  networkError: boolean;
+  networkError: { realtime: boolean; batch: boolean };
 }> = ({
   appData,
+  realtimeData,
   setUserSetRealtimeDest,
   defaultSelectedStation,
   networkError,
@@ -75,6 +77,7 @@ const Realtime: React.FC<{
       t,
       appData?.bus,
       appData,
+      realtimeData,
       stationName,
       setRealtimeResult,
       importantStations,
@@ -156,7 +159,7 @@ const Realtime: React.FC<{
       <div className="realtimeresult">
         <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
 
-        {networkError === true && (
+        {(networkError.realtime === true || networkError.batch === true) && (
           <div className="bus-offline">
             <RiAlertFill className="bus-offline-icon" />
             {t("internet_offline")}

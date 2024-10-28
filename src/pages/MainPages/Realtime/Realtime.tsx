@@ -15,10 +15,11 @@ import { useCallback, useEffect, useState } from "react";
 
 const Realtime: React.FC<{
   appData: any;
+  realtimeData: any;
   appTempData: any;
   setAppTempData: any;
-  networkError: boolean;
-}> = ({ appData, appTempData, setAppTempData, networkError }) => {
+  networkError: { realtime: boolean; batch: boolean };
+}> = ({ appData, realtimeData, appTempData, setAppTempData, networkError }) => {
   const [t] = useTranslation("global");
   const [userSetRealtimeDest, setUserSetRealtimeDest] = useState<string | null>(
     null
@@ -55,6 +56,7 @@ const Realtime: React.FC<{
       {userSetRealtimeDest ? (
         <RealtimeView
           appData={appData}
+          realtimeData={realtimeData}
           setUserSetRealtimeDest={setRealtimeStation}
           defaultSelectedStation={userSetRealtimeDest}
           networkError={networkError}

@@ -27,6 +27,7 @@ interface DownloadFilesProps {
   setAppData: any;
   setAppSettings: any;
   setNetworkError: any;
+  setRealtimeData: any;
 }
 
 interface ServerResponse {
@@ -54,12 +55,33 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
   setAppData,
   setAppSettings,
   setNetworkError,
+  setRealtimeData,
 }) => {
   const { t } = useTranslation("preset");
 
   const [downloadHint, setDownloadHint] = useState<string>(
     t("DownloadFiles-Initializing")
   );
+
+  const fetchDatabaseRealtimeUpdate = async () => {
+    try {
+      const response = await axios.get<ServerResponse>(
+        (import.meta.env.VITE_BASE_URL ??
+          "https://cu-bus.online/api/v1/functions") + "/getRealtimeData.php",
+        {
+          timeout: 5000,
+        }
+      );
+
+      const serverData = response.data;
+      setRealtimeData(serverData);
+    } catch (error: any) {
+      console.error(error);
+      setNetworkError((prev: any) => {
+        return { ...prev, realtime: true };
+      });
+    }
+  };
 
   const fetchDatabaseLastUpdated = async (
     currentDates: ModificationDates | null
@@ -91,8 +113,9 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
         error.code === "ECONNABORTED" ||
         error.message.includes("timeout")
       ) {
-        // use fallback data
-        setNetworkError(true);
+        setNetworkError((prev: any) => {
+          return { ...prev, batch: true };
+        });
         // const serverDates = lastModifiedDates;
         const localStoredDates = JSON.parse(
           await store.get("lastModifiedDates")
@@ -137,10 +160,10 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
               }
             );
 
-      console.log(response.data);
-
       if (!networkError) {
-        setNetworkError(false);
+        setNetworkError((prev: any) => {
+          return { ...prev, batch: false };
+        });
       }
 
       // Process all data, whether it's newly downloaded or existing
@@ -164,7 +187,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
         if ((response.data as ServerResponse)[table]) {
           // Data was downloaded
           tableData = (response.data as ServerResponse)[table];
-          if (table !== "Status.json")
+          if (table !== "timetable.json")
             await store.set(`data-${table}`, JSON.stringify(tableData));
         } else {
           // Data wasn't downloaded, fetch from local storage
@@ -190,14 +213,8 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
               case "station":
                 tableData = station;
                 break;
-              case "Status.json":
-                tableData = {};
-                break;
               case "timetable.json":
                 tableData = timetable;
-                break;
-              case "reportedTime.json":
-                tableData = {};
                 break;
               default:
                 console.log(`Unknown table: ${table}`);
@@ -207,12 +224,12 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
 
         // Process and store the data
         if (tableData) {
-          await processTableData(table, tableData, networkError);
+          await processTableData(table, tableData);
         }
       }
 
       if ("token" in response.data) {
-        await processTableData("token", response.data.token, networkError);
+        await processTableData("token", response.data.token);
       }
 
       // Update local storage with new modification dates
@@ -230,7 +247,9 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
         error.message.includes("timeout")
       ) {
         console.log(error.message);
-        setNetworkError(true);
+        setNetworkError((prev: any) => {
+          return { ...prev, batch: true };
+        });
       } else {
         setDownloadHint(t("StoreFile-Error"));
         console.error(error);
@@ -242,11 +261,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
     }
   };
 
-  const processTableData = async (
-    table: string,
-    data: any,
-    networkError: boolean
-  ) => {
+  const processTableData = async (table: string, data: any) => {
     switch (table) {
       case "translation":
         i18next.addResourceBundle("en", "global", data.en);
@@ -277,9 +292,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
           return { ...prev, [table]: data };
         });
         break;
-      case "Status.json":
       case "timetable.json":
-      case "reportedTime.json":
         setAppData((prev: any) => {
           return {
             ...prev,
@@ -318,14 +331,17 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
     if (storedDates) {
       currentDates = JSON.parse(storedDates);
     }
+    await fetchDatabaseRealtimeUpdate();
     await fetchDatabaseLastUpdated(currentDates);
 
-    // Fetch updates every 30 seconds
     setInterval(async () => {
-      console.log("Fetching updates...");
+      console.log("Fetching realtime updates...");
+      await fetchDatabaseRealtimeUpdate();
+    }, 10 * 1000);
+    setInterval(async () => {
+      console.log("Fetching db updates...");
       await fetchDatabaseLastUpdated(currentDates);
-    }, 60 * 1000);
-    // }, 10 * 1000);
+    }, 5 * 60 * 1000);
   };
 
   useEffect(() => {

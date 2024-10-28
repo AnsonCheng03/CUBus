@@ -1,7 +1,6 @@
 <?php
 
 include_once(__DIR__ . '/loadenv.php');
-include_once(__DIR__ . '/functions.php');
 date_default_timezone_set("Asia/Hong_Kong");
 
 // CORS to allow requests from any origin
@@ -63,7 +62,7 @@ function getTableDate($conn, $table)
 
 // Tables to check
 $tables = ['Route', 'translateroute', 'translatewebsite', 'translatebuilding', 'translateattribute', 'station', 'notice', 'gps', 'website'];
-$dataFiles = ['Status.json', 'timetable.json', 'reportedTime.json'];
+$dataFiles = ['timetable.json'];
 $translationTables = ['translateroute', 'translatewebsite', 'translatebuilding', 'translateattribute'];
 
 if (
@@ -255,15 +254,9 @@ if (
         $output['website'] = $WebsiteLinks;
     }
 
-    // if (in_array('Status.json', $outdatedTables)) {
-    $output['Status.json'] = json_decode(file_get_contents(__DIR__ . "/../../Data/Status.json"), true);
+    // if (in_array('timetable.json', $outdatedTables)) {
+    $output['timetable.json'] = json_decode(file_get_contents(__DIR__ . "/../../Data/timetable.json"), true);
     // }
-
-    if (in_array('timetable.json', $outdatedTables)) {
-        $output['timetable.json'] = json_decode(file_get_contents(__DIR__ . "/../../Data/timetable.json"), true);
-    }
-
-    $output['reportedTime.json'] = renderTimetableReport();
 
     // Add modification dates to the output
     $output['modificationDates'] = array();
@@ -286,14 +279,13 @@ if (
     // Set the content type to JSON
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Content-Type: application/json');
-
         // Output the JSON
         echo json_encode($output, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     } else {
         // Download as separate files
         foreach ($output as $key => $value) {
             echo '<body><script>
-                var a = document.createElement("a");    
+                var a = document.createElement("a");
                 a.href = "data:application/json;charset=utf-8,' . rawurlencode(json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)) . '";
                 a.download = "' . $key . '";
                 document.body.appendChild(a);
