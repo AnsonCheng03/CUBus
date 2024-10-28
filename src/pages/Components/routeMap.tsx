@@ -9,6 +9,7 @@ import {
   IonIcon,
   IonLabel,
 } from "@ionic/react";
+import { Geolocation } from "@capacitor/geolocation";
 import axios from "axios";
 import { busOutline, flagOutline, flagSharp } from "ionicons/icons";
 import React, { Component, useEffect } from "react";
@@ -67,18 +68,22 @@ export class RouteMap extends Component<routeMapProps> {
 
     const reportArrival = async () => {
       try {
+        // get gps
+        const position = await Geolocation.getCurrentPosition();
         const response = await axios.post<{}>(
           (import.meta.env.VITE_BASE_URL ??
             "https://cu-bus.online/api/v1/functions") + "/logData.php",
           {
             type: "reportArrival",
             Details: routeMap[2],
-            token: (routeMap[2] && routeMap.token) ?? "",
+            position: position,
+            token: (routeMap[2] && routeMap[2].token) ?? "",
           },
           {
             timeout: 10000,
           }
         );
+        window.alert(t(response.data));
       } catch (e) {
         window.alert("Error: " + e);
       }
@@ -110,8 +115,14 @@ export class RouteMap extends Component<routeMapProps> {
               <h2>{t("modal-map-title")}</h2>
             </div>
             <div className="mapModalHeaderButton">
-              <button onClick={reportArrival}>{t("modal-map-button")}</button>
-              <IonLabel>{t("modal-map-desc")}</IonLabel>
+              {routeMap[2] && routeMap[2].token && (
+                <>
+                  <button onClick={reportArrival}>
+                    {t("modal-map-button")}
+                  </button>
+                  <IonLabel>{t("modal-map-desc")}</IonLabel>
+                </>
+              )}
             </div>
           </div>
           <div id="detail-route-container">

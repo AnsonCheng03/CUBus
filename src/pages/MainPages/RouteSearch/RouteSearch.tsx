@@ -185,9 +185,7 @@ const RouteSearch: React.FC<{
   async function handleRefresh(): Promise<void> {
     await generateRouteResult();
     return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(void 0);
-      }, 1000);
+      resolve(void 0);
     });
   }
 
@@ -220,7 +218,7 @@ const RouteSearch: React.FC<{
 
   useEffect(() => {
     generateRouteResult();
-  }, [routeSearchStart, routeSearchDest, departNow]);
+  }, [routeSearchStart, routeSearchDest, departNow, realtimeData]);
 
   return (
     <IonPage>

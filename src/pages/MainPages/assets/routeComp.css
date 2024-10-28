@@ -148,7 +148,7 @@ https://huemint.com/website-3/#palette=fdfefe-911f27-001062-1d40b9-f4532c-fdf815
 #map-container {
   flex-grow: 1;
   overflow-y: auto;
-  max-height: calc(50vh - 70px - 2.3rem);
+  max-height: calc(50vh - 70px - 1.8rem);
 }
 
 .map-container {
@@ -193,6 +193,7 @@ ion-modal#RouteModal .mapModalHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: calc(1.8rem + 52px);
 }
 
 ion-modal#RouteModal .mapModalHeader .mapModalHeaderButton {
