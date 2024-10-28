@@ -92,12 +92,17 @@ const App: React.FC<RouteComponentProps | any> = () => {
   const [isDownloaded, setDownloadedState] = useState(false);
   const [appData, setAppData] = useState<any>({});
   const [appSettings, setAppSettings] = useState<any>({});
-  const [networkError, setNetworkError] = useState(true);
+  const [networkError, setNetworkError] = useState({
+    realtime: false,
+    batch: false,
+  });
 
   const [appTempData, setRawAppTempData] = useState<any>({
     realTimeStation: null,
     searchStation: null,
   });
+
+  const [realtimeData, setRealtimeData] = useState<any>({});
 
   const setAppTempData = (key: string, data: any) => {
     setRawAppTempData((prev: any) => {
@@ -108,7 +113,6 @@ const App: React.FC<RouteComponentProps | any> = () => {
   const checkDownloadData = () => {
     const dataToBeChecked = [
       "timetable.json",
-      "Status.json",
       "bus",
       "notice",
       "station",
@@ -117,6 +121,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
     ];
     for (const data of dataToBeChecked) {
       if (!appData[data]) {
+        console.error(`Data ${data} is missing`);
         return false;
       }
     }
@@ -135,6 +140,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
                   <Route exact path="/realtime">
                     <Realtime
                       appData={appData}
+                      realtimeData={realtimeData}
                       appTempData={appTempData}
                       setAppTempData={setAppTempData}
                       networkError={networkError}
@@ -143,6 +149,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
                   <Route exact path="/route">
                     <RouteSearch
                       appData={appData}
+                      realtimeData={realtimeData}
                       appSettings={appSettings}
                       appTempData={appTempData}
                       setAppTempData={setAppTempData}
@@ -165,6 +172,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
                   <Route>
                     <Realtime
                       appData={appData}
+                      realtimeData={realtimeData}
                       appTempData={appTempData}
                       setAppTempData={setAppTempData}
                       networkError={networkError}
@@ -186,6 +194,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
             appData={appData}
             setAppSettings={setAppSettings}
             setNetworkError={setNetworkError}
+            setRealtimeData={setRealtimeData}
           />
         )}
       </IonApp>

@@ -294,6 +294,7 @@ export const generateRouteResult = (
   t: TFunction,
   bus: BusData,
   appData: any,
+  realtimeData: any,
   searchStation: String | null = null,
   setRealtimeResult: any,
   importantStations: string[],
@@ -301,8 +302,8 @@ export const generateRouteResult = (
   setFetchError: any
 ) => {
   const busSchedule = appData["timetable.json"];
-  const busReportedSchedule = appData["reportedTime.json"] ?? {};
-  const busServices = appData["Status.json"];
+  const busReportedSchedule = realtimeData["reportedTime.json"] ?? {};
+  const busServices = realtimeData["Status.json"] ?? {};
 
   const busServiceKeys = Object.keys(busServices);
   const currentBusServices =

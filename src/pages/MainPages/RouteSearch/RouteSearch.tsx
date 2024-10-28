@@ -37,11 +37,19 @@ import axios from "axios";
 
 const RouteSearch: React.FC<{
   appData: any;
+  realtimeData: any;
   appSettings: any;
   appTempData: any;
   setAppTempData: any;
-  networkError: boolean;
-}> = ({ appData, appSettings, appTempData, setAppTempData, networkError }) => {
+  networkError: { realtime: boolean; batch: boolean };
+}> = ({
+  appData,
+  realtimeData,
+  appSettings,
+  appTempData,
+  setAppTempData,
+  networkError,
+}) => {
   const [routeMap, setRouteMap] = useState<any>([]);
   const { t, i18n } = useTranslation("global");
 
@@ -134,7 +142,7 @@ const RouteSearch: React.FC<{
       selectMinute,
     });
 
-    const busServices = appData["Status.json"];
+    const busServices = realtimeData["Status.json"] ?? {};
     const busServiceKeys = Object.keys(busServices);
     const currentBusServices =
       busServiceKeys.length > 0
@@ -167,7 +175,7 @@ const RouteSearch: React.FC<{
         filteredBus,
         appData?.station,
         appData["timetable.json"],
-        appData["reportedTime.json"] ?? {},
+        realtimeData["reportedTime.json"] ?? {},
         appSettings,
         logRequest
       )
@@ -317,7 +325,7 @@ const RouteSearch: React.FC<{
         <div className="routeresult">
           <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
 
-          {networkError === true && (
+          {(networkError.realtime === true || networkError.batch === true) && (
             <div className="bus-offline">
               <RiAlertFill className="bus-offline-icon" />
               {t("internet_offline")}
