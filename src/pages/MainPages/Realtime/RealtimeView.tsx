@@ -167,7 +167,8 @@ const Realtime: React.FC<{
         <div className="realtimeresult">
           <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
 
-          {(networkError.realtime === true || networkError.batch === true) && (
+          {networkError.realtime === true && (
+            // || networkError.batch === true
             <div className="bus-offline">
               <RiAlertFill className="bus-offline-icon" />
               {t("internet_offline")}

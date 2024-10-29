@@ -48,6 +48,7 @@ const SchoolBusPermitInput: React.FC<{
     value: string,
     placeholder?: string
   ) => {
+    const [inputValue, setInputValue] = useState(value);
     return (
       <IonItem>
         <IonInput
@@ -56,7 +57,8 @@ const SchoolBusPermitInput: React.FC<{
           ref={ref}
           type={type}
           {...(type === "number" ? { inputmode: "numeric" } : {})}
-          value={value}
+          value={inputValue}
+          onIonChange={(e: CustomEvent) => setInputValue(e.detail.value!)}
           placeholder={placeholder}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
