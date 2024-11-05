@@ -168,6 +168,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
                       appSettings={appSettings}
                       setAppSettings={setAppSettings}
                       setAppTempData={setAppTempData}
+                      networkError={networkError}
                     />
                   </Route>
                   <Route>
