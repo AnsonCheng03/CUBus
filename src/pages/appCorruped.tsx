@@ -17,9 +17,21 @@ const AppCorrupted: React.FC<{}> = () => {
         <p className="appCorruptedText">{t("app_data_corrupted")}</p>
         <IonButton
           onClick={async () => {
-            await store.create();
-            await store.clear();
-            window.location.reload();
+            try {
+              await store.create();
+              await store.clear();
+              navigator.serviceWorker
+                .getRegistrations()
+                .then((registrations) => {
+                  for (const registration of registrations) {
+                    registration.unregister();
+                  }
+                });
+            } catch (error) {
+              console.error(error);
+            } finally {
+              window.location.reload();
+            }
           }}
         >
           {t("reset_app")}
