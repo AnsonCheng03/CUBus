@@ -1,4 +1,5 @@
 import {
+  IonButton,
   IonContent,
   IonInput,
   IonItem,
@@ -24,7 +25,14 @@ const Settings: React.FC<{
   appSettings: any;
   setAppSettings: any;
   setAppTempData: any;
-}> = ({ appSettings, setAppSettings, appData, setAppTempData }) => {
+  networkError: any;
+}> = ({
+  appSettings,
+  setAppSettings,
+  appData,
+  setAppTempData,
+  networkError,
+}) => {
   const [t, i18n] = useTranslation("global");
   const lang = i18n.language.includes("en") ? 0 : 1;
 
@@ -74,6 +82,19 @@ const Settings: React.FC<{
                 <IonNote color="medium">{t("routeNoWaitTimeD")}</IonNote>
               </IonToggle>
             </IonItem>
+            {networkError.batch === true && (
+              <IonItem>
+                <IonLabel>{t("batch_fetch_err")}</IonLabel>
+                <IonButton
+                  onClick={() => {
+                    window.location.reload();
+                  }}
+                  fill="clear"
+                >
+                  {t("retry_btn")}
+                </IonButton>
+              </IonItem>
+            )}
             <IonItem
               onClick={async () => {
                 await store.clear();
