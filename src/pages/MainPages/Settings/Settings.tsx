@@ -23,9 +23,10 @@ const Settings: React.FC<{
   appData: any;
   appSettings: any;
   setAppSettings: any;
-}> = ({ appSettings, setAppSettings, appData }) => {
+  setAppTempData: any;
+}> = ({ appSettings, setAppSettings, appData, setAppTempData }) => {
   const [t, i18n] = useTranslation("global");
-  const lang = i18n.language === "zh" ? 1 : 0;
+  const lang = i18n.language.includes("en") ? 0 : 1;
 
   useEffect(() => {
     console.log("Saving appSettings to storage:", appSettings);
@@ -48,12 +49,15 @@ const Settings: React.FC<{
           <IonList inset={true}>
             <IonItem
               onClick={async () => {
-                await i18n.changeLanguage(i18n.language === "en" ? "zh" : "en");
-                window.location.reload();
+                await i18n.changeLanguage(
+                  i18n.language.includes("en") ? "zh" : "en"
+                );
+                setAppTempData("realTimeStation", null);
+                setAppTempData("searchStation", null);
               }}
             >
               <IonLabel>
-                {i18n.language === "zh" ? "Change Language" : "轉換語言"}
+                {i18n.language.includes("en") ? "轉換語言" : "Change Language"}
               </IonLabel>
             </IonItem>
             <IonItem>

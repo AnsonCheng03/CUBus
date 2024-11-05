@@ -167,6 +167,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
                       appData={appData}
                       appSettings={appSettings}
                       setAppSettings={setAppSettings}
+                      setAppTempData={setAppTempData}
                     />
                   </Route>
                   <Route>

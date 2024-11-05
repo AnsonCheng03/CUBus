@@ -177,10 +177,9 @@ const SchoolBusPermit: React.FC<{
   setAppSettings: any;
 }> = ({ appSettings, setAppSettings }) => {
   const { i18n } = useTranslation("global");
-  const schoolBusPermitDesc =
-    i18n.language === "zh"
-      ? "本網站所展示的校巴證僅為創作作品，旨在提供趣味性及娛樂用途，並非由香港中文大學或其任何相關部門授權、認可或發行的正式證件。根據現行規定，乘搭校巴需出示學生證或其他有效證件（校巴證不在此列）。本校巴證不具任何實際功能，亦不可作為身份識別或其他用途。如有疑問，請聯絡香港中文大學官方機構查詢。"
-      : "The bus pass provided on this website is a creative work intended solely for entertainment purposes and is not an official document issued, endorsed, or authorized by The Chinese University of Hong Kong or any of its affiliated departments. According to current regulations, students are required to present a student ID or other valid identification (excluding the bus pass) when boarding the university shuttle buses. This bus pass holds no official function and should not be used for identification or any other purposes. For any inquiries, please contact the official representatives of The Chinese University of Hong Kong.";
+  const schoolBusPermitDesc = i18n.language.includes("en")
+    ? "The bus pass provided on this website is a creative work intended solely for entertainment purposes and is not an official document issued, endorsed, or authorized by The Chinese University of Hong Kong or any of its affiliated departments. According to current regulations, students are required to present a student ID or other valid identification (excluding the bus pass) when boarding the university shuttle buses. This bus pass holds no official function and should not be used for identification or any other purposes. For any inquiries, please contact the official representatives of The Chinese University of Hong Kong."
+    : "本網站所展示的校巴證僅為創作作品，旨在提供趣味性及娛樂用途，並非由香港中文大學或其任何相關部門授權、認可或發行的正式證件。根據現行規定，乘搭校巴需出示學生證或其他有效證件（校巴證不在此列）。本校巴證不具任何實際功能，亦不可作為身份識別或其他用途。如有疑問，請聯絡香港中文大學官方機構查詢。";
 
   const [permit, setPermit] = useState(
     appSettings.schoolBusPermit ?? {
