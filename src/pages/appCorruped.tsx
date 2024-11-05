@@ -13,16 +13,18 @@ const AppCorrupted: React.FC<{}> = () => {
 
   return (
     <IonPage>
-      <p className="appCorruptedText">{t("app_data_corrupted")}</p>
-      <IonButton
-        onClick={async () => {
-          await store.create();
-          await store.clear();
-          window.location.reload();
-        }}
-      >
-        {t("reset_app")}
-      </IonButton>
+      <div className="downloadFilesContainer">
+        <p className="appCorruptedText">{t("app_data_corrupted")}</p>
+        <IonButton
+          onClick={async () => {
+            await store.create();
+            await store.clear();
+            window.location.reload();
+          }}
+        >
+          {t("reset_app")}
+        </IonButton>
+      </div>
     </IonPage>
   );
 };
