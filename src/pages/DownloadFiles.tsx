@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { IonPage } from "@ionic/react";
+import { IonButton, IonPage } from "@ionic/react";
 import axios from "axios";
 import "./DownloadFiles.css";
 
@@ -62,6 +62,8 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
   const [downloadHint, setDownloadHint] = useState<string>(
     t("DownloadFiles-Initializing")
   );
+
+  const [downloadError, setDownloadError] = useState<boolean>(false);
 
   const fetchDatabaseRealtimeUpdate = async () => {
     try {
@@ -130,10 +132,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
       } else {
         console.error(error);
         setDownloadHint(t("DownloadFiles-Error"));
-        store.clear();
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+        setDownloadError(true);
       }
     }
   };
@@ -246,7 +245,11 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
       setDownloadHint(t("StoreFile-Complete"));
     } catch (error: any) {
       if (
-        error.message === "Network Error" ||
+        error.code === "ERR_BAD_REQUEST" ||
+        error.code === "ECONNREFUSED" ||
+        error.code === "ECONNRESET" ||
+        error.code === "ERR_NETWORK" ||
+        error.code === "ECONNABORTED" ||
         error.message.includes("timeout")
       ) {
         console.log(error.message);
@@ -256,10 +259,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
       } else {
         setDownloadHint(t("StoreFile-Error"));
         console.error(error);
-        store.clear();
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+        setDownloadError(true);
       }
     }
   };
@@ -360,6 +360,17 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
           <LoadingImage />
         </div> */}
         <h1>{downloadHint}</h1>
+        {downloadError === true && (
+          <IonButton
+            onClick={async () => {
+              await store.create();
+              await store.clear();
+              window.location.reload();
+            }}
+          >
+            {t("reset_app")}
+          </IonButton>
+        )}
       </div>
     </IonPage>
   );
