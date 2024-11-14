@@ -225,6 +225,17 @@ if (
             $notice[$index]["pref"]["duration"] = isset($row['duration']) ? $row['duration'] : "";
             $index++;
         }
+        $alertJson = json_decode(file_get_contents(__DIR__ . "/../../Data/Alert.json"), true);
+        if ($alertJson) {
+            $notice[$index]["content"] = $alertJson;
+            $notice[$index]["id"] = "alert";
+            $notice[$index]["pref"]["type"] = "light";
+            $notice[$index]["pref"]["hide"] = "false";
+            $notice[$index]["pref"]["link"] = "";
+            $notice[$index]["pref"]["dismissible"] = "true";
+            $notice[$index]["pref"]["saveDismiss"] = "false";
+            $notice[$index]["pref"]["duration"] = "";
+        }
         $output['notice'] = $notice;
     }
 
