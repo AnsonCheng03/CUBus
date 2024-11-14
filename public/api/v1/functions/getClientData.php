@@ -208,7 +208,8 @@ if (
         $output['station'] = $station;
     }
 
-    if (in_array('notice', $outdatedTables)) {
+    $alertJson = json_decode(file_get_contents(__DIR__ . "/../../Data/Alert.json"), true);
+    if (in_array('notice', $outdatedTables) || $alertJson && count($alertJson) > 0) {
         $notice = array();
         $stmt = $conn->prepare("SELECT * FROM notice");
         $stmt->execute();
@@ -225,8 +226,7 @@ if (
             $notice[$index]["pref"]["duration"] = isset($row['duration']) ? $row['duration'] : "";
             $index++;
         }
-        $alertJson = json_decode(file_get_contents(__DIR__ . "/../../Data/Alert.json"), true);
-        if ($alertJson) {
+        if ($alertJson && count($alertJson) > 0) {
             $notice[$index]["content"] = $alertJson;
             $notice[$index]["id"] = "alert";
             $notice[$index]["pref"]["type"] = "light";
