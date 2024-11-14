@@ -60,8 +60,11 @@ if (pingAddress(gethostbyname($host))) {
 
         // get .home-popup-text > p
         $homePopupText = (new DOMXPath($dom))->query('//div[contains(@class, "home-popup-text")]/p');
-        if ($homePopupText->length == 1) {
-            $webWarning = $homePopupText->item(0)->textContent;
+        if ($homePopupText->length >= 1) {
+            $webWarning = "";
+            foreach ($homePopupText as $item) {
+                $webWarning .= $item->textContent . "\n";
+            }
             if ($webWarning) {
                 // also get chinese version(connect to /tc)
                 try {
@@ -70,7 +73,11 @@ if (pingAddress(gethostbyname($host))) {
                     libxml_use_internal_errors(true);
                     $dom->loadHTML($html);
                     $homePopupText = (new DOMXPath($dom))->query('//div[contains(@class, "home-popup-text")]/p');
-                    $webWarningTc = $homePopupText->item(0)->textContent;
+                    // $webWarningTc = $homePopupText->item(0)->textContent;
+                    $webWarningTc = "";
+                    foreach ($homePopupText as $item) {
+                        $webWarningTc .= $item->textContent . "\n";
+                    }
                 } catch (Exception $e) {
                     $webWarningTc = $webWarning;
                 }
