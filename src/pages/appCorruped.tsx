@@ -8,13 +8,16 @@ import { Storage } from "@ionic/storage";
 
 const store = new Storage();
 
-const AppCorrupted: React.FC<{}> = () => {
+const AppCorrupted: React.FC<{
+  missingData: string[];
+}> = ({ missingData }) => {
   const { t } = useTranslation("preset");
 
   return (
     <IonPage>
       <div className="downloadFilesContainer">
         <p className="appCorruptedText">{t("app_data_corrupted")}</p>
+        <span className="appCorruptedNote">{missingData.join(", ")}</span>
         <IonButton
           onClick={async () => {
             try {
