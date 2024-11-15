@@ -7,7 +7,7 @@ android {
         applicationId "com.cubus.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 12
+        versionCode 13
         
         versionName "0.9.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

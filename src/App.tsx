@@ -110,29 +110,36 @@ const App: React.FC<RouteComponentProps | any> = () => {
     });
   };
 
-  const checkDownloadData = () => {
-    const dataToBeChecked = [
-      "timetable.json",
-      "bus",
-      "notice",
-      "station",
-      "GPS",
-      "WebsiteLinks",
-    ];
+  const dataToBeChecked = [
+    "timetable.json",
+    "bus",
+    "notice",
+    "station",
+    "GPS",
+    "WebsiteLinks",
+  ];
+
+  const checkDownloadData = (
+    dataToBeChecked: string[],
+    returnMissing = false
+  ): boolean | string[] => {
+    const missingData: string[] = [];
     for (const data of dataToBeChecked) {
       if (!appData[data]) {
         console.error(`Data ${data} is missing`);
-        return false;
+        missingData.push(data);
       }
     }
-    return true;
+
+    if (returnMissing) return missingData;
+    return missingData.length === 0;
   };
 
   return (
     <I18nextProvider i18n={i18next}>
       <IonApp>
         {isDownloaded ? (
-          checkDownloadData() ? (
+          checkDownloadData(dataToBeChecked) ? (
             <>
               <IonReactRouter>
                 <Alert notice={appData.notice} />
@@ -186,7 +193,9 @@ const App: React.FC<RouteComponentProps | any> = () => {
               </IonReactRouter>
             </>
           ) : (
-            <AppCorrupted />
+            <AppCorrupted
+              missingData={checkDownloadData(dataToBeChecked, true) as string[]}
+            />
           )
         ) : (
           <DownloadFiles
