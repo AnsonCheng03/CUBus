@@ -7,6 +7,9 @@ date_default_timezone_set("Asia/Hong_Kong");
 
 $http_origin = $_SERVER['HTTP_ORIGIN'];
 $allowed_http_origins = array(
+    'capacitor://app.cu-bus.online',
+    'ionic://app.cu-bus.online',
+    'https://app.cu-bus.online',
     'capacitor://cu-bus.online',
     'ionic://cu-bus.online',
     "http://localhost:5173",

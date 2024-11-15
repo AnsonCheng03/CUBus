@@ -4,6 +4,7 @@
   "DownloadFiles-Downloading": "檢查更新中",
   "DownloadFiles-Initializing": "初始化中",
   "DownloadFiles-Processing": "資料處理中",
+  "DownloadFiles-Fetching-Latest": "正在獲取最新資料",
   "StoreFile-Complete": "資料處理並儲存完成",
   "StoreFile-Error": "處理資料時發生錯誤",
   "app_data_corrupted": "很抱歉，應用程式資料已損毀",

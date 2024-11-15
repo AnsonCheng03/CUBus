@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: "CU Bus",
   webDir: "dist",
   server: {
-    hostname: "cu-bus.online",
+    hostname: "app.cu-bus.online",
   },
 };
 
