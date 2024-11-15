@@ -17,7 +17,7 @@
     "dev:android": "ionic capacitor sync && ionic capacitor open android"
   },
   "dependencies": {
-    "@capacitor/android": "6.1.2",
+    "@capacitor/android": "^6.1.2",
     "@capacitor/app": "^6.0.1",
     "@capacitor/core": "6.1.2",
     "@capacitor/geolocation": "^6.0.1",

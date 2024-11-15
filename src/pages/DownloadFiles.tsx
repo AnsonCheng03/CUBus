@@ -143,7 +143,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
     networkError: boolean = false
   ) => {
     try {
-      setDownloadHint(t("DownloadFiles-Processing"));
+      setDownloadHint(t("DownloadFiles-Fetching-Latest"));
 
       const response =
         networkError === true
@@ -167,6 +167,8 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
           return { ...prev, batch: false };
         });
       }
+
+      setDownloadHint(t("DownloadFiles-Processing"));
 
       // Process all data, whether it's newly downloaded or existing
       let translateHandled = false;
