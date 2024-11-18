@@ -1,0 +1,77 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+h1 {
+    text-align: center;
+}
+
+.schbusinfo {
+    width: 90%;
+    margin: 50px auto;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 3px 5px rgba(154, 160, 185, .05), 0 15px 40px rgba(166, 173, 201, .2);
+    background-color: #fff;
+}
+
+.infotitle {
+    color: #62529c;
+    font-size: 1.5rem;
+    text-align: left;
+    margin: 5px 15px;
+    border-left: 3px solid #2196F3;
+    padding: 5px 5px 5px 15px;
+    border-radius: 2px;
+}
+
+.routedetails {
+    border-top: 1px solid #ddd;
+    display: flex;
+    width: 100%;
+}
+
+.routetitle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20%;
+    min-width: 120px;
+}
+
+.routetitle p {
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+    color: rgb(130, 46, 107);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80px;
+    height: 80px;
+    font-size: 2rem;
+    border-radius: 5px;
+}
+
+.detailsitems {
+    display: block;
+    width: 60%;
+}
+
+.redirect {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 20%;
+    min-width: 100px;
+    text-decoration: none;
+}
+
+.redirect p {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80%;
+    height: 60%;
+    color: #fff;
+    background: rgba(130, 46, 107, 0.7);
+    border-radius: 10px;
+}
