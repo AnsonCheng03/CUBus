@@ -15,6 +15,9 @@ if (isset($_SERVER['REMOTE_ADDR'])) {
     die('No Permission');
 }
 
+$skippedAlertSha = array('9775994646898f87c18a42ae96ba19d6ecbbf6fe3227755c335e14088fb259ab');
+
+
 date_default_timezone_set('Asia/Hong_Kong');
 $host = 'www.transport.cuhk.edu.hk';
 include('functions.php');
@@ -87,12 +90,19 @@ if (pingAddress(gethostbyname($host))) {
 
             }
         }
+        // get sha256 of current alert
+        $currentAlertSha = hash('sha256', json_encode($busAlert ?? array(), JSON_PRETTY_PRINT));
+        if (in_array($currentAlertSha, $skippedAlertSha)) {
+            $busAlert = null;
+        }
+
         // save current alert
         file_put_contents(__DIR__ . '/../../Data/Alert.json', json_encode($busAlert ?? array(), JSON_PRETTY_PRINT));
     }
 } else {
     $savestatus["ERROR"] = "ping";
 }
+
 
 
 
