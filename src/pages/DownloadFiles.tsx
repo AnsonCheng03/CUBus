@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { IonPage } from "@ionic/react";
+import { IonButton, IonPage } from "@ionic/react";
 import axios from "axios";
 import "./DownloadFiles.css";
 
@@ -27,11 +27,8 @@ interface DownloadFilesProps {
   setAppData: any;
   setAppSettings: any;
   setNetworkError: any;
+  setRealtimeData: any;
 }
-
-const baseUrl =
-  // "http://localhost:8080/api/v1/functions/getClientData.php";
-  "https://cu-bus.online/api/v1/functions/getClientData.php";
 
 interface ServerResponse {
   bus?: any;
@@ -58,28 +55,43 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
   setAppData,
   setAppSettings,
   setNetworkError,
+  setRealtimeData,
 }) => {
   const { t } = useTranslation("preset");
+
+  const apiUrl =
+    import.meta.env.VITE_BASE_URL && process.env.NODE_ENV !== "production"
+      ? import.meta.env.VITE_BASE_URL
+      : "https://cu-bus.online/api/v1/functions";
 
   const [downloadHint, setDownloadHint] = useState<string>(
     t("DownloadFiles-Initializing")
   );
 
-  const compareModificationDates = (
-    localDates: ModificationDates | null,
-    serverDates: ModificationDates
-  ): boolean => {
-    if (!localDates) return true;
+  const [downloadError, setDownloadError] = useState<boolean>(false);
 
-    for (const table in serverDates) {
-      if (
-        serverDates[table] &&
-        (!localDates[table] || localDates[table] < serverDates[table])
-      ) {
-        return true;
-      }
+  const fetchDatabaseRealtimeUpdate = async () => {
+    try {
+      const response = await axios.get<ServerResponse>(
+        apiUrl + "/getRealtimeData.php",
+        process.env.NODE_ENV !== "production"
+          ? {}
+          : {
+              timeout: 5000,
+            }
+      );
+
+      const serverData = response.data;
+      setRealtimeData(serverData);
+      setNetworkError((prev: any) => {
+        return { ...prev, realtime: false };
+      });
+    } catch (error: any) {
+      console.error(error);
+      setNetworkError((prev: any) => {
+        return { ...prev, realtime: true };
+      });
     }
-    return false;
   };
 
   const fetchDatabaseLastUpdated = async (
@@ -87,10 +99,23 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
   ) => {
     try {
       setDownloadHint(t("DownloadFiles-Downloading"));
-      const response = await axios.get<ModificationDates>(baseUrl, {
-        timeout: 5000,
-      });
+      const response = await axios.get<ModificationDates>(
+        apiUrl + "/getClientData.php",
+        process.env.NODE_ENV !== "production"
+          ? {}
+          : {
+              timeout: 5000,
+            }
+      );
       const serverDates = response.data;
+
+      if (typeof serverDates === "string") {
+        throw new Error(" (1001)");
+      }
+
+      if (response.status !== 200) {
+        throw new Error(" (1002)");
+      }
 
       // Fetch and process all data, regardless of update status
       await fetchData(currentDates, serverDates);
@@ -98,34 +123,15 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
       setDownloadHint(t("DownloadFiles-Complete"));
       setDownloadedState(true);
     } catch (error: any) {
-      console.error(error);
-      // check error type if its network error or server error
-      if (
-        error.code === "ERR_BAD_REQUEST" ||
-        error.code === "ECONNREFUSED" ||
-        error.code === "ECONNRESET" ||
-        error.code === "ERR_NETWORK" ||
-        error.code === "ECONNABORTED" ||
-        error.message.includes("timeout")
-      ) {
-        // use fallback data
-        setNetworkError(true);
-        // const serverDates = lastModifiedDates;
-        const localStoredDates = JSON.parse(
-          await store.get("lastModifiedDates")
-        );
-        const serverDates = localStoredDates ?? lastModifiedDates;
-        await fetchData(currentDates, serverDates, true);
-        setDownloadHint(t("DownloadFiles-Complete"));
-        setDownloadedState(true);
-      } else {
-        console.error(error);
-        setDownloadHint(t("DownloadFiles-Error"));
-        store.clear();
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-      }
+      setNetworkError((prev: any) => {
+        return { ...prev, batch: true };
+      });
+      // const serverDates = lastModifiedDates;
+      const localStoredDates = JSON.parse(await store.get("lastModifiedDates"));
+      const serverDates = localStoredDates ?? lastModifiedDates;
+      await fetchData(currentDates, serverDates, true);
+      setDownloadHint(t("DownloadFiles-Complete"));
+      setDownloadedState(true);
     }
   };
 
@@ -135,7 +141,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
     networkError: boolean = false
   ) => {
     try {
-      setDownloadHint(t("DownloadFiles-Processing"));
+      setDownloadHint(t("DownloadFiles-Fetching-Latest"));
 
       const response =
         networkError === true
@@ -144,13 +150,23 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
                 lastModifiedDates,
               },
             }
-          : await axios.post<ServerResponse>(baseUrl, currentDates, {
-              timeout: 10000,
-            });
+          : await axios.post<ServerResponse>(
+              apiUrl + "/getClientData.php",
+              currentDates,
+              process.env.NODE_ENV !== "production"
+                ? {}
+                : {
+                    timeout: 10000,
+                  }
+            );
 
       if (!networkError) {
-        setNetworkError(false);
+        setNetworkError((prev: any) => {
+          return { ...prev, batch: false };
+        });
       }
+
+      setDownloadHint(t("DownloadFiles-Processing"));
 
       // Process all data, whether it's newly downloaded or existing
       let translateHandled = false;
@@ -173,13 +189,13 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
         if ((response.data as ServerResponse)[table]) {
           // Data was downloaded
           tableData = (response.data as ServerResponse)[table];
-          if (table !== "Status.json")
+          if (table !== "timetable.json")
             await store.set(`data-${table}`, JSON.stringify(tableData));
         } else {
           // Data wasn't downloaded, fetch from local storage
           // check if data is in storage
           tableData = await JSON.parse(await store.get(`data-${table}`));
-          if (networkError && !tableData) {
+          if (!tableData) {
             switch (table) {
               case "translation":
                 tableData = translation;
@@ -199,9 +215,6 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
               case "station":
                 tableData = station;
                 break;
-              case "Status.json":
-                tableData = {};
-                break;
               case "timetable.json":
                 tableData = timetable;
                 break;
@@ -213,8 +226,12 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
 
         // Process and store the data
         if (tableData) {
-          await processTableData(table, tableData, networkError);
+          await processTableData(table, tableData);
         }
+      }
+
+      if ("token" in response.data) {
+        await processTableData("token", response.data.token);
       }
 
       // Update local storage with new modification dates
@@ -228,27 +245,26 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
       setDownloadHint(t("StoreFile-Complete"));
     } catch (error: any) {
       if (
-        error.message === "Network Error" ||
+        error.code === "ERR_BAD_REQUEST" ||
+        error.code === "ECONNREFUSED" ||
+        error.code === "ECONNRESET" ||
+        error.code === "ERR_NETWORK" ||
+        error.code === "ECONNABORTED" ||
         error.message.includes("timeout")
       ) {
         console.log(error.message);
-        setNetworkError(true);
+        setNetworkError((prev: any) => {
+          return { ...prev, batch: true };
+        });
       } else {
         setDownloadHint(t("StoreFile-Error"));
         console.error(error);
-        store.clear();
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+        setDownloadError(true);
       }
     }
   };
 
-  const processTableData = async (
-    table: string,
-    data: any,
-    networkError: boolean
-  ) => {
+  const processTableData = async (table: string, data: any) => {
     switch (table) {
       case "translation":
         i18next.addResourceBundle("en", "global", data.en);
@@ -279,12 +295,19 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
           return { ...prev, [table]: data };
         });
         break;
-      case "Status.json":
       case "timetable.json":
         setAppData((prev: any) => {
           return {
             ...prev,
             [table]: data,
+          };
+        });
+        break;
+      case "token":
+        setAppData((prev: any) => {
+          return {
+            ...prev,
+            ["token"]: data,
           };
         });
         break;
@@ -311,17 +334,21 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
     if (storedDates) {
       currentDates = JSON.parse(storedDates);
     }
+    await fetchDatabaseRealtimeUpdate();
     await fetchDatabaseLastUpdated(currentDates);
 
-    // Fetch updates every 30 seconds
     setInterval(async () => {
-      console.log("Fetching updates...");
+      console.log("Fetching realtime updates...");
+      await fetchDatabaseRealtimeUpdate();
+    }, 10 * 1000);
+    setInterval(async () => {
+      console.log("Fetching db updates...");
       await fetchDatabaseLastUpdated(currentDates);
-    }, 60 * 1000);
-    // }, 10 * 1000);
+    }, 5 * 60 * 1000);
   };
 
   useEffect(() => {
+    axios.defaults.withCredentials = true;
     initializeData();
   }, []);
 
@@ -333,6 +360,29 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
           <LoadingImage />
         </div> */}
         <h1>{downloadHint}</h1>
+        {downloadError === true && (
+          <IonButton
+            onClick={async () => {
+              try {
+                await store.create();
+                await store.clear();
+                navigator.serviceWorker
+                  .getRegistrations()
+                  .then((registrations) => {
+                    for (const registration of registrations) {
+                      registration.unregister();
+                    }
+                  });
+              } catch (error) {
+                console.error(error);
+              } finally {
+                window.location.reload();
+              }
+            }}
+          >
+            {t("reset_app")}
+          </IonButton>
+        )}
       </div>
     </IonPage>
   );

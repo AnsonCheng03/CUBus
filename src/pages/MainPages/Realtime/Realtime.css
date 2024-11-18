@@ -360,10 +360,15 @@
   white-space: nowrap;
 }
 
-.next-station-display .warning {
+.next-station-display .warning,
+.next-station-display .info {
   color: red;
   display: block;
   font-size: 0.7rem;
+}
+
+.next-station-display .info {
+  color: #2196f3;
 }
 
 .no-bus {

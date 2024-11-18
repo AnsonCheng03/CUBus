@@ -7,18 +7,28 @@ import {
   IonButton,
   IonContent,
   IonIcon,
+  IonLabel,
 } from "@ionic/react";
+import { Geolocation } from "@capacitor/geolocation";
+import axios from "axios";
 import { busOutline, flagOutline, flagSharp } from "ionicons/icons";
 import React, { Component, useEffect } from "react";
+import { withTranslation } from "react-i18next";
 
 interface routeMapProps {
   routeMap: any;
   setRouteMap: any;
+  t: any;
 }
 
-export default class RouteMap extends Component<routeMapProps> {
+export class RouteMap extends Component<routeMapProps> {
   render() {
-    const { routeMap, setRouteMap } = this.props;
+    const { routeMap, setRouteMap, t } = this.props;
+
+    const apiUrl =
+      import.meta.env.VITE_BASE_URL && process.env.NODE_ENV !== "production"
+        ? import.meta.env.VITE_BASE_URL
+        : "https://cu-bus.online/api/v1/functions";
 
     const currentStation = React.createRef<HTMLDivElement>();
 
@@ -61,6 +71,30 @@ export default class RouteMap extends Component<routeMapProps> {
       );
     };
 
+    const reportArrival = async () => {
+      try {
+        // get gps
+        const position = await Geolocation.getCurrentPosition();
+        const response = await axios.post<{}>(
+          apiUrl + "/logData.php",
+          {
+            type: "reportArrival",
+            Details: routeMap[2],
+            position: position,
+            token: (routeMap[2] && routeMap[2].token) ?? "",
+          },
+          process.env.NODE_ENV !== "production"
+            ? {}
+            : {
+                timeout: 10000,
+              }
+        );
+        window.alert(t(response.data));
+      } catch (e) {
+        window.alert("Error: " + e);
+      }
+    };
+
     return (
       <IonModal
         initialBreakpoint={0.5}
@@ -82,6 +116,21 @@ export default class RouteMap extends Component<routeMapProps> {
             e.stopPropagation();
           }}
         >
+          <div className="mapModalHeader">
+            <div>
+              <h2>{t("modal-map-title")}</h2>
+            </div>
+            <div className="mapModalHeaderButton">
+              {/* {routeMap[2] && routeMap[2].token && (
+                <>
+                  <button onClick={reportArrival}>
+                    {t("modal-map-button")}
+                  </button>
+                  <IonLabel>{t("modal-map-desc")}</IonLabel>
+                </>
+              )} */}
+            </div>
+          </div>
           <div id="detail-route-container">
             <div id="map-container">
               <div className="map-container completed">
@@ -108,3 +157,5 @@ export default class RouteMap extends Component<routeMapProps> {
     );
   }
 }
+
+export default withTranslation("global")(RouteMap);

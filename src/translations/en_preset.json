@@ -4,6 +4,7 @@
   "DownloadFiles-Downloading": "Checking for updates",
   "DownloadFiles-Initializing": "Initializing",
   "DownloadFiles-Processing": "Processing data",
+  "DownloadFiles-Fetching-Latest": "Getting for latest updates",
   "StoreFile-Complete": "Data processed and stored",
   "StoreFile-Error": "Error processing data",
   "app_data_corrupted": "Sorry, the application data is corrupted",

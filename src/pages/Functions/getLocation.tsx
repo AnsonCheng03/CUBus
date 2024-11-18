@@ -74,7 +74,7 @@ export async function getLocation(
 
   try {
     if (closeModal) closeModal(true);
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // await new Promise((resolve) => setTimeout(resolve, 1000));
     const position = await Geolocation.getCurrentPosition();
     return showPosition(position as GeolocationPosition);
   } catch (error: any) {

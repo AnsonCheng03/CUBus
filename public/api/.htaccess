@@ -1,9 +1,5 @@
 Options +Indexes
 IndexOptions FancyIndexing
-Header set Access-Control-Allow-Origin "*"
-Header set Access-Control-Allow-Methods: "GET,POST,OPTIONS,DELETE,PUT"
-Header set Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Connection, User-Agent, Cookie,
-Token
 
 <Files ~ "^.*\.([Ee][Nn][Vv])">
     order allow,deny

@@ -11,7 +11,10 @@ import { BusData, processBusStatus } from "../../Functions/getRealTime";
 import { useEffect, useState } from "react";
 import {
   busOutline,
+  informationCircle,
   informationCircleOutline,
+  informationCircleSharp,
+  informationOutline,
   locateOutline,
   locationOutline,
   pinOutline,
@@ -29,17 +32,31 @@ import { RouteSelect } from "../../Components/selectRouteForm";
 import { calculateRoute } from "../../Functions/getRoute";
 import LocationTimeChooser from "./RouteSearchFormTime";
 import PullToRefresh from "react-simple-pull-to-refresh";
-import { RiAlertFill, RiBusFill } from "react-icons/ri";
+import { RiAlertFill, RiBusFill, RiInformation2Fill } from "react-icons/ri";
+import axios from "axios";
 
 const RouteSearch: React.FC<{
   appData: any;
+  realtimeData: any;
   appSettings: any;
   appTempData: any;
   setAppTempData: any;
-  networkError: boolean;
-}> = ({ appData, appSettings, appTempData, setAppTempData, networkError }) => {
+  networkError: { realtime: boolean; batch: boolean };
+}> = ({
+  appData,
+  realtimeData,
+  appSettings,
+  appTempData,
+  setAppTempData,
+  networkError,
+}) => {
   const [routeMap, setRouteMap] = useState<any>([]);
-  const [t] = useTranslation("global");
+  const { t, i18n } = useTranslation("global");
+
+  const apiUrl =
+    import.meta.env.VITE_BASE_URL && process.env.NODE_ENV !== "production"
+      ? import.meta.env.VITE_BASE_URL
+      : "https://cu-bus.online/api/v1/functions";
 
   // need double check realtime side
   const [fetchError, setFetchError] = useState(false);
@@ -130,7 +147,7 @@ const RouteSearch: React.FC<{
       selectMinute,
     });
 
-    const busServices = appData["Status.json"];
+    const busServices = realtimeData["Status.json"] ?? {};
     const busServiceKeys = Object.keys(busServices);
     const currentBusServices =
       busServiceKeys.length > 0
@@ -163,7 +180,9 @@ const RouteSearch: React.FC<{
         filteredBus,
         appData?.station,
         appData["timetable.json"],
-        appSettings
+        realtimeData["reportedTime.json"] ?? {},
+        appSettings,
+        logRequest
       )
     );
   };
@@ -171,51 +190,49 @@ const RouteSearch: React.FC<{
   async function handleRefresh(): Promise<void> {
     await generateRouteResult();
     return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(void 0);
-      }, 1000);
+      resolve(void 0);
     });
   }
 
+  const logRequest = async (
+    routeSearchStart: string,
+    routeSearchDest: string,
+    departNow: boolean
+  ) => {
+    if (!routeSearchStart || !routeSearchDest) return;
+    try {
+      await axios.post<{}>(
+        apiUrl + "/logData.php",
+        {
+          type: "search",
+          Start: routeSearchStart,
+          Dest: routeSearchDest,
+          Departnow: departNow,
+          Lang: i18n.language,
+          Token: appData.token ?? "",
+        },
+        process.env.NODE_ENV !== "production"
+          ? {}
+          : {
+              timeout: 10000,
+            }
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
     generateRouteResult();
-  }, [routeSearchStart, routeSearchDest, departNow]);
+  }, [routeSearchStart, routeSearchDest, departNow, realtimeData]);
 
   return (
     <IonPage>
-      {/* <?php
-
-
-//Alert Delay Bus
-foreach ($bus as $busnum => $busline) {
-
-  if ($busline["stats"]["status"] == "no" && $busline["stats"]["prevstatus"] == "normal")
-    $buserrstat["justeos"][] = $busnum;
-
-  if ($busline["stats"]["status"] == "delay")
-    $buserrstat["delay"][] = $busnum;
-  if ($busline["stats"]["status"] == "suspended")
-    $buserrstat["suspended"][] = $busnum;
-}
-
-$finalerrbus = "";
-if (isset($buserrstat["delay"]))
-  $finalerrbus = $finalerrbus . $translation["delay-alert"][$lang] . implode(", ", $buserrstat["delay"]);
-if (isset($buserrstat["delay"]) && isset($buserrstat["suspended"]))
-  $finalerrbus = $finalerrbus . "<br>";
-if (isset($buserrstat["suspended"]))
-  $finalerrbus = $finalerrbus . $translation["suspended-alert"][$lang] . implode(", ", $buserrstat["suspended"]);
-// if ($finalerrbus !== "")
-//   alert("alert", $finalerrbus);
-
-?>
-
-*/}
       <div className="route-search-page">
         <div
           className={`route-search-form-container ${
             routeSearchStart === "" ||
-            routeSearchDest === "" ||
+            // routeSearchDest === "" ||
             (!routeResult.sortedResults && !routeResult.error)
               ? " empty"
               : ""
@@ -312,7 +329,8 @@ if (isset($buserrstat["suspended"]))
         <div className="routeresult">
           <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
 
-          {networkError === true && (
+          {networkError.realtime === true && (
+            // || networkError.batch === true
             <div className="bus-offline">
               <RiAlertFill className="bus-offline-icon" />
               {t("internet_offline")}
@@ -341,9 +359,27 @@ if (isset($buserrstat["suspended"]))
                         className="route-result-busno"
                         key={index}
                         onClick={() => {
-                          setRouteMap([result.route, result.routeIndex]);
+                          setRouteMap([
+                            result.route,
+                            result.routeIndex,
+                            {
+                              busNo: result.busNo,
+                              stationIndex: result.routeIndex,
+                              token: appData.token,
+                            },
+                          ]);
                         }}
                       >
+                        {result.config?.scheduleType === "reported" && (
+                          <div className="route-result-busno-details-warning-container">
+                            <IonIcon icon={informationCircleOutline}></IonIcon>
+                            <p className="route-result-busno-details-text-detail">
+                              {`${
+                                result.config?.scheduleConfig?.count ?? 1
+                              } ${t("bus-reported-by-user")}`}
+                            </p>
+                          </div>
+                        )}
                         <div className="route-result-busno-number-container">
                           <svg
                             stroke="currentColor"
@@ -418,6 +454,7 @@ if (isset($buserrstat["suspended"]))
                             {t("wait-time-desc")}
                           </p>
                         </div>
+
                         {result.warning && (
                           <div className="route-result-busno-details-warning-container">
                             <IonIcon icon={warningOutline}></IonIcon>
@@ -430,9 +467,9 @@ if (isset($buserrstat["suspended"]))
                     );
                   })
               : routeResult.error && (
-                  <div className="error-text">
-                    <IonIcon icon={informationCircleOutline}></IonIcon>
-                    <p>{t(routeResult.message)}</p>
+                  <div className="bus-offline">
+                    <RiInformation2Fill className="bus-offline-icon" />
+                    {t(routeResult.message)}
                   </div>
                 )}
           </PullToRefresh>

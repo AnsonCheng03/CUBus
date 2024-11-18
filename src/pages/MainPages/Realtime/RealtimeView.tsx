@@ -26,21 +26,30 @@ import {
   caretDownCircleOutline,
   caretUpCircleOutline,
 } from "ionicons/icons";
-import { RiAlertFill } from "react-icons/ri";
+import { RiAlertFill, RiInformation2Fill } from "react-icons/ri";
 import { getTextColor } from "../../Functions/Tools";
+import axios from "axios";
 
 const Realtime: React.FC<{
   appData: any;
+  realtimeData: any;
   setUserSetRealtimeDest: any;
   defaultSelectedStation: string;
-  networkError: boolean;
+  networkError: { realtime: boolean; batch: boolean };
 }> = ({
   appData,
+  realtimeData,
   setUserSetRealtimeDest,
   defaultSelectedStation,
   networkError,
 }) => {
-  const [t, i18n] = useTranslation("global");
+  const { t, i18n } = useTranslation("global");
+
+  const apiUrl =
+    import.meta.env.VITE_BASE_URL && process.env.NODE_ENV !== "production"
+      ? import.meta.env.VITE_BASE_URL
+      : "https://cu-bus.online/api/v1/functions";
+
   const [realtimeDest, setRealtimeDest] = useState<string>(
     defaultSelectedStation
   );
@@ -68,12 +77,13 @@ const Realtime: React.FC<{
 
   const generateResult = async (
     stationName: string = realtimeDest,
-    log = true
+    log = false
   ) => {
     await generateRouteResult(
       t,
       appData?.bus,
       appData,
+      realtimeData,
       stationName,
       setRealtimeResult,
       importantStations,
@@ -82,19 +92,43 @@ const Realtime: React.FC<{
     );
 
     if (log) {
-      console.log("Realtime request for", stationName);
+      try {
+        await axios.post<{}>(
+          apiUrl + "/logData.php",
+          {
+            type: "realtime",
+            Dest: stationName,
+            Lang: i18n.language,
+            Token: appData.token ?? "",
+          },
+          process.env.NODE_ENV !== "production"
+            ? {}
+            : {
+                timeout: 10000,
+              }
+        );
+      } catch (e) {
+        console.error(e);
+      }
     }
   };
 
   useEffect(() => {
     setUserSetRealtimeDest(realtimeDest);
 
-    generateResult(realtimeDest);
+    generateResult(realtimeDest, true);
   }, [realtimeDest]);
 
   useEffect(() => {
     generateResult(realtimeDest);
-  }, [appData]);
+  }, [realtimeData]);
+
+  async function handleRefresh(): Promise<void> {
+    await generateResult(realtimeDest);
+    return new Promise((resolve) => {
+      resolve(void 0);
+    });
+  }
 
   useEffect(() => {
     generateResult(defaultSelectedStation);
@@ -136,131 +170,175 @@ const Realtime: React.FC<{
         </div>
       </form>
 
-      <div className="realtimeresult">
-        <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
+      <PullToRefresh onRefresh={handleRefresh} pullingContent="">
+        <div className="realtimeresult">
+          <RouteMap routeMap={routeMap} setRouteMap={setRouteMap} />
 
-        {networkError === true && (
-          <div className="bus-offline">
-            <RiAlertFill className="bus-offline-icon" />
-            {t("internet_offline")}
-          </div>
-        )}
-        {fetchError === true && (
-          <div className="bus-offline">
-            <RiAlertFill className="bus-offline-icon" />
-            {t("fetch-error")}
-          </div>
-        )}
-        <div className="bus-grid">
-          {realtimeResult.length === 0 ? (
-            <div className="no-bus">
-              <IonIcon icon={alertCircleOutline} />
-              <p>{t("No-bus-time")}</p>
+          {networkError.realtime === true && (
+            // || networkError.batch === true
+            <div className="bus-offline">
+              <RiAlertFill className="bus-offline-icon" />
+              {t("internet_offline")}
             </div>
-          ) : (
-            realtimeResult.map((bus: any) => {
-              return (
-                <div
-                  className={"bus-row" + (bus.arrived ? " arrived" : "")}
-                  onClick={() => {
-                    setRouteMap([
-                      bus.nextStation.route,
-                      bus.nextStation.startIndex,
-                    ]);
-                  }}
-                  key={bus.busno + bus.time}
-                >
-                  <div className="bus-info">
-                    <div className="route-result-busno-number-container">
-                      <svg
-                        stroke="currentColor"
-                        fill="currentColor"
-                        strokeWidth="0"
-                        viewBox="0 0 24 24"
-                        height="1em"
-                        width="1em"
-                        className="route-result-busno-icon"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path d="M17 20H7V21C7 21.5523 6.55228 22 6 22H5C4.44772 22 4 21.5523 4 21V20H3V12H2V8H3V5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V8H22V12H21V20H20V21C20 21.5523 19.5523 22 19 22H18C17.4477 22 17 21.5523 17 21V20ZM5 5V14H19V5H5ZM5 16V18H9V16H5ZM15 16V18H19V16H15Z"></path>
-
-                        <g>
-                          <rect
-                            x="5"
-                            y="5"
-                            width="14"
-                            height="9"
-                            fill={bus.config?.colorCode}
-                          ></rect>
-                          <text
-                            x="50%"
-                            y="10px"
-                            dominantBaseline="middle"
-                            textAnchor="middle"
-                            fontSize="7"
-                            // fontWeight={600}
-                            fill={getTextColor(bus.config?.colorCode)}
-                          >
-                            {bus.busno}
-                          </text>
-                        </g>
-                      </svg>
-                      <span className="direction">
-                        {bus.direction &&
-                          (bus.direction === "DOWNST" ? (
-                            <IonIcon
-                              icon={caretDownCircleOutline}
-                              style={{
-                                color: "rgb(234, 72, 64)",
-                              }}
-                            />
-                          ) : (
-                            <IonIcon
-                              icon={caretUpCircleOutline}
-                              style={{
-                                color: "green",
-                              }}
-                            />
-                          ))}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="next-station-display">
-                    {bus.nextStation &&
-                      (bus.nextStation.importantStationAfter &&
-                      bus.nextStation.importantStationAfter.length > 0 ? (
-                        <>
-                          <p className="next-station-text">
-                            {t("next-important-station")}
-                          </p>
-                          <p className="next-station">
-                            {bus.nextStation.importantStationAfter[0]}
-                          </p>
-                        </>
-                      ) : (
-                        <>
-                          <p className="next-station-text">
-                            {t("next-station")}
-                          </p>
-                          <p className="next-station">
-                            {t(bus.nextStation.stationName)}
-                          </p>
-                        </>
-                      ))}
-                    {bus.warning && (
-                      <>
-                        <span></span>
-                        <span className="warning">{t(bus.warning)}</span>
-                      </>
-                    )}
-                  </div>
-                  <div className="arrival-time">{bus.time}</div>
-                </div>
-              );
-            })
           )}
+          {fetchError === true && (
+            <div className="bus-offline">
+              <RiAlertFill className="bus-offline-icon" />
+              {t("fetch-error")}
+            </div>
+          )}
+          {appData.GPS[realtimeDest] &&
+            appData.GPS[realtimeDest]["Grouped"] && (
+              <div className="bus-offline">
+                <RiInformation2Fill className="bus-offline-icon" />
+                <span>
+                  {t("DescTxt-yrloc")}：
+                  {appData.GPS[realtimeDest]["Grouped"].map(
+                    (group: string, index: number) => (
+                      <>
+                        <a onClick={() => setRealtimeDest(group)} key={group}>
+                          {t(group)}
+                        </a>
+                        {index !==
+                        appData.GPS[realtimeDest]["Grouped"].length - 1
+                          ? ", "
+                          : ""}
+                      </>
+                    )
+                  )}
+                </span>
+              </div>
+            )}
+          <div className="bus-grid">
+            {realtimeResult.length === 0 ? (
+              <div className="bus-offline">
+                <RiAlertFill className="bus-offline-icon" />
+                {t("No-bus-time")}
+              </div>
+            ) : (
+              <>
+                {/* <div className="bus-offline">
+                  <RiInformation2Fill className="bus-offline-icon" />
+                  {t("DescTxt-yrloc")}：
+                </div> */}
+                {realtimeResult.map((bus: any, index: number) => {
+                  return (
+                    <div
+                      className={"bus-row" + (bus.arrived ? " arrived" : "")}
+                      onClick={() => {
+                        setRouteMap([
+                          bus.nextStation.route,
+                          bus.nextStation.startIndex,
+                          {
+                            busNo: bus.busno,
+                            stationIndex: bus.nextStation.startIndex,
+                            token: appData.token,
+                          },
+                        ]);
+                      }}
+                      key={bus.busno + bus.time + index}
+                    >
+                      <div className="bus-info">
+                        <div className="route-result-busno-number-container">
+                          <svg
+                            stroke="currentColor"
+                            fill="currentColor"
+                            strokeWidth="0"
+                            viewBox="0 0 24 24"
+                            height="1em"
+                            width="1em"
+                            className="route-result-busno-icon"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path d="M17 20H7V21C7 21.5523 6.55228 22 6 22H5C4.44772 22 4 21.5523 4 21V20H3V12H2V8H3V5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V8H22V12H21V20H20V21C20 21.5523 19.5523 22 19 22H18C17.4477 22 17 21.5523 17 21V20ZM5 5V14H19V5H5ZM5 16V18H9V16H5ZM15 16V18H19V16H15Z"></path>
+
+                            <g>
+                              <rect
+                                x="5"
+                                y="5"
+                                width="14"
+                                height="9"
+                                fill={bus.config?.colorCode}
+                              ></rect>
+                              <text
+                                x="50%"
+                                y="10px"
+                                dominantBaseline="middle"
+                                textAnchor="middle"
+                                fontSize="7"
+                                // fontWeight={600}
+                                fill={getTextColor(bus.config?.colorCode)}
+                              >
+                                {bus.busno}
+                              </text>
+                            </g>
+                          </svg>
+                          <span className="direction">
+                            {bus.direction &&
+                              (bus.direction === "DOWNST" ? (
+                                <IonIcon
+                                  icon={caretDownCircleOutline}
+                                  style={{
+                                    color: "rgb(234, 72, 64)",
+                                  }}
+                                />
+                              ) : (
+                                <IonIcon
+                                  icon={caretUpCircleOutline}
+                                  style={{
+                                    color: "green",
+                                  }}
+                                />
+                              ))}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="next-station-display">
+                        {bus.nextStation &&
+                          (bus.nextStation.importantStationAfter &&
+                          bus.nextStation.importantStationAfter.length > 0 ? (
+                            <>
+                              <p className="next-station-text">
+                                {t("next-important-station")}
+                              </p>
+                              <p className="next-station">
+                                {bus.nextStation.importantStationAfter[0]}
+                              </p>
+                            </>
+                          ) : (
+                            <>
+                              <p className="next-station-text">
+                                {t("next-station")}
+                              </p>
+                              <p className="next-station">
+                                {t(bus.nextStation.stationName)}
+                              </p>
+                            </>
+                          ))}
+                        {(bus.warning || bus.config?.scheduleType) && (
+                          <>
+                            <span></span>
+                            {bus.config?.scheduleType === "reported" ? (
+                              <span className="info">
+                                {`${bus.config?.scheduleConfig?.count ?? 1} ${t(
+                                  "bus-reported-by-user"
+                                )}`}
+                              </span>
+                            ) : (
+                              <span className="warning">{t(bus.warning)}</span>
+                            )}
+                          </>
+                        )}
+                      </div>
+                      <div className="arrival-time">{bus.time}</div>
+                    </div>
+                  );
+                })}
+              </>
+            )}
+          </div>
         </div>
-      </div>
+      </PullToRefresh>
     </div>
   );
 };

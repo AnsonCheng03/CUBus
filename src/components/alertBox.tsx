@@ -79,7 +79,7 @@ const AlertBox: React.FC<{
 }> = ({ notice }) => {
   // instead return the first notice
   const { i18n } = useTranslation("global");
-  const lang = i18n.language === "zh" ? 0 : 1;
+  const lang = i18n.language.includes("en") ? 1 : 0;
 
   const showNotice =
     notice &&

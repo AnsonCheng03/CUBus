@@ -92,12 +92,17 @@ const App: React.FC<RouteComponentProps | any> = () => {
   const [isDownloaded, setDownloadedState] = useState(false);
   const [appData, setAppData] = useState<any>({});
   const [appSettings, setAppSettings] = useState<any>({});
-  const [networkError, setNetworkError] = useState(true);
+  const [networkError, setNetworkError] = useState({
+    realtime: false,
+    batch: false,
+  });
 
   const [appTempData, setRawAppTempData] = useState<any>({
     realTimeStation: null,
     searchStation: null,
   });
+
+  const [realtimeData, setRealtimeData] = useState<any>({});
 
   const setAppTempData = (key: string, data: any) => {
     setRawAppTempData((prev: any) => {
@@ -105,29 +110,36 @@ const App: React.FC<RouteComponentProps | any> = () => {
     });
   };
 
-  const checkDownloadData = () => {
-    const dataToBeChecked = [
-      "timetable.json",
-      "Status.json",
-      "bus",
-      "notice",
-      "station",
-      "GPS",
-      "WebsiteLinks",
-    ];
+  const dataToBeChecked = [
+    "timetable.json",
+    "bus",
+    "notice",
+    "station",
+    "GPS",
+    "WebsiteLinks",
+  ];
+
+  const checkDownloadData = (
+    dataToBeChecked: string[],
+    returnMissing = false
+  ): boolean | string[] => {
+    const missingData: string[] = [];
     for (const data of dataToBeChecked) {
       if (!appData[data]) {
-        return false;
+        console.error(`Data ${data} is missing`);
+        missingData.push(data);
       }
     }
-    return true;
+
+    if (returnMissing) return missingData;
+    return missingData.length === 0;
   };
 
   return (
     <I18nextProvider i18n={i18next}>
       <IonApp>
         {isDownloaded ? (
-          checkDownloadData() ? (
+          checkDownloadData(dataToBeChecked) ? (
             <>
               <IonReactRouter>
                 <Alert notice={appData.notice} />
@@ -135,6 +147,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
                   <Route exact path="/realtime">
                     <Realtime
                       appData={appData}
+                      realtimeData={realtimeData}
                       appTempData={appTempData}
                       setAppTempData={setAppTempData}
                       networkError={networkError}
@@ -143,6 +156,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
                   <Route exact path="/route">
                     <RouteSearch
                       appData={appData}
+                      realtimeData={realtimeData}
                       appSettings={appSettings}
                       appTempData={appTempData}
                       setAppTempData={setAppTempData}
@@ -160,11 +174,14 @@ const App: React.FC<RouteComponentProps | any> = () => {
                       appData={appData}
                       appSettings={appSettings}
                       setAppSettings={setAppSettings}
+                      setAppTempData={setAppTempData}
+                      networkError={networkError}
                     />
                   </Route>
                   <Route>
                     <Realtime
                       appData={appData}
+                      realtimeData={realtimeData}
                       appTempData={appTempData}
                       setAppTempData={setAppTempData}
                       networkError={networkError}
@@ -176,7 +193,9 @@ const App: React.FC<RouteComponentProps | any> = () => {
               </IonReactRouter>
             </>
           ) : (
-            <AppCorrupted />
+            <AppCorrupted
+              missingData={checkDownloadData(dataToBeChecked, true) as string[]}
+            />
           )
         ) : (
           <DownloadFiles
@@ -186,6 +205,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
             appData={appData}
             setAppSettings={setAppSettings}
             setNetworkError={setNetworkError}
+            setRealtimeData={setRealtimeData}
           />
         )}
       </IonApp>

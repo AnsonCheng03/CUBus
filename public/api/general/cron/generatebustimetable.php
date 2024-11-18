@@ -124,5 +124,13 @@ if (isset($_SERVER['REMOTE_ADDR'])) {
             }
         }
     }
-    file_put_contents(__DIR__ . '/../../Data/timetable.json', json_encode($bustime, JSON_PRETTY_PRINT));
+    $json_data = json_encode($bustime, JSON_PRETTY_PRINT);
+    $json_sha256 = hash('sha256', $json_data);
+    if (file_exists(__DIR__ . '/../../Data/timetable.json')) {
+        $json_sha256_old = hash('sha256', file_get_contents(__DIR__ . '/../../Data/timetable.json'));
+        if ($json_sha256 == $json_sha256_old) {
+            die();
+        }
+    }
+    file_put_contents(__DIR__ . '/../../Data/timetable.json', $json_data);
 }

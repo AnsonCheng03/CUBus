@@ -25,24 +25,6 @@ export interface BusData {
   };
 }
 
-const logRequest = () => {
-  // try {
-  //     $conn = new mysqli(getenv('DB_HOST'), getenv('DB_USER'), getenv('DB_PASS'), getenv('DB_NAME'));
-  //     if ($conn->connect_error)
-  //         die("Connection failed: " . $conn->connect_error);
-  //     $stmt = $conn->prepare("INSERT INTO `logs` (`Time`, `Webpage`, `Start`, `Dest`, `Mode`, `Departnow`, `Lang`)
-  //         VALUES (?, 'routesearch', ?, ?, ?, ?, ?);");
-  //     $stmt->bind_param("ssssss", $Time, $Startsql, $Destsql, $searchMode, $departNow, $lang);
-  //     $Time = (new DateTime())->format('Y-m-d H:i:s');
-  //     $Startsql = $searchMode == "building" ? $_POST['Startbd'] : $_POST['Start'];
-  //     $Destsql = $searchMode == "building" ? $_POST['Destbd'] : $_POST['Dest'];
-  //     $stmt->execute();
-  //     $stmt->close();
-  //     $conn->close();
-  // } catch (Exception $e) {
-  // }
-};
-
 const filterBus = (
   bus: BusData,
   selectWeekday: string,
@@ -328,7 +310,9 @@ export const calculateRoute = (
   originalBus: BusData,
   station: { [key: string]: string[] },
   busSchedule: any,
-  appSettings: any
+  busReportedSchedule: any,
+  appSettings: any,
+  logRequest?: any
 ) => {
   let routeCount = 0;
   let bus = filterBus(
@@ -371,6 +355,10 @@ export const calculateRoute = (
     };
   }
 
+  if (logRequest) {
+    logRequest(routeSearchStart, routeSearchDest, departNow);
+  }
+
   // $sortedResults = [];
   let sortedResults: any[] = [];
   let maxTimeWithoutWarning = 0;
@@ -383,6 +371,12 @@ export const calculateRoute = (
         )
       );
 
+      const reportedSchedule = Object.fromEntries(
+        Object.entries(busReportedSchedule).filter(
+          ([key]) => key.split("|")[0] === startStation
+        )
+      );
+
       for (const [busNo, busArray] of Object.entries(
         temp as { [key: string]: any }
       )) {
@@ -391,12 +385,17 @@ export const calculateRoute = (
           time = Number.MAX_SAFE_INTEGER;
         }
 
-        const allBuses = processAndSortBuses(t, outputSchedule, bus, {
-          busno: busNo,
-          currtime: departNow
-            ? null
-            : outputDate(`${selectHour}:${selectMinute}`).toISOString(),
-        });
+        const allBuses = processAndSortBuses(
+          t,
+          [outputSchedule, reportedSchedule],
+          bus,
+          {
+            busno: busNo,
+            currtime: departNow
+              ? null
+              : outputDate(`${selectHour}:${selectMinute}`).toISOString(),
+          }
+        );
 
         allBuses.forEach((busData: any) => {
           const busTime = outputDate(busData.time).getTime();
