@@ -109,6 +109,14 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
       );
       const serverDates = response.data;
 
+      if (typeof serverDates === "string") {
+        throw new Error(" (1001)");
+      }
+
+      if (response.status !== 200) {
+        throw new Error(" (1002)");
+      }
+
       // Fetch and process all data, regardless of update status
       await fetchData(currentDates, serverDates);
 
@@ -138,7 +146,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
         setDownloadedState(true);
       } else {
         console.error(error);
-        setDownloadHint(t("DownloadFiles-Error"));
+        setDownloadHint(t("DownloadFiles-Error") + error.message);
         setDownloadError(true);
       }
     }
