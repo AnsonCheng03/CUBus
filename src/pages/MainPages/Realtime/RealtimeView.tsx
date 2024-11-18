@@ -26,7 +26,7 @@ import {
   caretDownCircleOutline,
   caretUpCircleOutline,
 } from "ionicons/icons";
-import { RiAlertFill } from "react-icons/ri";
+import { RiAlertFill, RiInformation2Fill } from "react-icons/ri";
 import { getTextColor } from "../../Functions/Tools";
 import axios from "axios";
 
@@ -187,6 +187,12 @@ const Realtime: React.FC<{
               {t("fetch-error")}
             </div>
           )}
+
+          <div className="bus-offline">
+            <RiInformation2Fill className="bus-offline-icon" />
+            {t("DescTxt-yrloc")}：
+          </div>
+
           <div className="bus-grid">
             {realtimeResult.length === 0 ? (
               <div className="no-bus">
