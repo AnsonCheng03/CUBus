@@ -86,6 +86,9 @@ if (
         $modificationDates[$file] = getFilesDate($file);
     }
 
+    // Add modification date for this server file
+    $modificationDates['server'] = date("Y-m-d H:i:s", filemtime(__FILE__));
+
     header('Content-Type: application/json');
     echo json_encode($modificationDates);
 } else if ($_SERVER['REQUEST_METHOD'] === 'POST' || $_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['force'])) {
@@ -94,6 +97,7 @@ if (
 
     $output = array();
     $outdatedTables = array();
+    $ServerForceUpdate = false;
 
     if ($clientDates === null) {
         // Client sent null, return all data
@@ -116,6 +120,11 @@ if (
             }
         }
 
+        // Check this server file
+        if (!isset($clientDates['server']) || $clientDates['server'] < date("Y-m-d H:i:s", filemtime(__FILE__))) {
+            $serverForceUpdate = true;
+        }
+
         // Special handling for translation tables
         if (count(array_intersect($translationTables, $outdatedTables)) > 0) {
             $outdatedTables = array_merge($outdatedTables, $translationTables);
@@ -125,7 +134,7 @@ if (
     }
 
     // Fetch data for outdated tables
-    if (in_array('Route', $outdatedTables)) {
+    if (in_array('Route', $outdatedTables) || $ServerForceUpdate) {
         $stmt = $conn->prepare("
             SELECT r.BUSNO, r.StartTime, r.EndTime, r.Period, r.Days, r.Weekdays, r.Warning, r.colorCode,
                 rs.Location, rs.Direction, rs.TravelTime
@@ -161,7 +170,7 @@ if (
         $output['Route'] = $bus;
     }
 
-    if (count(array_intersect($translationTables, $outdatedTables)) > 0) {
+    if (count(array_intersect($translationTables, $outdatedTables)) > 0 || $ServerForceUpdate) {
         $translation = array();
         foreach ($translationTables as $table) {
             $stmt = $conn->prepare("SELECT * FROM $table");
@@ -190,7 +199,7 @@ if (
         );
     }
 
-    if (in_array('station', $outdatedTables)) {
+    if (in_array('station', $outdatedTables) || $ServerForceUpdate) {
         $station = array();
 
         // Updated SQL query with the new logic
@@ -217,7 +226,7 @@ if (
     }
 
     $alertJson = json_decode(file_get_contents(__DIR__ . "/../../Data/Alert.json"), true);
-    if (in_array('notice', $outdatedTables) || in_array('Alert.json', $outdatedTables)) {
+    if (in_array('notice', $outdatedTables) || in_array('Alert.json', $outdatedTables) || $ServerForceUpdate) {
         $notice = array();
         $stmt = $conn->prepare("SELECT * FROM notice");
         $stmt->execute();
@@ -247,20 +256,42 @@ if (
         $output['notice'] = $notice;
     }
 
-    if (in_array('gps', $outdatedTables)) {
+    if (in_array('gps', $outdatedTables) || $ServerForceUpdate) {
         $GPS = array();
-        $stmt = $conn->prepare("SELECT * FROM gps");
+        $stmt = $conn->prepare("
+        SELECT 
+            gps.Location,
+            gps.Lat,
+            gps.Lng,
+            gps.ImportantStation,
+            CASE
+                WHEN COUNT(gs_other.Station) = 0 THEN NULL
+                ELSE JSON_ARRAYAGG(gs_other.Station)
+            END AS GroupedStations
+        FROM gps
+        LEFT JOIN groupedStation gs_self 
+            ON gps.Location = gs_self.Station
+        LEFT JOIN groupedStation gs_other 
+            ON gs_self.Area = gs_other.Area AND gs_other.Station != gps.Location
+        GROUP BY gps.Location;
+    ");
         $stmt->execute();
         $result = $stmt->get_result();
+
         while ($row = $result->fetch_assoc()) {
             $GPS[$row['Location']]["Lat"] = $row['Lat'];
             $GPS[$row['Location']]["Lng"] = $row['Lng'];
             $GPS[$row['Location']]["ImportantStation"] = $row['ImportantStation'];
+
+            // Handle GroupedStations: NULL or a JSON-decoded array
+            $GPS[$row['Location']]["Grouped"] = $row['GroupedStations'] !== null
+                ? json_decode($row['GroupedStations'], true)
+                : null;
         }
         $output['gps'] = $GPS;
     }
 
-    if (in_array('website', $outdatedTables)) {
+    if (in_array('website', $outdatedTables) || $ServerForceUpdate) {
         $WebsiteLinks = array();
         $stmt = $conn->prepare("SELECT * FROM website");
         $stmt->execute();
@@ -273,7 +304,7 @@ if (
         $output['website'] = $WebsiteLinks;
     }
 
-    // if (in_array('timetable.json', $outdatedTables)) {
+    // if (in_array('timetable.json', $outdatedTables) || $ServerForceUpdate) {
     $output['timetable.json'] = json_decode(file_get_contents(__DIR__ . "/../../Data/timetable.json"), true);
     // }
 
@@ -286,6 +317,7 @@ if (
     foreach ($dataFiles as $file) {
         $output['modificationDates'][$file] = date("Y-m-d H:i:s", filemtime(__DIR__ . "/../../Data/$file"));
     }
+    $output['modificationDates']['server'] = date("Y-m-d H:i:s", filemtime(__FILE__));
 
     $output['fetchTime'] = date("Y-m-d H:i:s");
     if (!isset($_SESSION['token'])) {
