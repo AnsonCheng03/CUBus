@@ -11,22 +11,45 @@ if ($conn->connect_error)
     die("Connection failed: " . $conn->connect_error);
 
 // prepare and bind
-$stmt = $conn->prepare("SELECT * FROM `Route`;");
+$stmt = $conn->prepare("
+            SELECT r.BUSNO, r.StartTime, r.EndTime, r.Period, r.Days, r.Weekdays, r.Warning, r.colorCode,
+                rs.Location, rs.Direction, rs.TravelTime
+            FROM Route r
+            LEFT JOIN RouteStops rs ON r.BUSNO = rs.BUSNO
+            ORDER BY r.BUSNO, rs.StopOrder
+        ");
 $stmt->execute();
-
 $result = $stmt->get_result();
 
-for ($i = 0; $i < $result->num_rows; $i++) {
-    $busResult = $result->fetch_assoc();
-    $bus[$busResult["BUSNO"]]["schedule"] = array($busResult["StartTime"], $busResult["EndTime"], $busResult["Period"], $busResult["Days"], $busResult["Weekdays"], $busResult["AddTime"]);
-    $stations = json_decode($busResult["Route"], true);
-    foreach ($stations as $key => $value) {
-        $bus[$busResult["BUSNO"]]["stations"]["name"][] = $value[0] ?: "NULL";
-        $bus[$busResult["BUSNO"]]["stations"]["attr"][] = $value[1] ?: "NULL";
-        $bus[$busResult["BUSNO"]]["stations"]["time"][] = $value[2] ?: 0;
+$bus = array();
+while ($row = $result->fetch_assoc()) {
+    $busno = $row['BUSNO'];
+
+    // Initialize bus info if not already done
+    if (!isset($bus[$busno])) {
+        $bus[$busno]["schedule"] = array(
+            $row['StartTime'],
+            $row['EndTime'],
+            $row['Period'],
+            $row['Days'],
+            $row['Weekdays'],
+            isset($row['AddTime']) ? $row['AddTime'] : ""
+        );
+        $bus[$busno]['colorCode'] = $row['colorCode'] ?? "rgb(254, 250, 183)";
+        $bus[$busno]["stations"] = [
+            "name" => [],
+            "attr" => [],
+            "time" => []
+        ];
+    }
+
+    // Fetch station details
+    if ($row['Location']) {
+        $bus[$busno]["stations"]["name"][] = $row['Location'];
+        $bus[$busno]["stations"]["attr"][] = $row['Direction'] ?? "NULL";
+        $bus[$busno]["stations"]["time"][] = floatval($row['TravelTime'] ?? "0");
     }
 }
-
 
 
 foreach ($bus as $busnum => $busno) {
@@ -101,5 +124,13 @@ if (isset($_SERVER['REMOTE_ADDR'])) {
             }
         }
     }
-    file_put_contents(__DIR__ . '/../../Data/timetable.json', json_encode($bustime, JSON_PRETTY_PRINT));
+    $json_data = json_encode($bustime, JSON_PRETTY_PRINT);
+    $json_sha256 = hash('sha256', $json_data);
+    if (file_exists(__DIR__ . '/../../Data/timetable.json')) {
+        $json_sha256_old = hash('sha256', file_get_contents(__DIR__ . '/../../Data/timetable.json'));
+        if ($json_sha256 == $json_sha256_old) {
+            die();
+        }
+    }
+    file_put_contents(__DIR__ . '/../../Data/timetable.json', $json_data);
 }

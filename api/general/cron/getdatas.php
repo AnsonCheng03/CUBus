@@ -15,6 +15,9 @@ if (isset($_SERVER['REMOTE_ADDR'])) {
     die('No Permission');
 }
 
+$skippedAlertSha = array('9775994646898f87c18a42ae96ba19d6ecbbf6fe3227755c335e14088fb259ab');
+
+
 date_default_timezone_set('Asia/Hong_Kong');
 $host = 'www.transport.cuhk.edu.hk';
 include('functions.php');
@@ -60,8 +63,11 @@ if (pingAddress(gethostbyname($host))) {
 
         // get .home-popup-text > p
         $homePopupText = (new DOMXPath($dom))->query('//div[contains(@class, "home-popup-text")]/p');
-        if ($homePopupText->length == 1) {
-            $webWarning = $homePopupText->item(0)->textContent;
+        if ($homePopupText->length >= 1) {
+            $webWarning = "";
+            foreach ($homePopupText as $item) {
+                $webWarning .= $item->textContent . "\n";
+            }
             if ($webWarning) {
                 // also get chinese version(connect to /tc)
                 try {
@@ -70,7 +76,11 @@ if (pingAddress(gethostbyname($host))) {
                     libxml_use_internal_errors(true);
                     $dom->loadHTML($html);
                     $homePopupText = (new DOMXPath($dom))->query('//div[contains(@class, "home-popup-text")]/p');
-                    $webWarningTc = $homePopupText->item(0)->textContent;
+                    // $webWarningTc = $homePopupText->item(0)->textContent;
+                    $webWarningTc = "";
+                    foreach ($homePopupText as $item) {
+                        $webWarningTc .= $item->textContent . "\n";
+                    }
                 } catch (Exception $e) {
                     $webWarningTc = $webWarning;
                 }
@@ -80,12 +90,19 @@ if (pingAddress(gethostbyname($host))) {
 
             }
         }
+        // get sha256 of current alert
+        $currentAlertSha = hash('sha256', json_encode($busAlert ?? array(), JSON_PRETTY_PRINT));
+        if (in_array($currentAlertSha, $skippedAlertSha)) {
+            $busAlert = null;
+        }
+
         // save current alert
         file_put_contents(__DIR__ . '/../../Data/Alert.json', json_encode($busAlert ?? array(), JSON_PRETTY_PRINT));
     }
 } else {
     $savestatus["ERROR"] = "ping";
 }
+
 
 
 
