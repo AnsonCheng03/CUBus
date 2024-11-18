@@ -123,32 +123,15 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
       setDownloadHint(t("DownloadFiles-Complete"));
       setDownloadedState(true);
     } catch (error: any) {
-      console.error(error);
-      // check error type if its network error or server error
-      if (
-        error.code === "ERR_BAD_REQUEST" ||
-        error.code === "ECONNREFUSED" ||
-        error.code === "ECONNRESET" ||
-        error.code === "ERR_NETWORK" ||
-        error.code === "ECONNABORTED" ||
-        error.message.includes("timeout")
-      ) {
-        setNetworkError((prev: any) => {
-          return { ...prev, batch: true };
-        });
-        // const serverDates = lastModifiedDates;
-        const localStoredDates = JSON.parse(
-          await store.get("lastModifiedDates")
-        );
-        const serverDates = localStoredDates ?? lastModifiedDates;
-        await fetchData(currentDates, serverDates, true);
-        setDownloadHint(t("DownloadFiles-Complete"));
-        setDownloadedState(true);
-      } else {
-        console.error(error);
-        setDownloadHint(t("DownloadFiles-Error") + error.message);
-        setDownloadError(true);
-      }
+      setNetworkError((prev: any) => {
+        return { ...prev, batch: true };
+      });
+      // const serverDates = lastModifiedDates;
+      const localStoredDates = JSON.parse(await store.get("lastModifiedDates"));
+      const serverDates = localStoredDates ?? lastModifiedDates;
+      await fetchData(currentDates, serverDates, true);
+      setDownloadHint(t("DownloadFiles-Complete"));
+      setDownloadedState(true);
     }
   };
 
