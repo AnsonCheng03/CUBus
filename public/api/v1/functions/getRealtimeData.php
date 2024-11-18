@@ -1,7 +1,7 @@
 <?php
 
-include_once(__DIR__ . '/loadenv.php');
-include_once(__DIR__ . '/functions.php');
+include_once(__DIR__ . '/../../general/cron/loadenv.php');
+include_once(__DIR__ . '/../../general/cron/functions.php');
 date_default_timezone_set("Asia/Hong_Kong");
 
 // CORS to allow requests from any origin

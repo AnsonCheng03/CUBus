@@ -1,6 +1,6 @@
 <?php
 
-include_once(__DIR__ . '/loadenv.php');
+include_once(__DIR__ . '/../../general/cron/loadenv.php');
 date_default_timezone_set("Asia/Hong_Kong");
 
 // CORS to allow requests from any origin
@@ -63,9 +63,14 @@ function getTableDate($conn, $table)
     return $row['UPDATE_TIME'] ?? $row['CREATE_TIME'] ?? null;
 }
 
+function getFilesDate($file)
+{
+    return date("Y-m-d H:i:s", filemtime(__DIR__ . "/../../Data/$file"));
+}
+
 // Tables to check
 $tables = ['Route', 'translateroute', 'translatewebsite', 'translatebuilding', 'translateattribute', 'station', 'notice', 'gps', 'website'];
-$dataFiles = ['timetable.json'];
+$dataFiles = ['timetable.json', 'Alert.json'];
 $translationTables = ['translateroute', 'translatewebsite', 'translatebuilding', 'translateattribute'];
 
 if (
@@ -78,7 +83,7 @@ if (
     }
     // Add modification dates for data files
     foreach ($dataFiles as $file) {
-        $modificationDates[$file] = date("Y-m-d H:i:s", filemtime(__DIR__ . "/../../data/$file"));
+        $modificationDates[$file] = getFilesDate($file);
     }
 
     header('Content-Type: application/json');
@@ -98,7 +103,7 @@ if (
     } else {
         // check files
         foreach ($dataFiles as $file) {
-            if (!isset($clientDates[$file]) || $clientDates[$file] < date("Y-m-d H:i:s", filemtime(__DIR__ . "/../../data/$file"))) {
+            if (!isset($clientDates[$file]) || $clientDates[$file] < date("Y-m-d H:i:s", filemtime(__DIR__ . "/../../Data/$file"))) {
                 $outdatedTables[] = $file;
             }
         }
@@ -212,7 +217,7 @@ if (
     }
 
     $alertJson = json_decode(file_get_contents(__DIR__ . "/../../Data/Alert.json"), true);
-    if (in_array('notice', $outdatedTables) || $alertJson && count($alertJson) > 0) {
+    if (in_array('notice', $outdatedTables) || in_array('Alert.json', $outdatedTables)) {
         $notice = array();
         $stmt = $conn->prepare("SELECT * FROM notice");
         $stmt->execute();
@@ -279,7 +284,7 @@ if (
     }
     // Add modification dates for data files
     foreach ($dataFiles as $file) {
-        $output['modificationDates'][$file] = date("Y-m-d H:i:s", filemtime(__DIR__ . "/../../data/$file"));
+        $output['modificationDates'][$file] = date("Y-m-d H:i:s", filemtime(__DIR__ . "/../../Data/$file"));
     }
 
     $output['fetchTime'] = date("Y-m-d H:i:s");
