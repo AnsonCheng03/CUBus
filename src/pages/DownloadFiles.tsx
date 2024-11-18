@@ -195,7 +195,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
           // Data wasn't downloaded, fetch from local storage
           // check if data is in storage
           tableData = await JSON.parse(await store.get(`data-${table}`));
-          if (networkError && !tableData) {
+          if (!tableData) {
             switch (table) {
               case "translation":
                 tableData = translation;
