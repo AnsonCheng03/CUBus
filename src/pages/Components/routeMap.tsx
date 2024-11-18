@@ -83,9 +83,11 @@ export class RouteMap extends Component<routeMapProps> {
             position: position,
             token: (routeMap[2] && routeMap[2].token) ?? "",
           },
-          {
-            timeout: 10000,
-          }
+          process.env.NODE_ENV !== "production"
+            ? {}
+            : {
+                timeout: 10000,
+              }
         );
         window.alert(t(response.data));
       } catch (e) {

@@ -101,9 +101,11 @@ const Realtime: React.FC<{
             Lang: i18n.language,
             Token: appData.token ?? "",
           },
-          {
-            timeout: 10000,
-          }
+          process.env.NODE_ENV !== "production"
+            ? {}
+            : {
+                timeout: 10000,
+              }
         );
       } catch (e) {
         console.error(e);

@@ -74,9 +74,11 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
     try {
       const response = await axios.get<ServerResponse>(
         apiUrl + "/getRealtimeData.php",
-        {
-          timeout: 5000,
-        }
+        process.env.NODE_ENV !== "production"
+          ? {}
+          : {
+              timeout: 5000,
+            }
       );
 
       const serverData = response.data;
@@ -99,9 +101,11 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
       setDownloadHint(t("DownloadFiles-Downloading"));
       const response = await axios.get<ModificationDates>(
         apiUrl + "/getClientData.php",
-        {
-          timeout: 5000,
-        }
+        process.env.NODE_ENV !== "production"
+          ? {}
+          : {
+              timeout: 5000,
+            }
       );
       const serverDates = response.data;
 
@@ -158,9 +162,11 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
           : await axios.post<ServerResponse>(
               apiUrl + "/getClientData.php",
               currentDates,
-              {
-                timeout: 10000,
-              }
+              process.env.NODE_ENV !== "production"
+                ? {}
+                : {
+                    timeout: 10000,
+                  }
             );
 
       if (!networkError) {
