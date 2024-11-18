@@ -53,6 +53,11 @@ const RouteSearch: React.FC<{
   const [routeMap, setRouteMap] = useState<any>([]);
   const { t, i18n } = useTranslation("global");
 
+  const apiUrl =
+    import.meta.env.VITE_BASE_URL && process.env.NODE_ENV !== "production"
+      ? import.meta.env.VITE_BASE_URL
+      : "https://cu-bus.online/api/v1/functions";
+
   // need double check realtime side
   const [fetchError, setFetchError] = useState(false);
 
@@ -197,8 +202,7 @@ const RouteSearch: React.FC<{
     if (!routeSearchStart || !routeSearchDest) return;
     try {
       await axios.post<{}>(
-        (import.meta.env.VITE_BASE_URL ??
-          "https://cu-bus.online/api/v1/functions") + "/logData.php",
+        apiUrl + "/logData.php",
         {
           type: "search",
           Start: routeSearchStart,

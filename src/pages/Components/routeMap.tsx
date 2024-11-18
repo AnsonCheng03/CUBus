@@ -25,6 +25,11 @@ export class RouteMap extends Component<routeMapProps> {
   render() {
     const { routeMap, setRouteMap, t } = this.props;
 
+    const apiUrl =
+      import.meta.env.VITE_BASE_URL && process.env.NODE_ENV !== "production"
+        ? import.meta.env.VITE_BASE_URL
+        : "https://cu-bus.online/api/v1/functions";
+
     const currentStation = React.createRef<HTMLDivElement>();
 
     function canDismiss(data?: any, role?: string) {
@@ -71,8 +76,7 @@ export class RouteMap extends Component<routeMapProps> {
         // get gps
         const position = await Geolocation.getCurrentPosition();
         const response = await axios.post<{}>(
-          (import.meta.env.VITE_BASE_URL ??
-            "https://cu-bus.online/api/v1/functions") + "/logData.php",
+          apiUrl + "/logData.php",
           {
             type: "reportArrival",
             Details: routeMap[2],
