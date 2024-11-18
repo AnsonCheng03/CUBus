@@ -1,0 +1,281 @@
+ion-modal#GPSModal {
+  --height: max-content;
+  --width: min(750px, 75%);
+  --border-width: 0;
+  --border-color: transparent;
+  --border-style: none;
+  --border-radius: 0;
+  --background: transparent;
+}
+
+ion-modal#GPSModal::part(backdrop) {
+  background: rgba(50, 50, 50, 0.9);
+}
+
+ion-modal#GPSModal ion-toolbar {
+  --background: rgb(14 116 144);
+  --color: white;
+}
+
+ion-modal#LoadingModal {
+  --height: 100px;
+  --width: 100px;
+  --box-shadow: none;
+  --background: none;
+}
+
+.GpsText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.gpsMeter {
+  white-space: nowrap;
+}
+
+.loadingImageContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  padding: 50px;
+}
+
+.loadingImage {
+  width: 100px;
+  height: 100px;
+}
+
+.details-box {
+  border-radius: 5px;
+  overflow: hidden;
+  background: #fff;
+  width: 50%;
+}
+
+.gpsOptions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 20px 5%;
+  cursor: pointer;
+  border-bottom: 1px solid #ddd;
+}
+
+.gpsOptions:last-child {
+  border-bottom: none;
+}
+
+.GPSModalDetails,
+ion-modal#GPSModal .loading-image-wrapper {
+  border-radius: 16px;
+  overflow: hidden;
+  --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.gpsIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.gpsIcon .image-wrapper {
+  color: #4379f2;
+  font-size: 28px;
+}
+
+.GPSModalDetails {
+  background: #fff;
+}
+
+.showdetails {
+  text-align: left;
+  padding: 20px 5%;
+  background-color: #911f27;
+  border: 1px solid #911f27;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.bus-offline {
+  background-color: #ddd;
+  margin: 10px 20px;
+  padding: 10px;
+  border-radius: 5px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px;
+  align-items: center;
+}
+
+#details-box-heading {
+  display: inline;
+  color: #fff;
+  margin: 0;
+}
+
+/* 
+https://huemint.com/website-3/#palette=fdfefe-911f27-001062-1d40b9-f4532c-fdf815
+#fdf815 
+#f4532c
+#1d40b9
+#630A10
+#911f27
+#ddd
+*/
+
+#detail-route-container {
+  width: 100%;
+  background-color: white;
+  padding: 20px;
+}
+
+#close-button {
+  align-self: flex-end;
+  cursor: pointer;
+  font-size: 24px;
+  margin-bottom: 10px;
+  color: #666;
+}
+#map-container {
+  flex-grow: 1;
+  overflow-y: auto;
+  max-height: calc(50vh - 40px);
+}
+
+.map-container {
+  position: relative;
+  padding: 0 20px;
+  height: fit-content;
+}
+
+.map-container::before {
+  position: absolute;
+  content: " ";
+  display: block;
+  width: 7px;
+  left: 16.5px;
+  top: 40px;
+  /* height: calc(100% - 75px); */
+  height: calc(100% - 110px);
+  background-color: #630a10;
+  border-radius: 5px;
+}
+
+.map-container.completed::before {
+  background-color: #aaa;
+  height: calc(100%);
+}
+
+ion-modal#RouteModal {
+  --border-radius: 16px 16px 0 0;
+}
+
+ion-modal#RouteModal::part(backdrop) {
+  background: rgba(50, 50, 50, 0.77);
+}
+
+ion-modal#RouteModal ion-toolbar {
+  --background: rgb(14 116 144);
+  --color: white;
+}
+
+.station-container {
+  display: flex;
+  align-items: center;
+}
+
+.station-container-wrapper .station-name {
+  font-size: 1.15rem;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+  padding: 25px 0 25px 35px;
+}
+
+.station-container-wrapper .bus-station-icon,
+.station-container-wrapper .bus-station-flag {
+  position: absolute;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  padding: 10px;
+  background: #630a10;
+  color: white;
+  border-radius: 50%;
+  transform: translateY(-7.5px);
+}
+
+.station-container-wrapper .bus-station-flag {
+  background: #fff;
+  color: #911f27;
+}
+
+.station-container-wrapper .station-name::before {
+  content: " ";
+  display: block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 3px solid #630a10;
+  background-color: #fff;
+  position: absolute;
+  left: 11px;
+  transform: translateY(3px);
+}
+
+.station-container-wrapper.current .station-name::before {
+  background-color: yellow;
+}
+
+.station-container-wrapper.completed .station-name {
+  color: #aaa;
+}
+
+.station-container-wrapper.completed .station-name::before {
+  border: 3px solid #aaa;
+}
+
+.station-container-wrapper.completed::after {
+  border-left: 5px solid rgba(212, 163, 115, 0.7);
+}
+.station-container-wrapper:last-child::after {
+  display: none;
+}
+
+.route-result-busno-number-container {
+  position: relative;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.route-result-busno-number-container .route-result-busno-icon {
+  font-size: 60px;
+  color: #630a10;
+}
+
+.route-result-busno-number {
+  position: absolute;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  left: 50%;
+  transform: translate(-50%, -0.4rem);
+  width: 37.5px;
+  height: 22.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  background-color: rgb(254, 250, 183);
+}

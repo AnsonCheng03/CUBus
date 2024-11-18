@@ -1,0 +1,136 @@
+html,
+body {
+    min-width: 360px;
+    min-height: 800px;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    height: 100%;
+    width: 100%;
+    overscroll-behavior: none;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+    background: linear-gradient(45deg, rgba(66, 180, 250, 0.5) 0%, rgba(60, 250, 200, 0.5) 100%);
+}
+
+.center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}
+
+h1 {
+    font-size: 1.75rem;
+}
+
+.content {
+    width: 90%;
+    max-width: 800px;
+    padding: 50px 0px;
+    text-align: center;
+    background-color: #f8f8f8;
+    border-radius: 10px;
+    box-shadow: 0px 15px 15px 0.15px rgba(0, 0, 0, 0.05);
+}
+
+input,
+button {
+    font-size: 14px;
+}
+
+input {
+    display: inline-block;
+    text-align: center;
+    width: 50%;
+    height: 50px;
+    border: none;
+    border-bottom: 1px solid #999;
+    background: #f8f8f8;
+    margin: 0 10px 25px 10px;
+}
+
+input:focus {
+
+    background: rgba(0, 0, 0, 0.1);
+    border: 0;
+    border-radius: 4px;
+    box-sizing: border-box;
+    padding: 12px 20px;
+    color: rgba(0, 0, 0, 0.5);
+    outline: none;
+    transition: 0.3s ease;
+}
+
+::placeholder {
+    color: #000;
+    opacity: 0.7;
+}
+
+input:focus::placeholder {
+    color: transparent;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+button {
+
+    align-items: center;
+
+    background-color: #4285F4;
+    color: #fff;
+    border: 0px;
+    border-radius: 5px;
+    cursor: pointer;
+
+    height: 50px;
+    width: 60%;
+    margin-top: 10px;
+
+    transition: all 250ms;
+    touch-action: manipulation;
+    vertical-align: baseline;
+
+}
+
+.Notes {
+    border: 1px solid rgb(66, 133, 244);
+    margin: 5vh 10% 0 10%;
+    padding: 2vh;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.DownloadNotes {
+    display: none;
+    font-size: 2rem;
+    margin: 10vh 10;
+    padding: 2vh;
+    margin: 30px 0;
+}
+
+.warning {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-self: center;
+    background-color: #fff;
+}
+
+.warning * {
+    width: 100vw;
+}

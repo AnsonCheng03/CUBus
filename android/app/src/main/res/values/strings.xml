@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">
+		CU Bus
+	</string>
+	<string name="title_activity_main">
+		CU Bus
+	</string>
+	<string name="package_name">
+		com.cubus.app
+	</string>
+	<string name="custom_url_scheme">
+		com.cubus.app
+	</string>
+</resources>

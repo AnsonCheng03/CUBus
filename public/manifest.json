@@ -1,0 +1,23 @@
+{
+  "short_name": "CU BUS",
+  "name": "\u4e2d\u5927\u5df4\u58eb\u8cc7\u8a0a\u7ad9 CUHK BUS INFOPAGE",
+  "description": "\u4e2d\u5927\u5df4\u58eb\u8cc7\u8a0a\u7ad9\u63d0\u4f9b\u9ede\u5c0d\u9ede\u8def\u7dda\u641c\u5c0b\u3001\u5be6\u6642\u6821\u5df4\u67e5\u8a62\u670d\u52d9\uff0c\u8b93\u4f60\u8f15\u9b06\u5728\u4e2d\u5927\u6821\u5712\u7a7f\u68ad\u3002 CUHK Bus Infopage provides point-to-point route search and real-time school bus query services, allowing you to travel around the CUHK campus easily.",
+  "icons": [
+    {
+      "src": "assets/icon/favicon.png",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "assets/icon/icon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "maskable"
+    }
+  ],
+  "start_url": ".",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff"
+}

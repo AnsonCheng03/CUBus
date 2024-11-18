@@ -1,0 +1,148 @@
+nav {
+  position: sticky;
+  top: 0;
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  align-items: center;
+  left: 0;
+  width: 100%;
+  z-index: 9999;
+  margin: 0;
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: 0;
+  height: calc(75px + env(safe-area-inset-top));
+  background-color: #911f27;
+}
+
+ion-router-outlet {
+  top: 0;
+}
+nav h1 {
+  margin: 0;
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -1px;
+  padding: 10px 30px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+nav .navFunctions {
+  max-height: 75px;
+
+  overflow: hidden;
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+
+nav ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0 5%;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  gap: 5%;
+  width: 100%;
+}
+
+nav ion-item {
+  --background: transparent;
+  --border-color: transparent;
+  /* --inner-padding-end: env(--ion-safe-area-left);
+  --inner-padding-start: 0;
+  --ion-safe-area-left: 0; */
+  --background-activated: transparent;
+  --background-focused: transparent;
+  --background-hover: transparent;
+  --ripple-color: transparent;
+}
+
+nav .navLink {
+  font-size: 1.2rem;
+  color: #ccc;
+  text-decoration: none;
+  padding: 1em 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  justify-content: center;
+  transition: color 0.3s;
+  white-space: nowrap;
+}
+
+nav .navLink:hover,
+nav .navLink.active,
+nav .navLink.active:link {
+  color: #fff;
+}
+
+nav .navLink ion-icon {
+  font-weight: bolder;
+}
+
+nav .navtext {
+  margin: 0;
+  font-size: 0.8rem;
+}
+nav ion-item a .item-inner {
+  display: flex;
+  flex-direction: column;
+}
+
+nav ion-icon {
+  font-size: 1.3rem;
+  --ionicon-stroke-width: 3rem;
+}
+
+.ion-page {
+  overflow: scroll;
+}
+
+@media screen and (max-width: 768px) {
+  nav {
+    display: block;
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    height: calc(75px + env(safe-area-inset-bottom));
+    width: 100%;
+    padding-top: 0;
+    padding-bottom: 0;
+    box-shadow: 0 2px 6px rgba(154, 160, 185, 0.5),
+      0 6px 20px rgba(166, 173, 201, 0.8);
+    border-radius: 15px 15px 0 0;
+    background-color: #fff;
+  }
+
+  nav h1 {
+    display: none;
+  }
+
+  nav ul {
+    gap: auto;
+    justify-content: space-around;
+  }
+
+  nav .navFunctions {
+    justify-content: center;
+  }
+
+  ion-router-outlet {
+    top: 0;
+    bottom: 0;
+  }
+
+  nav .navLink {
+    color: #aaa;
+  }
+
+  nav .navLink:hover,
+  nav .navLink.active,
+  nav .navLink.active:link {
+    color: rgb(145, 31, 39);
+  }
+}

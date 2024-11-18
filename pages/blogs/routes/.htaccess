@@ -1,3 +1,0 @@
-<IfModule mod_rewrite.c>
-    RewriteRule ^(.*)$ index.php?route=$1 [NC,L,QSA]
-</IfModule>
