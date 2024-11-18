@@ -59,6 +59,11 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
 }) => {
   const { t } = useTranslation("preset");
 
+  const apiUrl =
+    import.meta.env.VITE_BASE_URL && process.env.NODE_ENV !== "production"
+      ? import.meta.env.VITE_BASE_URL
+      : "https://cu-bus.online/api/v1/functions";
+
   const [downloadHint, setDownloadHint] = useState<string>(
     t("DownloadFiles-Initializing")
   );
@@ -68,8 +73,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
   const fetchDatabaseRealtimeUpdate = async () => {
     try {
       const response = await axios.get<ServerResponse>(
-        (import.meta.env.VITE_BASE_URL ??
-          "https://cu-bus.online/api/v1/functions") + "/getRealtimeData.php",
+        apiUrl + "/getRealtimeData.php",
         {
           timeout: 5000,
         }
@@ -94,8 +98,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
     try {
       setDownloadHint(t("DownloadFiles-Downloading"));
       const response = await axios.get<ModificationDates>(
-        (import.meta.env.VITE_BASE_URL ??
-          "https://cu-bus.online/api/v1/functions") + "/getClientData.php",
+        apiUrl + "/getClientData.php",
         {
           timeout: 5000,
         }
@@ -153,9 +156,7 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
               },
             }
           : await axios.post<ServerResponse>(
-              (import.meta.env.VITE_BASE_URL ??
-                "https://cu-bus.online/api/v1/functions") +
-                "/getClientData.php",
+              apiUrl + "/getClientData.php",
               currentDates,
               {
                 timeout: 10000,

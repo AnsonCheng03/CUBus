@@ -44,6 +44,12 @@ const Realtime: React.FC<{
   networkError,
 }) => {
   const { t, i18n } = useTranslation("global");
+
+  const apiUrl =
+    import.meta.env.VITE_BASE_URL && process.env.NODE_ENV !== "production"
+      ? import.meta.env.VITE_BASE_URL
+      : "https://cu-bus.online/api/v1/functions";
+
   const [realtimeDest, setRealtimeDest] = useState<string>(
     defaultSelectedStation
   );
@@ -88,8 +94,7 @@ const Realtime: React.FC<{
     if (log) {
       try {
         await axios.post<{}>(
-          (import.meta.env.VITE_BASE_URL ??
-            "https://cu-bus.online/api/v1/functions") + "/logData.php",
+          apiUrl + "/logData.php",
           {
             type: "realtime",
             Dest: stationName,
