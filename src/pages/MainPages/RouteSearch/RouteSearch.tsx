@@ -32,7 +32,7 @@ import { RouteSelect } from "../../Components/selectRouteForm";
 import { calculateRoute } from "../../Functions/getRoute";
 import LocationTimeChooser from "./RouteSearchFormTime";
 import PullToRefresh from "react-simple-pull-to-refresh";
-import { RiAlertFill, RiBusFill } from "react-icons/ri";
+import { RiAlertFill, RiBusFill, RiInformation2Fill } from "react-icons/ri";
 import axios from "axios";
 
 const RouteSearch: React.FC<{
@@ -232,7 +232,7 @@ const RouteSearch: React.FC<{
         <div
           className={`route-search-form-container ${
             routeSearchStart === "" ||
-            routeSearchDest === "" ||
+            // routeSearchDest === "" ||
             (!routeResult.sortedResults && !routeResult.error)
               ? " empty"
               : ""
@@ -467,9 +467,9 @@ const RouteSearch: React.FC<{
                     );
                   })
               : routeResult.error && (
-                  <div className="error-text">
-                    <IonIcon icon={informationCircleOutline}></IonIcon>
-                    <p>{t(routeResult.message)}</p>
+                  <div className="bus-offline">
+                    <RiInformation2Fill className="bus-offline-icon" />
+                    {t(routeResult.message)}
                   </div>
                 )}
           </PullToRefresh>
