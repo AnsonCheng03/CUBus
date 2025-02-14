@@ -236,7 +236,9 @@ const Realtime: React.FC<{
                           },
                         ]);
                       }}
-                      key={bus.busno + bus.time + index}
+                      key={
+                        bus.busno + bus.time + index + bus.arrived + bus.warning
+                      }
                     >
                       <div className="bus-info">
                         <div className="route-result-busno-number-container">
