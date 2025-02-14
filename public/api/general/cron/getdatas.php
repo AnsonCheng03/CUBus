@@ -15,7 +15,7 @@ if (isset($_SERVER['REMOTE_ADDR'])) {
     die('No Permission');
 }
 
-$skippedAlertSha = array('9775994646898f87c18a42ae96ba19d6ecbbf6fe3227755c335e14088fb259ab');
+$skippedAlertSha = array('a83f31c0d21b8492c3960d923a3d8bbb8a375d3dc2d8127c18fadafa6936e6fe', '9775994646898f87c18a42ae96ba19d6ecbbf6fe3227755c335e14088fb259ab');
 
 
 date_default_timezone_set('Asia/Hong_Kong');
@@ -94,6 +94,8 @@ if (pingAddress(gethostbyname($host))) {
         $currentAlertSha = hash('sha256', json_encode($busAlert ?? array(), JSON_PRETTY_PRINT));
         if (in_array($currentAlertSha, $skippedAlertSha)) {
             $busAlert = null;
+        } else {
+            $busAlert = [$webWarningTc, $webWarning, $currentAlertSha];
         }
 
         // save current alert
