@@ -15,7 +15,7 @@ const AppCorrupted: React.FC<{
 
   return (
     <IonPage>
-      <div className="downloadFilesContainer">
+      <div className="appCorruptedContainer">
         <p className="appCorruptedText">{t("app_data_corrupted")}</p>
         <span className="appCorruptedNote">{missingData.join(", ")}</span>
         <IonButton
