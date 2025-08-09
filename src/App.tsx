@@ -200,10 +200,7 @@ const App: React.FC<RouteComponentProps | any> = () => {
         ) : (
           <DownloadFiles
             setDownloadedState={setDownloadedState}
-            i18next={i18next}
             setAppData={setAppData}
-            appData={appData}
-            setAppSettings={setAppSettings}
             setNetworkError={setNetworkError}
             setRealtimeData={setRealtimeData}
           />
