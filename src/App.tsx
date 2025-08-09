@@ -121,7 +121,7 @@ const AppShell: React.FC = () => {
               </Route>
 
               <Route exact path="/permit">
-                <SchoolBusPermit appSettings={appSettings} setAppSettings={setAppSettings} />
+                <SchoolBusPermit />
               </Route>
 
               {/* New Settings uses context, no props */}

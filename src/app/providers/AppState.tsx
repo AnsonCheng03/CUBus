@@ -62,7 +62,6 @@ export const AppStateProvider: React.FC<React.PropsWithChildren<{}>> = ({ childr
 
 export function useAppState() {
   const ctx = useContext(Ctx);
-  console.log('useAppState', ctx);
   if (!ctx) throw new Error('useAppState must be used within AppStateProvider');
   return ctx;
 }
