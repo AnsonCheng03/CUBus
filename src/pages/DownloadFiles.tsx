@@ -1,32 +1,26 @@
-// screens/DownloadFiles.tsx
-import React from "react";
-import { IonButton, IonPage } from "@ionic/react";
-import icon from "../assets/bus.jpg";
-import "./DownloadFiles.css";
-import { useTranslation } from "react-i18next";
-import { useActiveBusPolling } from "../utils/useActiveBusPolling";
-import { useAppBootstrap } from "../hooks/useAppBootstrap";
+import React from 'react';
+import { IonButton, IonPage } from '@ionic/react';
+import icon from '../assets/bus.jpg';
+import './DownloadFiles.css';
+import { useTranslation } from 'react-i18next';
 
-type DownloadFilesProps = {
-  setAppData: (data: any) => void;
-  setNetworkError: (error: any) => void;
-  setRealtimeData: (data: any) => void;
-  setDownloadedState: (state: boolean) => void;
-};
+import { useAppState } from '@app/providers/AppState';
+import { log } from '@shared/lib/logger';
+import { useBackgroundPoll } from '@shared/hooks/useBackgroundPoll';
 
-// help me find the type for DownloadFilesProps
-const DownloadFiles: React.FC<DownloadFilesProps> = ({
-  setAppData,
-  setNetworkError,
-  setRealtimeData,
-  setDownloadedState,
-}) => {
-  const { t, i18n } = useTranslation("preset");
-  const [hint, setHint] = React.useState(t("DownloadFiles-Initializing"));
+// NOTE: We keep using your existing bootstrap hook for now.
+// It should accept the same args you already use.
+import { useAppBootstrap } from '../hooks/useAppBootstrap';
+
+const DownloadFiles: React.FC = () => {
+  const { t, i18n } = useTranslation('preset');
+  const { setAppData, setNetworkError, setRealtimeData, setDownloadedState } = useAppState();
+
+  const [hint, setHint] = React.useState(t('DownloadFiles-Initializing'));
   const [err, setErr] = React.useState(false);
-  const [stale, setStale] = React.useState(true); // show “not latest” badge
+  const [stale, setStale] = React.useState(true);
 
-  // FAST boot: no blocking network
+  // FAST boot: no blocking network (same behavior as before)
   const { ready, datesRef, repo } = useAppBootstrap(
     {
       i18next: i18n,
@@ -36,36 +30,44 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
       setHint,
       t,
     },
-    "fast" // or "syncOnIdle" 如果想自動做一次空檔同步
+    'fast', // or "syncOnIdle"
   );
 
   React.useEffect(() => {
     if (ready) {
       setDownloadedState(true);
-      setHint(t("DownloadFiles-Complete"));
+      setHint(t('DownloadFiles-Complete'));
     }
-  }, [ready]);
+  }, [ready, setDownloadedState, t]);
 
-  // 延後啟動輪詢（避免剛開 app 搶資源）
-  useActiveBusPolling({
-    getDates: () => datesRef.current ?? null,
-    realtimeMs: 10_000,
-    lastUpdatedMs: 5 * 60_000,
-    onRealtime: async () => {
+  // Poll realtime every 10s when app visible/active
+  useBackgroundPoll(
+    async () => {
       try {
         await repo.current?.realtimeOnce();
-      } catch {}
-    },
-    onLastUpdated: async (dates) => {
-      try {
-        await repo.current?.syncDelta(dates ?? null);
-        setStale(false);
-      } catch {
-        setErr(true);
-        setStale(true);
+      } catch (e) {
+        // non-fatal; allow next tick
+        log.warn('realtimeOnce failed', e);
       }
     },
-  });
+    { intervalMs: 10_000, enabled: true },
+  );
+
+  // Poll delta sync every 5 min when app visible/active
+  useBackgroundPoll(
+    async () => {
+      try {
+        const dates = datesRef.current ?? null;
+        await repo.current?.syncDelta(dates);
+        setStale(false);
+      } catch (e) {
+        setErr(true);
+        setStale(true);
+        log.warn('syncDelta failed', e);
+      }
+    },
+    { intervalMs: 5 * 60_000, enabled: true },
+  );
 
   return (
     <IonPage>
@@ -77,14 +79,17 @@ const DownloadFiles: React.FC<DownloadFilesProps> = ({
           <IonButton
             color="medium"
             onClick={async () => {
-              if ("serviceWorker" in navigator) {
-                const regs = await navigator.serviceWorker.getRegistrations();
-                regs.forEach((r) => r.unregister());
+              try {
+                if ('serviceWorker' in navigator) {
+                  const regs = await navigator.serviceWorker.getRegistrations();
+                  regs.forEach((r) => r.unregister());
+                }
+              } finally {
+                window.location.reload();
               }
-              window.location.reload();
             }}
           >
-            {t("reset_app")}
+            {t('reset_app')}
           </IonButton>
         )}
       </div>

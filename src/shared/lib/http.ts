@@ -1,7 +1,6 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 
-export const http = axios.create({
-  // baseURL can be set via env if needed
+export const http: AxiosInstance = axios.create({
   timeout: 15000,
 });
 

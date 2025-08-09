@@ -21,7 +21,7 @@ export function useBackgroundPoll(fn: () => void | Promise<void>, opts: Options)
 
     let cancelled = false;
     const tick = () => Promise.resolve(fn()).catch(() => {});
-    tick(); // immediate
+    tick();
     timer.current = window.setInterval(() => {
       if (!cancelled) tick();
     }, intervalMs);
