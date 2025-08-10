@@ -49,7 +49,10 @@ const SchoolBusPermit: React.FC = () => {
   // nicer mobile keyboard bar
   useEffect(() => {
     Keyboard.setAccessoryBarVisible({ isVisible: true });
-    return () => Keyboard.setAccessoryBarVisible({ isVisible: false });
+    return () => {
+      // Cleanup must not be async
+      Keyboard.setAccessoryBarVisible({ isVisible: false });
+    };
   }, []);
 
   // IonInput helpers

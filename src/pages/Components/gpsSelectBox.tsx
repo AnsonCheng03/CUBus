@@ -2,7 +2,7 @@ import { IonIcon, IonModal } from "@ionic/react";
 import { navigateCircleOutline } from "ionicons/icons";
 import { Component } from "react";
 import { withTranslation } from "react-i18next";
-import { getLocation } from "../Functions/getLocation";
+import { getLocation } from '../../functions/getLocation';
 import { LoadingImage } from "./newPageModal";
 import React from "react";
 
@@ -84,7 +84,7 @@ class SelectIcon extends Component<gpsSelectIconProps> {
 }
 
 class PopUpBox extends Component<gpsSelectBoxProps> {
-  modalRef: React.RefObject<HTMLIonModalElement>;
+  modalRef: React.RefObject<HTMLIonModalElement | null>;
 
   constructor(props: gpsSelectBoxProps) {
     super(props);
@@ -109,8 +109,8 @@ class PopUpBox extends Component<gpsSelectBoxProps> {
     };
 
     const formattedGPSText = (string: any) => {
-      return string.includes("|")
-        ? t(string.split("|")[0]) + " (" + t(string.split("|")[1]) + ")"
+      return string.includes('|')
+        ? t(string.split('|')[0]) + ' (' + t(string.split('|')[1]) + ')'
         : t(string);
     };
 
@@ -122,11 +122,7 @@ class PopUpBox extends Component<gpsSelectBoxProps> {
             key={data[0]}
             onClick={async () => {
               !data[1].error &&
-                changeValuebyGPS(
-                  fullName
-                    ? `${formattedGPSText(data[0])} (${data[0]})`
-                    : data[0]
-                );
+                changeValuebyGPS(fullName ? `${formattedGPSText(data[0])} (${data[0]})` : data[0]);
               await this.modalRef.current?.dismiss();
             }}
           >
@@ -134,8 +130,8 @@ class PopUpBox extends Component<gpsSelectBoxProps> {
             {!data[1].error && (
               <div className="gpsMeter">
                 {Number(data[1].distance.toFixed(3)) * 1000 > 1000
-                  ? "> 9999"
-                  : Number(data[1].distance.toFixed(3)) * 1000 + " m"}
+                  ? '> 9999'
+                  : Number(data[1].distance.toFixed(3)) * 1000 + ' m'}
               </div>
             )}
           </div>
@@ -146,7 +142,7 @@ class PopUpBox extends Component<gpsSelectBoxProps> {
     return (
       <IonModal
         isOpen={openModal}
-        id={"GPSModal"}
+        id={'GPSModal'}
         canDismiss={sortedGPSData && sortedGPSData.length > 0}
         onDidDismiss={dismissModal}
         ref={this.modalRef}
@@ -155,14 +151,14 @@ class PopUpBox extends Component<gpsSelectBoxProps> {
         {sortedGPSData && sortedGPSData.length > 0 ? (
           <div className="GPSModalDetails">
             <div className="showdetails">
-              <h4 id="details-box-heading">{t("nearst_txt")}</h4>
+              <h4 id="details-box-heading">{t('nearst_txt')}</h4>
               <div
                 className="map-submit-btn"
                 onClick={() => {
                   this.modalRef.current?.dismiss();
                 }}
               >
-                {t("cancel_btntxt")}
+                {t('cancel_btntxt')}
               </div>
             </div>
             <div id="GPSresult">{returnNearest(sortedGPSData)}</div>

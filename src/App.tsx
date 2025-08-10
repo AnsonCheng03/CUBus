@@ -100,24 +100,11 @@ const AppShell: React.FC = () => {
             <Alert notice={appData.notice} />
             <IonRouterOutlet>
               <Route exact path="/realtime">
-                <Realtime
-                  appData={appData}
-                  realtimeData={realtimeData}
-                  appTempData={appTempData}
-                  setAppTempData={setAppTempData}
-                  networkError={networkError}
-                />
+                <Realtime />
               </Route>
 
               <Route exact path="/route">
-                <RouteSearch
-                  appData={appData}
-                  realtimeData={realtimeData}
-                  appSettings={appSettings}
-                  appTempData={appTempData}
-                  setAppTempData={setAppTempData}
-                  networkError={networkError}
-                />
+                <RouteSearch />
               </Route>
 
               <Route exact path="/permit">
@@ -131,13 +118,7 @@ const AppShell: React.FC = () => {
 
               {/* Fallback */}
               <Route>
-                <Realtime
-                  appData={appData}
-                  realtimeData={realtimeData}
-                  appTempData={appTempData}
-                  setAppTempData={setAppTempData}
-                  networkError={networkError}
-                />
+                <Realtime />
               </Route>
             </IonRouterOutlet>
             <NavBar />
