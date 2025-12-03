@@ -1,44 +1,38 @@
-import { IonButton, IonPage } from "@ionic/react";
-import { useTranslation } from "react-i18next";
-import { RouteComponentProps } from "react-router";
+import { IonButton, IonPage } from '@ionic/react';
+import { useTranslation } from 'react-i18next';
+import './appCorruped.css';
 
-import "./appCorruped.css";
+import { clearAll } from '@shared/lib/storage';
 
-import { Storage } from "@ionic/storage";
+const AppCorrupted: React.FC<{ missingData: string[] }> = ({ missingData }) => {
+  const { t } = useTranslation('preset');
 
-const store = new Storage();
+  const handleReset = async () => {
+    try {
+      // clear Ionic Storage (via shared helper)
+      await clearAll();
 
-const AppCorrupted: React.FC<{
-  missingData: string[];
-}> = ({ missingData }) => {
-  const { t } = useTranslation("preset");
+      // unregister all service workers (offline cache, old assets)
+      if ('serviceWorker' in navigator) {
+        const regs = await navigator.serviceWorker.getRegistrations();
+        regs.forEach((r) => r.unregister());
+      }
+    } catch (err) {
+      // non‑fatal; reload anyway
+      console.error(err);
+    } finally {
+      window.location.reload();
+    }
+  };
 
   return (
     <IonPage>
-      <div className="downloadFilesContainer">
-        <p className="appCorruptedText">{t("app_data_corrupted")}</p>
-        <span className="appCorruptedNote">{missingData.join(", ")}</span>
-        <IonButton
-          onClick={async () => {
-            try {
-              await store.create();
-              await store.clear();
-              navigator.serviceWorker
-                .getRegistrations()
-                .then((registrations) => {
-                  for (const registration of registrations) {
-                    registration.unregister();
-                  }
-                });
-            } catch (error) {
-              console.error(error);
-            } finally {
-              window.location.reload();
-            }
-          }}
-        >
-          {t("reset_app")}
-        </IonButton>
+      <div className="appCorruptedContainer">
+        <p className="appCorruptedText">{t('app_data_corrupted')}</p>
+        {missingData?.length > 0 && (
+          <span className="appCorruptedNote">{missingData.join(', ')}</span>
+        )}
+        <IonButton onClick={handleReset}>{t('reset_app')}</IonButton>
       </div>
     </IonPage>
   );

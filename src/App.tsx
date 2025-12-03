@@ -1,213 +1,171 @@
-import { Route, RouteComponentProps } from "react-router-dom";
-import {
-  IonApp,
-  IonButton,
-  IonNav,
-  IonRouterOutlet,
-  setupIonicReact,
-} from "@ionic/react";
-import { IonReactRouter } from "@ionic/react-router";
+import { Route } from 'react-router-dom';
+import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
+import { IonReactRouter } from '@ionic/react-router';
 
-import i18next from "i18next";
-import { I18nextProvider } from "react-i18next";
-import HttpBackend from "i18next-http-backend";
-import LanguageDetector from "i18next-browser-languagedetector";
-import { useTranslation, initReactI18next } from "react-i18next";
-import preset_en from "./translations/en_preset.json";
-import preset_zh from "./translations/zh_preset.json";
+import i18next from 'i18next';
+import { I18nextProvider } from 'react-i18next';
+import HttpBackend from 'i18next-http-backend';
+import LanguageDetector from 'i18next-browser-languagedetector';
+import { initReactI18next, useTranslation } from 'react-i18next';
+import preset_en from './translations/en_preset.json';
+import preset_zh from './translations/zh_preset.json';
 
-import NavBar from "./components/navBar";
-import PWAPrompt from "./components/mobilePWAPrompt";
-import Alert from "./components/alertBox";
+import NavBar from './components/navBar';
+import PWAPrompt from './components/mobilePWAPrompt';
+import Alert from './components/alertBox';
 
-import Realtime from "./pages/MainPages/Realtime/Realtime";
-import RouteSearch from "./pages/MainPages/RouteSearch/RouteSearch";
-import SchoolBusPermit from "./pages/MainPages/SchoolBusPermit/SchoolBusPermit";
-import Settings from "./pages/MainPages/Settings/Settings";
-import DownloadFiles from "./pages/DownloadFiles";
+import Realtime from './pages/MainPages/Realtime/Realtime';
+import RouteSearch from './pages/MainPages/RouteSearch/RouteSearch';
+import SchoolBusPermit from './pages/MainPages/SchoolBusPermit/SchoolBusPermit';
+import Settings from './pages/MainPages/Settings/Settings';
+import DownloadFiles from './pages/DownloadFiles';
 
-/* Core CSS required for Ionic components to work properly */
-import "@ionic/react/css/core.css";
+import * as Sentry from '@sentry/capacitor';
+import * as SentryReact from '@sentry/react';
 
-/* Basic CSS for apps built with Ionic */
-import "@ionic/react/css/normalize.css";
-import "@ionic/react/css/structure.css";
-import "@ionic/react/css/typography.css";
+/* Ionic CSS */
+import '@ionic/react/css/core.css';
+import '@ionic/react/css/normalize.css';
+import '@ionic/react/css/structure.css';
+import '@ionic/react/css/typography.css';
 
-/* Optional CSS utils that can be commented out */
-// import "@ionic/react/css/padding.css";
-// import "@ionic/react/css/float-elements.css";
-// import "@ionic/react/css/text-alignment.css";
-// import "@ionic/react/css/text-transformation.css";
-// import "@ionic/react/css/flex-utils.css";
-// import "@ionic/react/css/display.css";
+/* Theme */
+import './theme/variables.css';
+import './main.css';
 
-/* Theme variables */
-import "./theme/variables.css";
+import AppCorrupted from './pages/appCorruped';
 
-import "./main.css";
-
-import { useState } from "react";
-import AppCorrupted from "./pages/appCorruped";
+import { AppStateProvider, useAppState } from '@app/providers/AppState';
 
 setupIonicReact({
   platform: {
-    /** The default `desktop` function returns false for devices with a touchscreen.
-     * This is not always wanted, so this function tests the User Agent instead.
-     **/
-    desktop: (win) => {
-      const isMobile =
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          win.navigator.userAgent
-        );
-      return !isMobile;
-    },
+    desktop: (win) =>
+      !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        win.navigator.userAgent,
+      ),
   },
 });
+
+Sentry.init(
+  {
+    dsn: 'https://05bedc8c2dfb23fa8f8b70e735e5f409@o4510470118178816.ingest.us.sentry.io/4510470120275968',
+    integrations: [
+      Sentry.browserTracingIntegration(),
+      // new SentryReact.BrowserTracing({
+      //   // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
+      //   tracePropagationTargets: ['localhost', /^https:\/\/yourserver\.io\/api/],
+      // }),
+      // new SentryReact.Replay(),
+    ],
+    // Tracing
+    tracesSampleRate: 1.0, //  Capture 100% of the transactions,
+    // Session Replay
+    replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
+    replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+  },
+  // Forward the init method from @sentry/react
+  SentryReact.init,
+);
 
 i18next
   .use(HttpBackend)
   .use(LanguageDetector)
-  .use(initReactI18next) // passes i18n down to react-i18next
+  .use(initReactI18next)
   .init({
-    fallbackLng: "zh",
-    saveMissing: true, // send not translated keys to endpoint
-    interpolation: {
-      escapeValue: false,
-    },
+    fallbackLng: 'zh',
+    saveMissing: true,
+    interpolation: { escapeValue: false },
     resources: {
-      en: {
-        global: {},
-        preset: preset_en,
-      },
-      zh: {
-        global: {},
-        preset: preset_zh,
-      },
+      en: { global: {}, preset: preset_en },
+      zh: { global: {}, preset: preset_zh },
     },
   });
 
-const App: React.FC<RouteComponentProps | any> = () => {
-  const [t, i18n] = useTranslation("global");
-  const [isDownloaded, setDownloadedState] = useState(false);
-  const [appData, setAppData] = useState<any>({});
-  const [appSettings, setAppSettings] = useState<any>({});
-  const [networkError, setNetworkError] = useState({
-    realtime: false,
-    batch: false,
-  });
+const AppShell: React.FC = () => {
+  useTranslation('global'); // ensures i18n instance ready
 
-  const [appTempData, setRawAppTempData] = useState<any>({
-    realTimeStation: null,
-    searchStation: null,
-  });
-
-  const [realtimeData, setRealtimeData] = useState<any>({});
-
-  const setAppTempData = (key: string, data: any) => {
-    setRawAppTempData((prev: any) => {
-      return { ...prev, [key]: data };
-    });
-  };
+  // 🔑 Read everything from context (no local state duplicates)
+  const {
+    isDownloaded,
+    appData,
+    appSettings,
+    setAppSettings,
+    appTempData,
+    setAppTempData,
+    networkError,
+    realtimeData,
+  } = useAppState();
 
   const dataToBeChecked = [
-    "timetable.json",
-    "bus",
-    "notice",
-    "station",
-    "GPS",
-    "WebsiteLinks",
-  ];
+    'timetable.json',
+    'bus',
+    'notice',
+    'station',
+    'GPS',
+    'WebsiteLinks',
+  ] as const;
 
   const checkDownloadData = (
-    dataToBeChecked: string[],
-    returnMissing = false
+    keys: readonly string[],
+    returnMissing = false,
   ): boolean | string[] => {
-    const missingData: string[] = [];
-    for (const data of dataToBeChecked) {
-      if (!appData[data]) {
-        console.error(`Data ${data} is missing`);
-        missingData.push(data);
-      }
+    const missing: string[] = [];
+    for (const k of keys) {
+      if (!appData[k]) missing.push(k);
     }
-
-    if (returnMissing) return missingData;
-    return missingData.length === 0;
+    return returnMissing ? missing : missing.length === 0;
   };
 
   return (
+    <>
+      {isDownloaded ? (
+        checkDownloadData(dataToBeChecked) ? (
+          <IonReactRouter>
+            <Alert notice={appData.notice} />
+            <IonRouterOutlet>
+              <Route exact path="/realtime">
+                <Realtime />
+              </Route>
+
+              <Route exact path="/route">
+                <RouteSearch />
+              </Route>
+
+              <Route exact path="/permit">
+                <SchoolBusPermit />
+              </Route>
+
+              {/* New Settings uses context, no props */}
+              <Route exact path="/settings">
+                <Settings />
+              </Route>
+
+              {/* Fallback */}
+              <Route>
+                <Realtime />
+              </Route>
+            </IonRouterOutlet>
+            <NavBar />
+            <PWAPrompt />
+          </IonReactRouter>
+        ) : (
+          <AppCorrupted missingData={checkDownloadData(dataToBeChecked, true) as string[]} />
+        )
+      ) : (
+        // New DownloadFiles uses context; no props
+        <DownloadFiles />
+      )}
+    </>
+  );
+};
+
+const App: React.FC = () => {
+  return (
     <I18nextProvider i18n={i18next}>
       <IonApp>
-        {isDownloaded ? (
-          checkDownloadData(dataToBeChecked) ? (
-            <>
-              <IonReactRouter>
-                <Alert notice={appData.notice} />
-                <IonRouterOutlet>
-                  <Route exact path="/realtime">
-                    <Realtime
-                      appData={appData}
-                      realtimeData={realtimeData}
-                      appTempData={appTempData}
-                      setAppTempData={setAppTempData}
-                      networkError={networkError}
-                    />
-                  </Route>
-                  <Route exact path="/route">
-                    <RouteSearch
-                      appData={appData}
-                      realtimeData={realtimeData}
-                      appSettings={appSettings}
-                      appTempData={appTempData}
-                      setAppTempData={setAppTempData}
-                      networkError={networkError}
-                    />
-                  </Route>
-                  <Route exact path="/permit">
-                    <SchoolBusPermit
-                      appSettings={appSettings}
-                      setAppSettings={setAppSettings}
-                    />
-                  </Route>
-                  <Route exact path="/settings">
-                    <Settings
-                      appData={appData}
-                      appSettings={appSettings}
-                      setAppSettings={setAppSettings}
-                      setAppTempData={setAppTempData}
-                      networkError={networkError}
-                    />
-                  </Route>
-                  <Route>
-                    <Realtime
-                      appData={appData}
-                      realtimeData={realtimeData}
-                      appTempData={appTempData}
-                      setAppTempData={setAppTempData}
-                      networkError={networkError}
-                    />
-                  </Route>
-                </IonRouterOutlet>
-                <NavBar />
-                <PWAPrompt />
-              </IonReactRouter>
-            </>
-          ) : (
-            <AppCorrupted
-              missingData={checkDownloadData(dataToBeChecked, true) as string[]}
-            />
-          )
-        ) : (
-          <DownloadFiles
-            setDownloadedState={setDownloadedState}
-            i18next={i18next}
-            setAppData={setAppData}
-            appData={appData}
-            setAppSettings={setAppSettings}
-            setNetworkError={setNetworkError}
-            setRealtimeData={setRealtimeData}
-          />
-        )}
+        <AppStateProvider>
+          <AppShell />
+        </AppStateProvider>
       </IonApp>
     </I18nextProvider>
   );

@@ -1,19 +1,27 @@
 PODS:
-  - Capacitor (6.1.2):
+  - Capacitor (7.4.4):
     - CapacitorCordova
-  - CapacitorApp (6.0.1):
+  - CapacitorApp (7.1.0):
     - Capacitor
-  - CapacitorCordova (6.1.2)
-  - CapacitorGeolocation (6.0.1):
+  - CapacitorCordova (7.4.4)
+  - CapacitorGeolocation (7.1.6):
     - Capacitor
-  - CapacitorHaptics (6.0.1):
+    - IONGeolocationLib (= 1.0.1)
+  - CapacitorHaptics (7.0.2):
     - Capacitor
-  - CapacitorKeyboard (6.0.2):
+  - CapacitorKeyboard (7.0.3):
     - Capacitor
-  - CapacitorStatusBar (6.0.1):
+  - CapacitorNetwork (7.0.2):
     - Capacitor
-  - CordovaPlugins (6.1.2):
+  - CapacitorStatusBar (7.0.3):
+    - Capacitor
+  - CordovaPlugins (7.4.4):
     - CapacitorCordova
+  - IONGeolocationLib (1.0.1)
+  - Sentry/HybridSDK (8.56.2)
+  - SentryCapacitor (2.4.1):
+    - Capacitor
+    - Sentry/HybridSDK (= 8.56.2)
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
@@ -22,8 +30,15 @@ DEPENDENCIES:
   - "CapacitorGeolocation (from `../../node_modules/@capacitor/geolocation`)"
   - "CapacitorHaptics (from `../../node_modules/@capacitor/haptics`)"
   - "CapacitorKeyboard (from `../../node_modules/@capacitor/keyboard`)"
+  - "CapacitorNetwork (from `../../node_modules/@capacitor/network`)"
   - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
   - CordovaPlugins (from `../capacitor-cordova-ios-plugins`)
+  - "SentryCapacitor (from `../../node_modules/@sentry/capacitor`)"
+
+SPEC REPOS:
+  trunk:
+    - IONGeolocationLib
+    - Sentry
 
 EXTERNAL SOURCES:
   Capacitor:
@@ -38,21 +53,29 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/haptics"
   CapacitorKeyboard:
     :path: "../../node_modules/@capacitor/keyboard"
+  CapacitorNetwork:
+    :path: "../../node_modules/@capacitor/network"
   CapacitorStatusBar:
     :path: "../../node_modules/@capacitor/status-bar"
   CordovaPlugins:
     :path: "../capacitor-cordova-ios-plugins"
+  SentryCapacitor:
+    :path: "../../node_modules/@sentry/capacitor"
 
 SPEC CHECKSUMS:
-  Capacitor: 679f9673fdf30597493a6362a5d5bf233d46abc2
-  CapacitorApp: 0bc633b4eae40a1f32cd2834788fad3bc42da6a1
-  CapacitorCordova: f48c89f96c319101cd2f0ce8a2b7449b5fb8b3dd
-  CapacitorGeolocation: 39dca51d755f08ed1d43e51be55291a402cdc64f
-  CapacitorHaptics: fe689ade56ef20ec9b041a753c6da70c5d8ec9a9
-  CapacitorKeyboard: 2700f9b18687be021e28b5a09b59eb151a46d5e0
-  CapacitorStatusBar: b81d4fb5d4e0064c712018071b3ab4b810b39a63
-  CordovaPlugins: 397a07d3fd06e897eba2170c25babd53c6e0122b
+  Capacitor: 358dd1c3fdd71d969547b17e159fd8a7736cb45f
+  CapacitorApp: 26587c2ce485d88ddb39adb21cac64f8e481afe3
+  CapacitorCordova: bf648a636f3c153f652d312ae145fb508b6ffced
+  CapacitorGeolocation: a65213fef581c7b8c5d486abbd5a6d00192a179e
+  CapacitorHaptics: b3fb2869e72c4466e18ce9ccbeb60a3d8723b3d4
+  CapacitorKeyboard: 62f36104f26d53d8b3a2a43f2a69fe714f1777d5
+  CapacitorNetwork: 695069886b3c5ed514db69aa3d026b8dc3c03a6b
+  CapacitorStatusBar: 0659ddc7b1713764a05831463d215b177a15d054
+  CordovaPlugins: 6642b4374042e6612edd0cc4e2cd12554e98bced
+  IONGeolocationLib: 20f9d0248a0b5264511fb57a37e25dd2badf797a
+  Sentry: b53951377b78e21a734f5dc8318e333dbfc682d7
+  SentryCapacitor: 84549a1440a7f58a336ed3175db0f067d571cd5b
 
-PODFILE CHECKSUM: 9deff66e7905e14f81db4077b0a40eb01cef5442
+PODFILE CHECKSUM: af8f7145a35c9f0ff3b41a37fbd63cd918847942
 
-COCOAPODS: 1.15.2
+COCOAPODS: 1.16.2

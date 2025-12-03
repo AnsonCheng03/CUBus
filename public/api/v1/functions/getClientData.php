@@ -219,6 +219,10 @@ if (
         while ($row = $result->fetch_assoc()) {
             // Store data in the array, same as before
             $station[$row['最近之車站']][] = $row['建築物'];
+            $station[$row['最近之車站']][] = $row['最近之車站'];
+        }
+        foreach ($station as $key => $value) {
+            $station[$key] = array_values(array_unique($value));
         }
 
         // Save the output

@@ -16,18 +16,18 @@ import { IconoirProvider, BusStop } from "iconoir-react";
 import "./Realtime.css";
 import "../assets/routeComp.css";
 
-import { generateRouteResult, BusData } from "../../Functions/getRealTime";
-import RouteMap from "../../Components/routeMap";
-import PullToRefresh from "react-simple-pull-to-refresh";
+import { generateRouteResult, BusData } from '../../../functions/getRealTime';
+import RouteMap from '../../Components/routeMap';
+import PullToRefresh from 'react-simple-pull-to-refresh';
 import {
   alertCircleOutline,
   alertOutline,
   alertSharp,
   caretDownCircleOutline,
   caretUpCircleOutline,
-} from "ionicons/icons";
-import { RiAlertFill, RiInformation2Fill } from "react-icons/ri";
-import { getTextColor } from "../../Functions/Tools";
+} from 'ionicons/icons';
+import { RiAlertFill, RiInformation2Fill } from 'react-icons/ri';
+import { getTextColor } from '../../../functions/Tools';
 import axios from "axios";
 
 const Realtime: React.FC<{
@@ -236,7 +236,9 @@ const Realtime: React.FC<{
                           },
                         ]);
                       }}
-                      key={bus.busno + bus.time + index}
+                      key={
+                        bus.busno + bus.time + index + bus.arrived + bus.warning
+                      }
                     >
                       <div className="bus-info">
                         <div className="route-result-busno-number-container">
