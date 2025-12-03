@@ -27,7 +27,33 @@ export default defineConfig({
         'data-vendor': [/node_modules\/axios/, /node_modules\/redux/, /node_modules\/react-redux/],
       },
     }),
-    VitePWA({ registerType: 'autoUpdate' }),
+    VitePWA({
+      registerType: 'autoUpdate',
+      manifest: {
+        short_name: 'CU BUS',
+        name: '中大巴士資訊站 CUHK BUS INFOPAGE',
+        description:
+          '中大巴士資訊站提供點對點路線搜尋、實時校巴查詢服務，讓你輕鬆在中大校園穿梭。 CUHK Bus Infopage provides point-to-point route search and real-time school bus query services, allowing you to travel around the CUHK campus easily.',
+        icons: [
+          {
+            src: 'assets/icon/favicon.png',
+            sizes: '64x64 32x32 24x24 16x16',
+            type: 'image/x-icon',
+          },
+          {
+            src: 'assets/icon/icon.png',
+            type: 'image/png',
+            sizes: '512x512',
+            purpose: 'maskable',
+          },
+        ],
+        start_url: '.',
+        scope: '/',
+        display: 'standalone',
+        theme_color: '#ffffff',
+        background_color: '#ffffff',
+      },
+    }),
   ],
   resolve: {
     alias: {
