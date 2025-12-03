@@ -84,7 +84,7 @@ class SelectIcon extends Component<gpsSelectIconProps> {
 }
 
 class PopUpBox extends Component<gpsSelectBoxProps> {
-  modalRef: React.RefObject<HTMLIonModalElement | null>;
+  modalRef: React.RefObject<HTMLIonModalElement>;
 
   constructor(props: gpsSelectBoxProps) {
     super(props);

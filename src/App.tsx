@@ -20,6 +20,9 @@ import SchoolBusPermit from './pages/MainPages/SchoolBusPermit/SchoolBusPermit';
 import Settings from './pages/MainPages/Settings/Settings';
 import DownloadFiles from './pages/DownloadFiles';
 
+import * as Sentry from '@sentry/capacitor';
+import * as SentryReact from '@sentry/react';
+
 /* Ionic CSS */
 import '@ionic/react/css/core.css';
 import '@ionic/react/css/normalize.css';
@@ -42,6 +45,27 @@ setupIonicReact({
       ),
   },
 });
+
+Sentry.init(
+  {
+    dsn: 'https://05bedc8c2dfb23fa8f8b70e735e5f409@o4510470118178816.ingest.us.sentry.io/4510470120275968',
+    integrations: [
+      Sentry.browserTracingIntegration(),
+      // new SentryReact.BrowserTracing({
+      //   // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled
+      //   tracePropagationTargets: ['localhost', /^https:\/\/yourserver\.io\/api/],
+      // }),
+      // new SentryReact.Replay(),
+    ],
+    // Tracing
+    tracesSampleRate: 1.0, //  Capture 100% of the transactions,
+    // Session Replay
+    replaysSessionSampleRate: 0.1, // This sets the sample rate at 10%. You may want to change it to 100% while in development and then sample at a lower rate in production.
+    replaysOnErrorSampleRate: 1.0, // If you're not already sampling the entire session, change the sample rate to 100% when sampling sessions where errors occur.
+  },
+  // Forward the init method from @sentry/react
+  SentryReact.init,
+);
 
 i18next
   .use(HttpBackend)
