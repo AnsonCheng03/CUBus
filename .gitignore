@@ -1,32 +1,69 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# dependencies
-/node_modules
-/.pnp
+# Dependencies
+node_modules/
+.pnp/
 .pnp.js
 
-# testing
-/coverage
+# Test and build output
+coverage/
+dist/
+build/
+web-build/
 
-# production
-/dist
+# Vite / tooling caches
+.vite/
+.vitest/
+.nx/
+.eslintcache
 
-# misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-/.nx
-/.nx/cache
-/.vscode/*
-!/.vscode/extensions.json
-.idea
-
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
-# Optional eslint cache
-.eslintcache
-public/api/Data
+# Environment and local config
+.env
+.env.*
+!.env.example
+!.env.sample
+local.properties
+
+# Editors and OS files
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# App-generated data
+public/api/Data/
+
+# Cypress
+cypress/screenshots/
+cypress/videos/
+
+# Capacitor / Android
+android/.gradle/
+android/local.properties
+android/**/build/
+
+# Capacitor / iOS
+ios/**/Pods/
+ios/**/build/
+ios/**/DerivedData/
+ios/**/xcuserdata/
+
+# Expo / React Native mobile app
+mobile/.expo/
+mobile/.expo-shared/
+mobile/node_modules/
+mobile/dist/
+mobile/web-build/
+mobile/android/.gradle/
+mobile/android/**/build/
+mobile/ios/Pods/
+mobile/ios/build/
+mobile/ios/DerivedData/
+mobile/ios/**/*.xcuserdata/
+mobile/ios/.xcode.env.local

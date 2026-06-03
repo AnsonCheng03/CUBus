@@ -1,0 +1,96 @@
+import axios from 'axios';
+import type { ModificationDates, ServerResponse } from '../app/types';
+
+export type ApiClientOptions = {
+  baseUrl: string;
+  withCredentials?: boolean;
+  devMode?: boolean;
+  timeoutMs?: number;
+};
+
+function stripTrailingSlash(value: string) {
+  return value.endsWith('/') ? value.slice(0, -1) : value;
+}
+
+export function createApiClient(options: ApiClientOptions) {
+  const { withCredentials = true, devMode = false, timeoutMs = 10_000 } = options;
+  const baseUrl = stripTrailingSlash(options.baseUrl);
+  const client = axios.create({
+    withCredentials,
+    timeout: devMode ? 0 : timeoutMs,
+  });
+
+  const shortTimeout = devMode ? 0 : Math.min(timeoutMs, 5_000);
+
+  return {
+    async fetchRealtime(): Promise<ServerResponse> {
+      const response = await client.get<ServerResponse>(`${baseUrl}/getRealtimeData.php`, {
+        timeout: shortTimeout,
+      });
+      return response.data;
+    },
+
+    async fetchServerDates(): Promise<ModificationDates> {
+      const response = await client.get<ModificationDates>(`${baseUrl}/getClientData.php`, {
+        timeout: shortTimeout,
+      });
+      if (typeof response.data === 'string' || response.status !== 200) {
+        throw new Error('Bad server dates response');
+      }
+      return response.data;
+    },
+
+    async fetchDelta(current: ModificationDates | null): Promise<ServerResponse> {
+      const response = await client.post<ServerResponse>(
+        `${baseUrl}/getClientData.php`,
+        current ?? {},
+        { timeout: devMode ? 0 : timeoutMs },
+      );
+      return response.data;
+    },
+
+    async logEvent(payload: Record<string, any>) {
+      await client.post(`${baseUrl}/logData.php`, payload, {
+        timeout: devMode ? 0 : timeoutMs,
+      });
+    },
+
+    async logSearch(input: {
+      start: string;
+      dest: string;
+      departNow: boolean;
+      lang: string;
+      token: string;
+    }) {
+      if (!input.start || !input.dest) return;
+      await client.post(
+        `${baseUrl}/logData.php`,
+        {
+          type: 'search',
+          Start: input.start,
+          Dest: input.dest,
+          Departnow: input.departNow,
+          Lang: input.lang,
+          Token: input.token,
+        },
+        { timeout: devMode ? 0 : timeoutMs },
+      );
+    },
+
+    async logRealtime(input: { dest: string; lang: string; token: string }) {
+      if (!input.dest) return;
+      await client.post(
+        `${baseUrl}/logData.php`,
+        {
+          type: 'realtime',
+          Dest: input.dest,
+          Lang: input.lang,
+          Token: input.token,
+        },
+        { timeout: devMode ? 0 : timeoutMs },
+      );
+    },
+  };
+}
+
+export type ApiClient = ReturnType<typeof createApiClient>;

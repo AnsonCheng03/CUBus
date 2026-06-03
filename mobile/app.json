@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "CU Bus",
+    "slug": "cu-bus-native",
+    "scheme": "cubus",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "plugins": [
+      "expo-router",
+      "expo-location"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "ios": {
+      "bundleIdentifier": "com.anson12666.cu-bus-native"
+    }
+  }
+}
