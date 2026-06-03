@@ -66,7 +66,7 @@ export function RouteSearchScreen() {
       subtitle={t('meta_desc_routesearch')}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#0f766e" />}
     >
-      <RouteMapModal routeMap={routeMap} onClose={() => setRouteMap([])} />
+      <RouteMapModal routeMap={routeMap} onClose={() => setRouteMap(null)} />
       <SelectionModal
         title={pickerType ? pickerType.toUpperCase() : ''}
         visible={pickerType !== null}
@@ -166,11 +166,11 @@ export function RouteSearchScreen() {
             key={`${result.busNo}-${result.arrivalTime}-${index}`}
             style={styles.resultCard}
             onPress={() =>
-              setRouteMap([
-                result.route,
-                result.routeIndex,
-                { busNo: result.busNo, stationIndex: result.routeIndex, token: appData.token },
-              ])
+              setRouteMap({
+                route: result.route,
+                currentIndex: result.routeIndex,
+                details: { busNo: result.busNo, stationIndex: result.routeIndex, token: appData.token },
+              })
             }
           >
             <View style={styles.resultTopRow}>

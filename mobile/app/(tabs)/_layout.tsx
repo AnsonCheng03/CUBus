@@ -1,16 +1,53 @@
 import React from 'react';
+import { Text } from 'react-native';
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
 import { useAppState } from '../../src/providers/AppProvider';
-import { LoadingScreen } from '../../src/components/LoadingScreen';
+import { AppStatusScreen } from '../../src/components/AppStatusScreen';
 
 export default function TabsLayout() {
-  const { t } = useTranslation('global');
-  const { ready, hint } = useAppState();
+  const { t } = useTranslation(['global', 'preset']);
+  const { hint, bootStatus, missingData, retryBoot, resetApp } = useAppState();
 
-  if (!ready) {
-    return <LoadingScreen hint={hint} />;
+  if (bootStatus === 'initializing') {
+    return <AppStatusScreen title="CU Bus" hint={hint} loading />;
+  }
+
+  if (bootStatus === 'recoverable-error') {
+    return (
+      <AppStatusScreen
+        title="CU Bus"
+        hint={hint}
+        body={
+          <Text style={{ color: '#6b5c2e', textAlign: 'center', lineHeight: 22 }}>
+            A startup sync failed. You can retry the boot flow or reset local data and rebuild from seed data.
+          </Text>
+        }
+        actions={[
+          { label: t('retry_btn', { defaultValue: 'Retry' }), onPress: () => retryBoot().catch(() => {}) },
+          { label: t('reset_app', { ns: 'preset' }), onPress: () => resetApp().catch(() => {}), tone: 'secondary' },
+        ]}
+      />
+    );
+  }
+
+  if (bootStatus === 'corrupted') {
+    return (
+      <AppStatusScreen
+        title="CU Bus"
+        hint={t('app_data_corrupted', { ns: 'preset' })}
+        body={
+          <Text style={{ color: '#6b5c2e', textAlign: 'center', lineHeight: 22 }}>
+            {missingData.length > 0 ? missingData.join(', ') : hint}
+          </Text>
+        }
+        actions={[
+          { label: t('reset_app', { ns: 'preset' }), onPress: () => resetApp().catch(() => {}) },
+          { label: t('retry_btn', { defaultValue: 'Retry' }), onPress: () => retryBoot().catch(() => {}), tone: 'secondary' },
+        ]}
+      />
+    );
   }
 
   return (

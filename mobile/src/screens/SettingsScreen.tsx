@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Linking, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { BusMapModal } from '../components/BusMapModal';
 import { ScreenContainer } from '../components/ScreenContainer';
 import { useAppState } from '../providers/AppProvider';
 import { i18next } from '../lib/i18n';
@@ -11,6 +12,7 @@ export function SettingsScreen() {
   const { t } = useTranslation('global');
   const { appSettings, setAppSettings, appData, networkError, resetApp, setAppTempData, syncDelta } =
     useAppState();
+  const [busMapVisible, setBusMapVisible] = useState(false);
   const langIndex = i18next.language.includes('en') ? 0 : 1;
 
   const websiteLinks = ((appData.WebsiteLinks as WebsiteLink[]) ?? []).filter(
@@ -19,6 +21,7 @@ export function SettingsScreen() {
 
   return (
     <ScreenContainer title={t('NAV-Settings')} subtitle={t('meta_desc_settings') || 'Preferences and links'}>
+      <BusMapModal visible={busMapVisible} onClose={() => setBusMapVisible(false)} />
       <View style={styles.card}>
         <Pressable
           style={styles.row}
@@ -55,6 +58,9 @@ export function SettingsScreen() {
       </View>
 
       <View style={styles.card}>
+        <Pressable style={styles.row} onPress={() => setBusMapVisible(true)}>
+          <Text style={styles.rowLabel}>{t('bus_map_page')}</Text>
+        </Pressable>
         {websiteLinks.map((row, index) => (
           <Pressable key={`${row[0][langIndex]}-${index}`} style={styles.row} onPress={() => Linking.openURL(row[1])}>
             <Text style={styles.rowLabel}>{row[0][langIndex]}</Text>

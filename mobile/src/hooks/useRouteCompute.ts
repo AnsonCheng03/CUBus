@@ -4,13 +4,14 @@ import { useAppState } from '../providers/AppProvider';
 import { processBusStatus } from '../../../src/shared-core/realtime/getRealTime';
 import { calculateRoute } from '../../../src/shared-core/routing/getRoute';
 import { nativeApiClient } from '../lib/nativeApi';
+import type { RouteMapSelection } from '../../../src/shared-core/app/types';
 
 export function useRouteCompute() {
   const { t, i18n } = useTranslation('global');
   const { appData, realtimeData, appSettings } = useAppState();
   const [fetchError, setFetchError] = useState(false);
   const [routeResult, setRouteResult] = useState<any>([]);
-  const [routeMap, setRouteMap] = useState<any>([]);
+  const [routeMap, setRouteMap] = useState<RouteMapSelection | null>(null);
 
   const generate = useCallback(
     async (args: {

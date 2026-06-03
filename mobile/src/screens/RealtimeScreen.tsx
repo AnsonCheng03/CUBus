@@ -13,6 +13,7 @@ import { SelectionModal, type SelectionOption } from '../components/SelectionMod
 import { RouteMapModal } from '../components/RouteMapModal';
 import { useAppState } from '../providers/AppProvider';
 import type { BusData } from '../../../src/shared-core/realtime/getRealTime';
+import type { RouteMapSelection } from '../../../src/shared-core/app/types';
 import { generateRouteResult } from '../../../src/shared-core/realtime/getRealTime';
 import { nativeApiClient } from '../lib/nativeApi';
 import { getNearestStation } from '../lib/location';
@@ -22,7 +23,7 @@ export function RealtimeScreen() {
   const { appData, appTempData, setAppTempData, realtimeData, networkError, refreshRealtime } = useAppState();
   const [selectedStation, setSelectedStation] = useState(appTempData.realTimeStation ?? 'MTR');
   const [realtimeResult, setRealtimeResult] = useState<any[]>([]);
-  const [routeMap, setRouteMap] = useState<any[]>([]);
+  const [routeMap, setRouteMap] = useState<RouteMapSelection | null>(null);
   const [fetchError, setFetchError] = useState(false);
   const [pickerVisible, setPickerVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -106,7 +107,7 @@ export function RealtimeScreen() {
       subtitle={t('meta_desc_realtime')}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#0f766e" />}
     >
-      <RouteMapModal routeMap={routeMap} onClose={() => setRouteMap([])} />
+      <RouteMapModal routeMap={routeMap} onClose={() => setRouteMap(null)} />
       <SelectionModal
         title={t('DescTxt-yrloc')}
         visible={pickerVisible}
@@ -154,15 +155,15 @@ export function RealtimeScreen() {
             style={[styles.busCard, bus.arrived && styles.busCardArrived]}
             onPress={() => {
               if (!bus.nextStation) return;
-              setRouteMap([
-                bus.nextStation.route,
-                bus.nextStation.startIndex,
-                {
+              setRouteMap({
+                route: bus.nextStation.route,
+                currentIndex: bus.nextStation.startIndex,
+                details: {
                   busNo: bus.busno,
                   stationIndex: bus.nextStation.startIndex,
                   token: appData.token,
                 },
-              ]);
+              });
             }}
           >
             <View style={styles.busTopRow}>

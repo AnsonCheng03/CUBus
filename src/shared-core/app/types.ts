@@ -1,5 +1,30 @@
 export type NetworkError = { realtime: boolean; batch: boolean };
 
+export type PermitData = {
+  name: string | null;
+  sid: string | null;
+  major: string | null;
+  expiry: string | null;
+};
+
+export type RouteMapDetails = {
+  busNo?: string;
+  stationIndex?: number;
+  token?: string;
+};
+
+export type RouteMapSelection = {
+  route: string[];
+  currentIndex: number;
+  details?: RouteMapDetails;
+};
+
+export type AppBootstrapStatus =
+  | 'initializing'
+  | 'ready'
+  | 'recoverable-error'
+  | 'corrupted';
+
 export type AppData = {
   WebsiteLinks?: any;
   bus?: unknown;
@@ -13,12 +38,7 @@ export type AppData = {
 
 export type AppSettings = {
   searchSortDontIncludeWaitTime?: boolean;
-  schoolBusPermit?: {
-    name: string | null;
-    sid: string | null;
-    major: string | null;
-    expiry: string | null;
-  };
+  schoolBusPermit?: PermitData;
   [key: string]: unknown;
 };
 

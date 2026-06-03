@@ -2,6 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useR
 import { AppState } from 'react-native';
 import type {
   AppData,
+  AppBootstrapStatus,
   AppSettings,
   AppTempData,
   ModificationDates,
@@ -27,14 +28,30 @@ const Ctx = createContext<{
   isDownloaded: boolean;
   setDownloadedState: React.Dispatch<React.SetStateAction<boolean>>;
   ready: boolean;
+  bootStatus: AppBootstrapStatus;
+  missingData: string[];
   hint: string;
+  retryBoot: () => Promise<void>;
   refreshRealtime: () => Promise<void>;
   syncDelta: () => Promise<void>;
   resetApp: () => Promise<void>;
 } | null>(null);
 
+const REQUIRED_DATA_KEYS = [
+  'timetable.json',
+  'bus',
+  'notice',
+  'station',
+  'GPS',
+  'WebsiteLinks',
+] as const;
+
+function findMissingRequiredData(appData: AppData) {
+  return REQUIRED_DATA_KEYS.filter((key) => !appData[key]);
+}
+
 export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const [ready, setReady] = useState(false);
+  const [bootStatus, setBootStatus] = useState<AppBootstrapStatus>('initializing');
   const [hint, setHint] = useState('Initializing');
   const [isDownloaded, setDownloadedState] = useState(false);
   const [appData, setAppData] = useState<AppData>({});
@@ -48,13 +65,24 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
 
   const repoRef = useRef<ReturnType<typeof createRepository> | null>(null);
   const datesRef = useRef<ModificationDates | null>(null);
+  const appDataRef = useRef<AppData>({});
+
+  const setTrackedAppData = useCallback((updater: React.SetStateAction<AppData>) => {
+    const next =
+      typeof updater === 'function' ? (updater as (value: AppData) => AppData)(appDataRef.current) : updater;
+    appDataRef.current = next;
+    setAppData(next);
+  }, []);
 
   const setAppTempData = useCallback((key: string, value: unknown) => {
     setAppTempDataRaw((prev) => ({ ...prev, [key]: value }));
   }, []);
 
   const bootApp = useCallback(async () => {
+    setBootStatus('initializing');
+    setDownloadedState(false);
     setHint(i18next.t('DownloadFiles-Initializing', { ns: 'preset' }) as string);
+    setNetworkError({ realtime: false, batch: false });
     const savedSettings = await asyncStorageStore.get<AppSettings>('appSettings');
     if (savedSettings) setAppSettings(savedSettings);
 
@@ -66,48 +94,62 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
           i18next.addResourceBundle(lang, namespace, resources, true, true);
         },
       },
-      setAppData,
+      setAppData: setTrackedAppData,
       setNetworkError,
       setRealtimeData,
       setHint,
       t: (key: string) => i18next.t(key, { ns: 'preset' }) as string,
     });
 
-    const current = await repoRef.current.initAndWarm();
-    datesRef.current = current;
-    setDownloadedState(true);
-    setReady(true);
-    setHint(i18next.t('DownloadFiles-Complete', { ns: 'preset' }) as string);
+    try {
+      const current = await repoRef.current.initAndWarm();
+      datesRef.current = current;
+      setDownloadedState(true);
 
-    if (repoRef.current) {
-      await repoRef.current.realtimeOnce();
+      const missing = findMissingRequiredData(appDataRef.current);
+      if (missing.length > 0) {
+        setBootStatus('corrupted');
+        setHint(i18next.t('StoreFile-Error', { ns: 'preset' }) as string);
+        return;
+      }
+
+      setBootStatus('ready');
+      setHint(i18next.t('DownloadFiles-Complete', { ns: 'preset' }) as string);
+
+      if (repoRef.current) {
+        await repoRef.current.realtimeOnce();
+      }
+
+      setTimeout(() => {
+        const currentRepo = repoRef.current;
+        if (!currentRepo) return;
+        currentRepo
+          .syncDelta(datesRef.current)
+          .then((dates) => {
+            datesRef.current = dates ?? datesRef.current;
+          })
+          .catch(() => {});
+      }, 1200);
+    } catch {
+      setBootStatus('recoverable-error');
+      setHint(i18next.t('StoreFile-Error', { ns: 'preset' }) as string);
     }
-    setTimeout(() => {
-      const currentRepo = repoRef.current;
-      if (!currentRepo) return;
-      currentRepo
-        .syncDelta(datesRef.current)
-        .then((dates) => {
-          datesRef.current = dates ?? datesRef.current;
-        })
-        .catch(() => {});
-    }, 1200);
-  }, []);
+  }, [setTrackedAppData]);
 
   useEffect(() => {
     bootApp().catch(() => {
-      setReady(true);
+      setBootStatus('recoverable-error');
       setHint(i18next.t('StoreFile-Error', { ns: 'preset' }) as string);
     });
   }, [bootApp]);
 
   useEffect(() => {
-    if (!ready) return;
+    if (bootStatus !== 'ready') return;
     asyncStorageStore.set('appSettings', appSettings).catch(() => {});
-  }, [appSettings, ready]);
+  }, [appSettings, bootStatus]);
 
   useEffect(() => {
-    if (!ready) return;
+    if (bootStatus !== 'ready') return;
 
     let appState = AppState.currentState;
     let realtimeTimer: ReturnType<typeof setInterval> | null = null;
@@ -158,7 +200,7 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
       stopTimers();
       sub.remove();
     };
-  }, [ready]);
+  }, [bootStatus]);
 
   const refreshRealtime = useCallback(async () => {
     if (repoRef.current) {
@@ -174,20 +216,25 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
 
   const resetApp = useCallback(async () => {
     await asyncStorageStore.clearAll();
+    appDataRef.current = {};
     setAppData({});
     setAppSettings({});
     setRealtimeData({});
     setNetworkError({ realtime: false, batch: false });
     setAppTempDataRaw({ realTimeStation: null, searchStation: null });
     setDownloadedState(false);
-    setReady(false);
+    setBootStatus('initializing');
+    await bootApp();
+  }, [bootApp]);
+
+  const retryBoot = useCallback(async () => {
     await bootApp();
   }, [bootApp]);
 
   const value = useMemo(
     () => ({
       appData,
-      setAppData,
+      setAppData: setTrackedAppData,
       appSettings,
       setAppSettings,
       appTempData: appTempDataRaw,
@@ -198,8 +245,11 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
       setRealtimeData,
       isDownloaded,
       setDownloadedState,
-      ready,
+      ready: bootStatus === 'ready',
+      bootStatus,
+      missingData: findMissingRequiredData(appData),
       hint,
+      retryBoot,
       refreshRealtime,
       syncDelta,
       resetApp,
@@ -208,13 +258,15 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
       appData,
       appSettings,
       appTempDataRaw,
+      bootStatus,
       hint,
       isDownloaded,
       networkError,
-      ready,
       realtimeData,
       refreshRealtime,
+      retryBoot,
       resetApp,
+      setTrackedAppData,
       setAppTempData,
       syncDelta,
     ],
