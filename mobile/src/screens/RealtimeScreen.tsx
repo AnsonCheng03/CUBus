@@ -119,7 +119,7 @@ export function RealtimeScreen() {
       />
 
       <RealtimeHeader
-        paddingTop={(isLargeScreen ? 0 : insets.top) + 15}
+        paddingTop={isLargeScreen ? 0 : insets.top}
         stationLabel={t(selectedStation)}
         onOpen={() => setPickerVisible(true)}
         onLocate={() => {

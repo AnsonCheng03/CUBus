@@ -1,5 +1,6 @@
 import React from 'react';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 const busIcon = require('../../../src/assets/bus.png');
 const gpsIcon = require('../../../src/assets/GPS.jpg');
@@ -23,7 +24,7 @@ export function FloatingStationSelector({
           <Text style={styles.selectorValue} numberOfLines={1}>
             {value}
           </Text>
-          <Text style={styles.chevron}>▼</Text>
+          <Ionicons name="chevron-down" size={16} color="#666" style={styles.chevron} />
         </Pressable>
         <Pressable style={styles.gpsButton} onPress={onLocate}>
           <Image source={gpsIcon} style={styles.gpsImage} resizeMode="contain" />
@@ -75,8 +76,6 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   chevron: {
-    color: '#666',
-    fontSize: 14,
     marginRight: 2,
   },
   gpsButton: {
