@@ -4,7 +4,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { usePathname, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { NAV_RESPONSIVE_BREAKPOINT } from '../lib/layout';
+import { APP_BRAND_COLOR, NAV_RESPONSIVE_BREAKPOINT } from '../lib/layout';
+
+export const MOBILE_BOTTOM_NAV_HEIGHT = 60;
+export const MOBILE_BOTTOM_NAV_SURFACE_HEIGHT = 75;
+export const MOBILE_BOTTOM_NAV_OVERLAP = MOBILE_BOTTOM_NAV_SURFACE_HEIGHT - MOBILE_BOTTOM_NAV_HEIGHT;
 
 const NAV_ITEMS = [
   { href: '/', labelKey: 'NAV-Home', icon: 'home-outline' as const, match: ['/', '/index'] },
@@ -48,7 +52,7 @@ export function CustomNavBar() {
               active
                 ? isLargeScreen
                   ? '#fff'
-                  : 'rgb(145, 31, 39)'
+                  : APP_BRAND_COLOR
                 : isLargeScreen
                   ? '#ccc'
                   : '#aaa'
@@ -86,15 +90,25 @@ export function CustomNavBar() {
   }
 
   return (
-    <View style={[styles.bottomBar, { height: 75 + insets.bottom, paddingBottom: insets.bottom }]}>
-      <View style={styles.bottomNavList}>{NAV_ITEMS.map(renderItem)}</View>
+    <View style={[styles.bottomBar, { height: MOBILE_BOTTOM_NAV_HEIGHT + insets.bottom }]}>
+      <View
+        style={[
+          styles.bottomNavList,
+          {
+            height: MOBILE_BOTTOM_NAV_SURFACE_HEIGHT + insets.bottom,
+            paddingBottom: insets.bottom,
+          },
+        ]}
+      >
+        {NAV_ITEMS.map(renderItem)}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   topBar: {
-    backgroundColor: '#911f27',
+    backgroundColor: APP_BRAND_COLOR,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -121,6 +135,11 @@ const styles = StyleSheet.create({
     marginHorizontal: '5%',
   },
   bottomBar: {
+    backgroundColor: 'transparent',
+    justifyContent: 'flex-end',
+    overflow: 'visible',
+  },
+  bottomNavList: {
     backgroundColor: '#fff',
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
@@ -129,14 +148,11 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     shadowOffset: { width: 0, height: -2 },
     elevation: 16,
-    justifyContent: 'center',
-  },
-  bottomNavList: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    flex: 1,
     paddingHorizontal: 12,
+    height: MOBILE_BOTTOM_NAV_SURFACE_HEIGHT,
   },
   navItem: {
     minWidth: 58,
@@ -167,7 +183,7 @@ const styles = StyleSheet.create({
     color: '#ccc',
   },
   bottomNavTextActive: {
-    color: 'rgb(145, 31, 39)',
+    color: APP_BRAND_COLOR,
   },
   bottomNavTextInactive: {
     color: '#aaa',

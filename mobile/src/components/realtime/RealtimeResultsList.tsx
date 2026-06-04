@@ -13,6 +13,7 @@ export function RealtimeResultsList({
   onSelectGroupedStop,
   onSelectRow,
   refreshControl,
+  contentBottomPadding = 0,
   t,
 }: {
   rows: RealtimeRowData[];
@@ -22,6 +23,7 @@ export function RealtimeResultsList({
   onSelectGroupedStop: (value: string) => void;
   onSelectRow: (row: RealtimeRowData) => void;
   refreshControl?: React.ReactElement<RefreshControlProps>;
+  contentBottomPadding?: number;
   t: (value: string) => string;
 }) {
   const hasInlineNotice = networkError || fetchError || groupedNearbyStops.length > 0;
@@ -29,7 +31,7 @@ export function RealtimeResultsList({
   return (
     <ScrollView
       style={styles.scroll}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingBottom: contentBottomPadding }]}
       refreshControl={refreshControl}
     >
       {networkError ? <InlineNoticeRow text={t('internet_offline')} variant="alert" /> : null}

@@ -8,12 +8,13 @@ import { RealtimeHeader } from '../components/realtime/RealtimeHeader';
 import { RealtimeResultsList } from '../components/realtime/RealtimeResultsList';
 import { RouteMapModal } from '../components/RouteMapModal';
 import { SelectionModal } from '../components/SelectionModal';
+import { MOBILE_BOTTOM_NAV_OVERLAP } from '../components/CustomNavBar';
 import { useNearestStation } from '../hooks/useNearestStation';
 import { createRealtimeRouteMapSelection } from '../hooks/useRouteMapSelection';
 import { useRealtimeStationOptions } from '../hooks/useRealtimeStationOptions';
-import { NAV_RESPONSIVE_BREAKPOINT } from '../lib/layout';
-import { mobileApiClient } from '../lib/api';
 import { useAppState } from '../providers/AppProvider';
+import { useLogRealtimeMutation } from '../query/hooks';
+import { NAV_RESPONSIVE_BREAKPOINT } from '../lib/layout';
 
 export function RealtimeScreen() {
   const { t, i18n } = useTranslation('global');
@@ -28,6 +29,7 @@ export function RealtimeScreen() {
     networkError,
     refreshRealtime,
   } = useAppState();
+  const logRealtimeMutation = useLogRealtimeMutation();
 
   const [selectedStation, setSelectedStation] = useState(appTempData.realTimeStation ?? 'MTR');
   const [realtimeResult, setRealtimeResult] = useState<RealtimeRow[]>([]);
@@ -57,9 +59,11 @@ export function RealtimeScreen() {
     );
 
     if (shouldLog) {
-      mobileApiClient
-        .logRealtime({ dest: stationName, lang: i18n.language, token: appData.token ?? '' })
-        .catch(() => {});
+      logRealtimeMutation.mutate({
+        dest: stationName,
+        lang: i18n.language,
+        token: appData.token ?? '',
+      });
     }
   };
 
@@ -142,6 +146,7 @@ export function RealtimeScreen() {
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#0f766e" />
           }
+          contentBottomPadding={isLargeScreen ? 0 : MOBILE_BOTTOM_NAV_OVERLAP}
           t={t}
         />
       </View>

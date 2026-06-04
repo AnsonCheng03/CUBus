@@ -1,37 +1,36 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import type {
   AppData,
   AppBootstrapStatus,
   AppSettings,
   AppTempData,
-  ModificationDates,
   NetworkError,
   RealtimeData,
   SearchStationTempState,
 } from '../../../src/shared-core/app/types';
-import { createRepository } from '../../../src/shared-core/data/repository';
 import { asyncStorageStore } from '../lib/storage';
-import { mobileApiClient } from '../lib/api';
-import { i18next } from '../lib/i18n';
+import { mobileQueryKeys } from '../query/client';
+import {
+  useBootstrapDataQuery,
+  useDelayedActivation,
+  useDeltaSyncQuery,
+  useRealtimeDataQuery,
+} from '../query/hooks';
 import { findMissingRequiredData } from './internal/requiredData';
 import { DEFAULT_APP_TEMP_DATA, useTempState } from './internal/tempState';
-import { usePollingLifecycle } from './internal/usePollingLifecycle';
 
 type AppStateContextValue = {
   appData: AppData;
-  setAppData: React.Dispatch<React.SetStateAction<AppData>>;
   appSettings: AppSettings;
   setAppSettings: React.Dispatch<React.SetStateAction<AppSettings>>;
   appTempData: AppTempData;
   setRealtimeStation: (station: string | null) => void;
   setSearchStation: (state: SearchStationTempState | null) => void;
   clearTemporaryState: () => void;
-  networkError: NetworkError;
-  setNetworkError: React.Dispatch<React.SetStateAction<NetworkError>>;
   realtimeData: RealtimeData;
-  setRealtimeData: React.Dispatch<React.SetStateAction<RealtimeData>>;
+  networkError: NetworkError;
   isDownloaded: boolean;
-  setDownloadedState: React.Dispatch<React.SetStateAction<boolean>>;
   ready: boolean;
   bootStatus: AppBootstrapStatus;
   missingData: string[];
@@ -45,100 +44,63 @@ type AppStateContextValue = {
 const AppStateContext = createContext<AppStateContextValue>(null);
 
 export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
-  const [bootStatus, setBootStatus] = useState<AppBootstrapStatus>('initializing');
+  const queryClient = useQueryClient();
   const [hint, setHint] = useState('Initializing');
-  const [isDownloaded, setDownloadedState] = useState(false);
-  const [appData, setAppData] = useState<AppData>({});
   const [appSettings, setAppSettings] = useState<AppSettings>({});
-  const [networkError, setNetworkError] = useState<NetworkError>({ realtime: false, batch: false });
-  const [realtimeData, setRealtimeData] = useState<RealtimeData>({});
 
-  const {
-    appTempData,
-    setAppTempData,
-    setRealtimeStation,
-    setSearchStation,
-    clearTemporaryState,
-  } = useTempState();
+  const { appTempData, setSearchStation, setRealtimeStation, clearTemporaryState } = useTempState();
 
-  const repoRef = useRef<ReturnType<typeof createRepository> | null>(null);
-  const datesRef = useRef<ModificationDates | null>(null);
-  const appDataRef = useRef<AppData>({});
+  const bootstrapQuery = useBootstrapDataQuery();
+  const appData = bootstrapQuery.data?.appData ?? {};
+  const missingData = useMemo(() => findMissingRequiredData(appData), [appData]);
 
-  const setTrackedAppData = useCallback((updater: React.SetStateAction<AppData>) => {
-    const next =
-      typeof updater === 'function' ? (updater as (value: AppData) => AppData)(appDataRef.current) : updater;
-    appDataRef.current = next;
-    setAppData(next);
-  }, []);
+  const bootStatus: AppBootstrapStatus = bootstrapQuery.isPending
+    ? 'initializing'
+    : bootstrapQuery.isError
+      ? 'recoverable-error'
+      : missingData.length > 0
+        ? 'corrupted'
+        : 'ready';
 
-  const createRepositoryInstance = useCallback(() => {
-    return createRepository({
-      cache: asyncStorageStore,
-      api: mobileApiClient,
-      translator: {
-        addBundle(lang, namespace, resources) {
-          i18next.addResourceBundle(lang, namespace, resources, true, true);
-        },
-      },
-      setAppData: setTrackedAppData,
-      setNetworkError,
-      setRealtimeData,
-      setHint,
-      t: (key: string) => i18next.t(key, { ns: 'preset' }) as string,
-    });
-  }, [setTrackedAppData]);
+  const deltaSyncEnabled = useDelayedActivation(bootStatus === 'ready', 1200);
+  const realtimeQuery = useRealtimeDataQuery(bootStatus === 'ready');
+  const realtimeData = realtimeQuery.data ?? {};
+  const deltaSyncQuery = useDeltaSyncQuery(deltaSyncEnabled && bootStatus === 'ready');
 
-  const bootApp = useCallback(async () => {
-    setBootStatus('initializing');
-    setDownloadedState(false);
-    setHint(i18next.t('DownloadFiles-Initializing', { ns: 'preset' }) as string);
-    setNetworkError({ realtime: false, batch: false });
-
-    const savedSettings = await asyncStorageStore.get<AppSettings>('appSettings');
-    if (savedSettings) {
-      setAppSettings(savedSettings);
-    }
-
-    repoRef.current = createRepositoryInstance();
-
-    try {
-      const current = await repoRef.current.initAndWarm();
-      datesRef.current = current;
-      setDownloadedState(true);
-
-      const missing = findMissingRequiredData(appDataRef.current);
-      if (missing.length > 0) {
-        setBootStatus('corrupted');
-        setHint(i18next.t('StoreFile-Error', { ns: 'preset' }) as string);
-        return;
-      }
-
-      setBootStatus('ready');
-      setHint(i18next.t('DownloadFiles-Complete', { ns: 'preset' }) as string);
-
-      await repoRef.current.realtimeOnce();
-
-      setTimeout(() => {
-        repoRef.current
-          ?.syncDelta(datesRef.current)
-          .then((dates) => {
-            datesRef.current = dates ?? datesRef.current;
-          })
-          .catch(() => {});
-      }, 1200);
-    } catch {
-      setBootStatus('recoverable-error');
-      setHint(i18next.t('StoreFile-Error', { ns: 'preset' }) as string);
-    }
-  }, [createRepositoryInstance]);
+  const networkError = useMemo<NetworkError>(
+    () => ({
+      realtime: realtimeQuery.isError,
+      batch: deltaSyncQuery.isError || deltaSyncQuery.data?.batchError === true,
+    }),
+    [deltaSyncQuery.data?.batchError, deltaSyncQuery.isError, realtimeQuery.isError],
+  );
 
   useEffect(() => {
-    bootApp().catch(() => {
-      setBootStatus('recoverable-error');
-      setHint(i18next.t('StoreFile-Error', { ns: 'preset' }) as string);
+    asyncStorageStore.get<AppSettings>('appSettings').then((savedSettings) => {
+      if (savedSettings) {
+        setAppSettings(savedSettings);
+      }
     });
-  }, [bootApp]);
+  }, []);
+
+  useEffect(() => {
+    if (bootStatus === 'initializing') {
+      setHint('DownloadFiles-Initializing');
+      return;
+    }
+
+    if (bootStatus === 'recoverable-error' || bootStatus === 'corrupted') {
+      setHint('StoreFile-Error');
+      return;
+    }
+
+    if (deltaSyncQuery.fetchStatus === 'fetching') {
+      setHint('DownloadFiles-Downloading');
+      return;
+    }
+
+    setHint('DownloadFiles-Complete');
+  }, [bootStatus, deltaSyncQuery.fetchStatus]);
 
   useEffect(() => {
     if (bootStatus !== 'ready') {
@@ -148,57 +110,47 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
     asyncStorageStore.set('appSettings', appSettings).catch(() => {});
   }, [appSettings, bootStatus]);
 
-  usePollingLifecycle({ bootStatus, repoRef, datesRef });
-
   const refreshRealtime = useCallback(async () => {
-    await repoRef.current?.realtimeOnce();
-  }, []);
+    await realtimeQuery.refetch();
+  }, [realtimeQuery]);
 
   const syncDelta = useCallback(async () => {
-    if (!repoRef.current) {
-      return;
-    }
+    setHint('DownloadFiles-Downloading');
+    await deltaSyncQuery.refetch();
+  }, [deltaSyncQuery]);
 
-    const nextDates = await repoRef.current.syncDelta(datesRef.current);
-    datesRef.current = nextDates ?? datesRef.current;
-  }, []);
+  const retryBoot = useCallback(async () => {
+    setHint('DownloadFiles-Initializing');
+    await queryClient.invalidateQueries({ queryKey: mobileQueryKeys.bootstrap });
+    await bootstrapQuery.refetch();
+  }, [bootstrapQuery, queryClient]);
 
   const resetApp = useCallback(async () => {
     await asyncStorageStore.clearAll();
-    appDataRef.current = {};
-    setAppData({});
+    clearTemporaryState();
     setAppSettings({});
-    setRealtimeData({});
-    setNetworkError({ realtime: false, batch: false });
-    setAppTempData(DEFAULT_APP_TEMP_DATA);
-    setDownloadedState(false);
-    setBootStatus('initializing');
-    await bootApp();
-  }, [bootApp, setAppTempData]);
-
-  const retryBoot = useCallback(async () => {
-    await bootApp();
-  }, [bootApp]);
+    setHint('DownloadFiles-Initializing');
+    await queryClient.removeQueries({ queryKey: mobileQueryKeys.bootstrap });
+    await queryClient.removeQueries({ queryKey: mobileQueryKeys.realtime });
+    await queryClient.removeQueries({ queryKey: mobileQueryKeys.deltaSync });
+    await bootstrapQuery.refetch();
+  }, [bootstrapQuery, clearTemporaryState, queryClient]);
 
   const value = useMemo<AppStateContextValue>(
     () => ({
       appData,
-      setAppData: setTrackedAppData,
       appSettings,
       setAppSettings,
       appTempData,
       setRealtimeStation,
       setSearchStation,
       clearTemporaryState,
-      networkError,
-      setNetworkError,
       realtimeData,
-      setRealtimeData,
-      isDownloaded,
-      setDownloadedState,
+      networkError,
+      isDownloaded: bootStatus === 'ready',
       ready: bootStatus === 'ready',
       bootStatus,
-      missingData: findMissingRequiredData(appData),
+      missingData,
       hint,
       retryBoot,
       refreshRealtime,
@@ -206,21 +158,20 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
       resetApp,
     }),
     [
-      appData,
       appSettings,
+      appData,
       appTempData,
       bootStatus,
       clearTemporaryState,
       hint,
-      isDownloaded,
+      missingData,
       networkError,
+      realtimeData,
       refreshRealtime,
       resetApp,
       retryBoot,
-      realtimeData,
       setRealtimeStation,
       setSearchStation,
-      setTrackedAppData,
       syncDelta,
     ],
   );

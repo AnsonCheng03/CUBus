@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
-import { Linking, Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, Switch, Text, View, useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { BusMapModal } from '../components/BusMapModal';
+import { MOBILE_BOTTOM_NAV_OVERLAP } from '../components/CustomNavBar';
 import { ScreenContainer } from '../components/ScreenContainer';
 import { SettingsRow, SettingsSection } from '../components/settings/SettingsSection';
 import { useAppState } from '../providers/AppProvider';
 import { i18next } from '../lib/i18n';
+import { NAV_RESPONSIVE_BREAKPOINT } from '../lib/layout';
 import type { WebsiteLink } from '../types/mobile';
 
 export function SettingsScreen() {
   const { t } = useTranslation('global');
+  const { width } = useWindowDimensions();
+  const isLargeScreen = width >= NAV_RESPONSIVE_BREAKPOINT;
   const {
     appSettings,
     setAppSettings,
@@ -33,7 +37,10 @@ export function SettingsScreen() {
       subtitle={t('meta_desc_settings') || 'Preferences and links'}
       contentPadding={0}
       headerSpacing={12}
-      contentStyle={styles.pageContent}
+      contentStyle={[
+        styles.pageContent,
+        !isLargeScreen && { paddingBottom: 24 + MOBILE_BOTTOM_NAV_OVERLAP },
+      ]}
     >
       <BusMapModal visible={busMapVisible} onClose={() => setBusMapVisible(false)} />
 

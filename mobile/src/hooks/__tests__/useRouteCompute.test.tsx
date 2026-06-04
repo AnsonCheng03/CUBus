@@ -40,6 +40,12 @@ jest.mock('../../lib/api', () => ({
   },
 }));
 
+jest.mock('../../query/hooks', () => ({
+  useLogSearchMutation: () => ({
+    mutate: (...args: unknown[]) => mockLogSearch(...args),
+  }),
+}));
+
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,

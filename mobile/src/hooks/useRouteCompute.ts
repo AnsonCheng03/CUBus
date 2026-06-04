@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import type { RouteMapSelection, RouteSearchInput, RouteSearchResult } from '../../../src/shared-core/app/types';
 import { processBusStatus } from '../../../src/shared-core/realtime/getRealTime';
 import { calculateRoute } from '../../../src/shared-core/routing/getRoute';
-import { mobileApiClient } from '../lib/api';
 import { useAppState } from '../providers/AppProvider';
+import { useLogSearchMutation } from '../query/hooks';
 
 type GenerateRouteArgs = Pick<
   RouteSearchInput,
@@ -20,6 +20,7 @@ type GenerateRouteArgs = Pick<
 export function useRouteCompute() {
   const { t, i18n } = useTranslation('global');
   const { appData, realtimeData, appSettings } = useAppState();
+  const logSearchMutation = useLogSearchMutation();
   const [fetchError, setFetchError] = useState(false);
   const [routeResult, setRouteResult] = useState<RouteSearchResult | null>(null);
   const [routeMap, setRouteMap] = useState<RouteMapSelection | null>(null);
@@ -54,21 +55,19 @@ export function useRouteCompute() {
         realtimeData['reportedTime.json'] ?? {},
         appSettings,
         (start, dest, departNowFlag) => {
-          mobileApiClient
-            .logSearch({
-              start,
-              dest,
-              departNow: departNowFlag,
-              lang: i18n.language,
-              token: appData.token ?? '',
-            })
-            .catch(() => {});
+          logSearchMutation.mutate({
+            start,
+            dest,
+            departNow: departNowFlag,
+            lang: i18n.language,
+            token: appData.token ?? '',
+          });
         },
       );
 
       setRouteResult(result);
     },
-    [appData, appSettings, i18n.language, realtimeData, t],
+    [appData, appSettings, i18n.language, logSearchMutation, realtimeData, t],
   );
 
   return { routeResult, routeMap, setRouteMap, fetchError, generate };

@@ -1,6 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Image, ImageBackground, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  Image,
+  ImageBackground,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import { useTranslation } from 'react-i18next';
+import { MOBILE_BOTTOM_NAV_OVERLAP } from '../components/CustomNavBar';
 import { ScreenContainer } from '../components/ScreenContainer';
 import {
   EMPTY_PERMIT,
@@ -10,6 +20,7 @@ import {
   shuttleBusImage,
 } from '../lib/permit';
 import { useAppState } from '../providers/AppProvider';
+import { NAV_RESPONSIVE_BREAKPOINT } from '../lib/layout';
 import type { PermitData } from '../../../src/shared-core/app/types';
 import type { PermitFormValue } from '../types/mobile';
 
@@ -92,6 +103,8 @@ function PermitCard({
 
 export function PermitScreen() {
   const { t, i18n } = useTranslation('global');
+  const { width } = useWindowDimensions();
+  const isLargeScreen = width >= NAV_RESPONSIVE_BREAKPOINT;
   const { appSettings, setAppSettings } = useAppState();
   const saved = useMemo<PermitFormValue>(
     () => ({
@@ -134,7 +147,10 @@ export function PermitScreen() {
       title={t('NAV-Permit')}
       showHeader={false}
       contentPadding={20}
-      contentStyle={styles.pageContent}
+      contentStyle={[
+        styles.pageContent,
+        !isLargeScreen && { paddingBottom: 24 + MOBILE_BOTTOM_NAV_OVERLAP },
+      ]}
     >
       {mode === 'edit' ? (
         <View style={styles.formPage}>

@@ -9,6 +9,7 @@ import { RouteSearchFormCard } from '../components/route-search/RouteSearchFormC
 import { RouteSearchResultsList } from '../components/route-search/RouteSearchResultsList';
 import { RouteSearchTimeGrid } from '../components/route-search/RouteSearchTimeGrid';
 import { ScreenContainer } from '../components/ScreenContainer';
+import { MOBILE_BOTTOM_NAV_OVERLAP } from '../components/CustomNavBar';
 import { useNearestStation, formatTranslatedStationLabel } from '../hooks/useNearestStation';
 import { useRouteCompute } from '../hooks/useRouteCompute';
 import { createRouteSearchRouteMapSelection } from '../hooks/useRouteMapSelection';
@@ -90,7 +91,10 @@ export function RouteSearchScreen() {
       showHeader={false}
       contentPadding={0}
       contentGap={0}
-      contentStyle={styles.pageContent}
+      contentStyle={[
+        styles.pageContent,
+        !isLargeScreen && { paddingBottom: 24 + MOBILE_BOTTOM_NAV_OVERLAP },
+      ]}
       scrollStyle={styles.scroll}
       safeAreaBackgroundColor="#911f27"
       safeAreaEdges={[]}

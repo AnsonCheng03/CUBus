@@ -16,6 +16,7 @@
     "@expo/vector-icons": "^14.0.4",
     "@react-native-async-storage/async-storage": "^1.24.0",
     "@sentry/react-native": "^6.19.0",
+    "@tanstack/react-query": "^5.101.0",
     "axios": "^1.7.7",
     "expo": "~52.0.0",
     "expo-asset": "~11.0.5",
@@ -30,10 +31,10 @@
     "react-i18next": "^15.0.1",
     "react-native": "0.76.3",
     "react-native-gesture-handler": "~2.20.0",
-    "react-native-web": "~0.19.13",
     "react-native-safe-area-context": "4.12.0",
     "react-native-screens": "~4.4.0",
-    "react-native-svg": "^15.15.5"
+    "react-native-svg": "^15.15.5",
+    "react-native-web": "~0.19.13"
   },
   "devDependencies": {
     "@testing-library/react-native": "^13.0.1",

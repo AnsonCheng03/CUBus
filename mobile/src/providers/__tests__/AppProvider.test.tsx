@@ -1,41 +1,51 @@
 import React from 'react';
-import { AppState, Pressable, Text } from 'react-native';
+import { Pressable, Text } from 'react-native';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { AppProvider, useAppState } from '../AppProvider';
 
-const mockCreateRepository = jest.fn();
 const mockGet = jest.fn();
 const mockSet = jest.fn();
 const mockClearAll = jest.fn();
-const mockRemove = jest.fn();
-const appStateListeners: Array<(nextState: string) => void> = [];
+const mockInvalidateQueries = jest.fn();
+const mockRemoveQueries = jest.fn();
+const mockBootstrapRefetch = jest.fn().mockResolvedValue(undefined);
+const mockRealtimeRefetch = jest.fn().mockResolvedValue(undefined);
+const mockDeltaRefetch = jest.fn().mockResolvedValue(undefined);
 
-jest.mock('../../../../src/shared-core/data/repository', () => ({
-  createRepository: (...args: unknown[]) => mockCreateRepository(...args),
-}));
+const mockBootstrapQuery = jest.fn();
+const mockRealtimeQuery = jest.fn();
+const mockDeltaSyncQuery = jest.fn();
+const mockDelayedActivation = jest.fn();
 
 jest.mock('../../lib/storage', () => ({
   asyncStorageStore: {
     get: (...args: unknown[]) => mockGet(...args),
     set: (...args: unknown[]) => mockSet(...args),
     clearAll: (...args: unknown[]) => mockClearAll(...args),
-    remove: (...args: unknown[]) => mockRemove(...args),
   },
 }));
 
-jest.mock('../../lib/api', () => ({
-  mobileApiClient: {},
+jest.mock('../../query/hooks', () => ({
+  useBootstrapDataQuery: () => mockBootstrapQuery(),
+  useRealtimeDataQuery: () => mockRealtimeQuery(),
+  useDeltaSyncQuery: () => mockDeltaSyncQuery(),
+  useDelayedActivation: (...args: unknown[]) => mockDelayedActivation(...args),
 }));
 
-jest.mock('../../lib/i18n', () => ({
-  i18next: {
-    t: (key: string) => key,
-    addResourceBundle: jest.fn(),
-  },
-}));
+jest.mock('@tanstack/react-query', () => {
+  const actual = jest.requireActual('@tanstack/react-query');
+  return {
+    ...actual,
+    useQueryClient: () => ({
+      invalidateQueries: (...args: unknown[]) => mockInvalidateQueries(...args),
+      removeQueries: (...args: unknown[]) => mockRemoveQueries(...args),
+    }),
+  };
+});
 
 function Consumer() {
-  const { bootStatus, missingData, resetApp } = useAppState();
+  const { bootStatus, missingData, resetApp, retryBoot, syncDelta, refreshRealtime } = useAppState();
   return (
     <>
       <Text>{bootStatus}</Text>
@@ -43,65 +53,71 @@ function Consumer() {
       <Pressable onPress={() => resetApp().catch(() => {})}>
         <Text>reset</Text>
       </Pressable>
+      <Pressable onPress={() => retryBoot().catch(() => {})}>
+        <Text>retry</Text>
+      </Pressable>
+      <Pressable onPress={() => syncDelta().catch(() => {})}>
+        <Text>sync</Text>
+      </Pressable>
+      <Pressable onPress={() => refreshRealtime().catch(() => {})}>
+        <Text>refresh</Text>
+      </Pressable>
     </>
   );
 }
 
-function buildRepository(options: { fillRequiredData?: boolean; failInit?: boolean } = {}) {
-  return {
-    async initAndWarm() {
-      if (options.failInit) {
-        throw new Error('boot failed');
-      }
-      if (options.fillRequiredData) {
-        const deps = mockCreateRepository.mock.calls[mockCreateRepository.mock.calls.length - 1][0];
-        deps.setAppData((prev: Record<string, unknown>) => ({
-          ...prev,
+function renderWithQueryProvider(ui: React.ReactElement) {
+  return render(
+    <QueryClientProvider client={new QueryClient()}>
+      {ui}
+    </QueryClientProvider>,
+  );
+}
+
+describe('AppProvider', () => {
+  beforeEach(() => {
+    mockGet.mockImplementation(async (key: string) => (key === 'appSettings' ? null : null));
+    mockSet.mockResolvedValue(undefined);
+    mockClearAll.mockResolvedValue(undefined);
+    mockInvalidateQueries.mockClear();
+    mockRemoveQueries.mockClear();
+    mockBootstrapRefetch.mockClear();
+    mockRealtimeRefetch.mockClear();
+    mockDeltaRefetch.mockClear();
+    mockDelayedActivation.mockReturnValue(true);
+
+    mockBootstrapQuery.mockReturnValue({
+      data: {
+        appData: {
           'timetable.json': {},
           bus: {},
           notice: [],
           station: {},
           GPS: {},
           WebsiteLinks: [],
-        }));
-      }
-      return null;
-    },
-    async realtimeOnce() {
-      return {};
-    },
-    async syncDelta() {
-      return null;
-    },
-  };
-}
-
-describe('AppProvider', () => {
-  beforeEach(() => {
-    jest.useRealTimers();
-    appStateListeners.length = 0;
-    (AppState as { currentState: string }).currentState = 'active';
-    jest.spyOn(AppState, 'addEventListener').mockImplementation((_, listener) => {
-      appStateListeners.push(listener as (nextState: string) => void);
-      return { remove: jest.fn() } as never;
+        },
+      },
+      isPending: false,
+      isError: false,
+      refetch: mockBootstrapRefetch,
     });
-    mockGet.mockImplementation(async (key: string) => {
-      if (key === 'appSettings') return null;
-      return null;
-    });
-    mockSet.mockResolvedValue(undefined);
-    mockClearAll.mockResolvedValue(undefined);
-    mockRemove.mockResolvedValue(undefined);
-    mockCreateRepository.mockReset();
-  });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
+    mockRealtimeQuery.mockReturnValue({
+      data: {},
+      isError: false,
+      refetch: mockRealtimeRefetch,
+    });
+
+    mockDeltaSyncQuery.mockReturnValue({
+      data: { batchError: false },
+      isError: false,
+      fetchStatus: 'idle',
+      refetch: mockDeltaRefetch,
+    });
   });
 
   it('initializes successfully into ready state', async () => {
-    mockCreateRepository.mockImplementation(() => buildRepository({ fillRequiredData: true }));
-    const { getByText } = render(
+    const { getByText } = renderWithQueryProvider(
       <AppProvider>
         <Consumer />
       </AppProvider>,
@@ -111,8 +127,14 @@ describe('AppProvider', () => {
   });
 
   it('shows corrupted state when required data is missing', async () => {
-    mockCreateRepository.mockImplementation(() => buildRepository());
-    const { getByText } = render(
+    mockBootstrapQuery.mockReturnValue({
+      data: { appData: {} },
+      isPending: false,
+      isError: false,
+      refetch: mockBootstrapRefetch,
+    });
+
+    const { getByText } = renderWithQueryProvider(
       <AppProvider>
         <Consumer />
       </AppProvider>,
@@ -122,9 +144,15 @@ describe('AppProvider', () => {
     expect(getByText(/timetable\.json/)).toBeTruthy();
   });
 
-  it('shows recoverable error when boot fails', async () => {
-    mockCreateRepository.mockImplementation(() => buildRepository({ failInit: true }));
-    const { getByText } = render(
+  it('shows recoverable error when bootstrap query fails', async () => {
+    mockBootstrapQuery.mockReturnValue({
+      data: undefined,
+      isPending: false,
+      isError: true,
+      refetch: mockBootstrapRefetch,
+    });
+
+    const { getByText } = renderWithQueryProvider(
       <AppProvider>
         <Consumer />
       </AppProvider>,
@@ -133,52 +161,34 @@ describe('AppProvider', () => {
     await waitFor(() => expect(getByText('recoverable-error')).toBeTruthy());
   });
 
-  it('reset path clears storage and boots again', async () => {
-    mockCreateRepository.mockImplementation(() => buildRepository({ fillRequiredData: true }));
-    const { getByText } = render(
+  it('reset clears storage and query caches before refetching bootstrap', async () => {
+    const { getByText } = renderWithQueryProvider(
       <AppProvider>
         <Consumer />
       </AppProvider>,
     );
 
-    await waitFor(() => expect(getByText('ready')).toBeTruthy());
     fireEvent.press(getByText('reset'));
 
     await waitFor(() => expect(mockClearAll).toHaveBeenCalled());
-    await waitFor(() => expect(mockCreateRepository).toHaveBeenCalledTimes(2));
+    expect(mockRemoveQueries).toHaveBeenCalledTimes(3);
+    expect(mockBootstrapRefetch).toHaveBeenCalled();
   });
 
-  it('starts polling when ready and refreshes again after returning active', async () => {
-    jest.useFakeTimers();
-    const realtimeOnce = jest.fn().mockResolvedValue({});
-    const syncDelta = jest.fn().mockResolvedValue(null);
-    mockCreateRepository.mockImplementation(() => ({
-      ...buildRepository({ fillRequiredData: true }),
-      realtimeOnce,
-      syncDelta,
-    }));
-
-    const { getByText } = render(
+  it('retry and refresh actions refetch the expected query owners', async () => {
+    const { getByText } = renderWithQueryProvider(
       <AppProvider>
         <Consumer />
       </AppProvider>,
     );
 
-    await waitFor(() => expect(getByText('ready')).toBeTruthy());
+    fireEvent.press(getByText('retry'));
+    fireEvent.press(getByText('sync'));
+    fireEvent.press(getByText('refresh'));
 
-    expect(realtimeOnce).toHaveBeenCalledTimes(1);
-    jest.advanceTimersByTime(10_000);
-    expect(realtimeOnce).toHaveBeenCalledTimes(2);
-
-    appStateListeners[0]?.('background');
-    const callsBeforePause = realtimeOnce.mock.calls.length;
-    jest.advanceTimersByTime(10_000);
-    expect(realtimeOnce).toHaveBeenCalledTimes(callsBeforePause);
-
-    appStateListeners[0]?.('active');
-    expect(realtimeOnce).toHaveBeenCalledTimes(callsBeforePause + 1);
-
-    jest.advanceTimersByTime(5 * 60_000);
-    expect(syncDelta).toHaveBeenCalled();
+    await waitFor(() => expect(mockInvalidateQueries).toHaveBeenCalled());
+    expect(mockBootstrapRefetch).toHaveBeenCalled();
+    expect(mockDeltaRefetch).toHaveBeenCalled();
+    expect(mockRealtimeRefetch).toHaveBeenCalled();
   });
 });
