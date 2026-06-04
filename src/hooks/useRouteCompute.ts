@@ -34,8 +34,8 @@ export function useRouteCompute() {
 
       const services = realtimeData['Status.json'] ?? {};
       const keys = Object.keys(services);
-      const current = keys.length ? services[keys[keys.length - 1]] : [];
-      const thirty = keys.length >= 60 ? services[keys[keys.length - 60]] : [];
+      const current = keys.length ? services[keys[keys.length - 1]] : {};
+      const thirty = keys.length >= 60 ? services[keys[keys.length - 60]] : {};
 
       let filteredBus = { ...(appData.bus as Record<string, any>) };
       filteredBus = processBusStatus(current, thirty, filteredBus, setFetchError);
@@ -52,7 +52,7 @@ export function useRouteCompute() {
         departNow,
         filteredBus,
         appData?.station ?? {},
-        appData['timetable.json'],
+        appData['timetable.json'] ?? {},
         realtimeData['reportedTime.json'] ?? {},
         appSettings,
         (start: string, dest: string, departNowFlag: boolean) =>

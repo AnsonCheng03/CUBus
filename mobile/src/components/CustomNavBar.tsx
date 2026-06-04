@@ -8,9 +8,19 @@ import { NAV_RESPONSIVE_BREAKPOINT } from '../lib/layout';
 
 const NAV_ITEMS = [
   { href: '/', labelKey: 'NAV-Home', icon: 'home-outline' as const, match: ['/', '/index'] },
-  { href: '/route', labelKey: 'NAV-StationSearch', icon: 'search-outline' as const, match: ['/route'] },
+  {
+    href: '/route',
+    labelKey: 'NAV-StationSearch',
+    icon: 'search-outline' as const,
+    match: ['/route'],
+  },
   { href: '/permit', labelKey: 'NAV-Permit', icon: 'id-card-outline' as const, match: ['/permit'] },
-  { href: '/settings', labelKey: 'NAV-Settings', icon: 'settings-outline' as const, match: ['/settings'] },
+  {
+    href: '/settings',
+    labelKey: 'NAV-Settings',
+    icon: 'settings-outline' as const,
+    match: ['/settings'],
+  },
 ] as const;
 
 function isActivePath(pathname: string, matches: readonly string[]) {
@@ -34,7 +44,15 @@ export function CustomNavBar() {
           <Ionicons
             name={item.icon}
             size={isLargeScreen ? 21 : 22}
-            color={active ? (isLargeScreen ? '#fff' : 'rgb(145, 31, 39)') : isLargeScreen ? '#ccc' : '#aaa'}
+            color={
+              active
+                ? isLargeScreen
+                  ? '#fff'
+                  : 'rgb(145, 31, 39)'
+                : isLargeScreen
+                  ? '#ccc'
+                  : '#aaa'
+            }
           />
           <Text
             style={[

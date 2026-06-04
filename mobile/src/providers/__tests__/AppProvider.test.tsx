@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, Text } from 'react-native';
+import { AppState, Pressable, Text } from 'react-native';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
 import { AppProvider, useAppState } from '../AppProvider';
 
@@ -8,6 +8,7 @@ const mockGet = jest.fn();
 const mockSet = jest.fn();
 const mockClearAll = jest.fn();
 const mockRemove = jest.fn();
+const appStateListeners: Array<(nextState: string) => void> = [];
 
 jest.mock('../../../../src/shared-core/data/repository', () => ({
   createRepository: (...args: unknown[]) => mockCreateRepository(...args),
@@ -22,8 +23,8 @@ jest.mock('../../lib/storage', () => ({
   },
 }));
 
-jest.mock('../../lib/nativeApi', () => ({
-  nativeApiClient: {},
+jest.mock('../../lib/api', () => ({
+  mobileApiClient: {},
 }));
 
 jest.mock('../../lib/i18n', () => ({
@@ -77,6 +78,13 @@ function buildRepository(options: { fillRequiredData?: boolean; failInit?: boole
 
 describe('AppProvider', () => {
   beforeEach(() => {
+    jest.useRealTimers();
+    appStateListeners.length = 0;
+    (AppState as { currentState: string }).currentState = 'active';
+    jest.spyOn(AppState, 'addEventListener').mockImplementation((_, listener) => {
+      appStateListeners.push(listener as (nextState: string) => void);
+      return { remove: jest.fn() } as never;
+    });
     mockGet.mockImplementation(async (key: string) => {
       if (key === 'appSettings') return null;
       return null;
@@ -85,6 +93,10 @@ describe('AppProvider', () => {
     mockClearAll.mockResolvedValue(undefined);
     mockRemove.mockResolvedValue(undefined);
     mockCreateRepository.mockReset();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it('initializes successfully into ready state', async () => {
@@ -134,5 +146,39 @@ describe('AppProvider', () => {
 
     await waitFor(() => expect(mockClearAll).toHaveBeenCalled());
     await waitFor(() => expect(mockCreateRepository).toHaveBeenCalledTimes(2));
+  });
+
+  it('starts polling when ready and refreshes again after returning active', async () => {
+    jest.useFakeTimers();
+    const realtimeOnce = jest.fn().mockResolvedValue({});
+    const syncDelta = jest.fn().mockResolvedValue(null);
+    mockCreateRepository.mockImplementation(() => ({
+      ...buildRepository({ fillRequiredData: true }),
+      realtimeOnce,
+      syncDelta,
+    }));
+
+    const { getByText } = render(
+      <AppProvider>
+        <Consumer />
+      </AppProvider>,
+    );
+
+    await waitFor(() => expect(getByText('ready')).toBeTruthy());
+
+    expect(realtimeOnce).toHaveBeenCalledTimes(1);
+    jest.advanceTimersByTime(10_000);
+    expect(realtimeOnce).toHaveBeenCalledTimes(2);
+
+    appStateListeners[0]?.('background');
+    const callsBeforePause = realtimeOnce.mock.calls.length;
+    jest.advanceTimersByTime(10_000);
+    expect(realtimeOnce).toHaveBeenCalledTimes(callsBeforePause);
+
+    appStateListeners[0]?.('active');
+    expect(realtimeOnce).toHaveBeenCalledTimes(callsBeforePause + 1);
+
+    jest.advanceTimersByTime(5 * 60_000);
+    expect(syncDelta).toHaveBeenCalled();
   });
 });

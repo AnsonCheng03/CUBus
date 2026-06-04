@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { KeyValueStore } from '../../../src/shared-core/platform/types';
 
 export const asyncStorageStore: KeyValueStore = {
-  async get<T = any>(key: string): Promise<T | null> {
+  async get<T = unknown>(key: string): Promise<T | null> {
     const raw = await AsyncStorage.getItem(key);
     if (raw == null) return null;
     try {
@@ -12,7 +12,7 @@ export const asyncStorageStore: KeyValueStore = {
     }
   },
 
-  async set(key: string, value: any) {
+  async set<T>(key: string, value: T) {
     await AsyncStorage.setItem(
       key,
       typeof value === 'string' ? value : JSON.stringify(value),

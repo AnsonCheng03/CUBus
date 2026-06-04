@@ -6,33 +6,34 @@ export type ProcessDeps = {
   setAppData: (updater: (prev: AppData) => AppData) => void;
 };
 
-export type Processor = (data: any, deps: ProcessDeps) => Promise<void>;
+export type Processor = (data: unknown, deps: ProcessDeps) => Promise<void>;
 
 export const processors: Record<string, Processor> = {
   translation: async (data, { translator }) => {
-    if (data?.en) translator.addBundle('en', 'global', data.en);
-    if (data?.zh) translator.addBundle('zh', 'global', data.zh);
+    const translationData = data as ServerResponse['translation'];
+    if (translationData?.en) translator.addBundle('en', 'global', translationData.en);
+    if (translationData?.zh) translator.addBundle('zh', 'global', translationData.zh);
   },
   website: async (data, { setAppData }) => {
-    setAppData((prev) => ({ ...prev, WebsiteLinks: data }));
+    setAppData((prev) => ({ ...prev, WebsiteLinks: data as AppData['WebsiteLinks'] }));
   },
   Route: async (data, { setAppData }) => {
-    setAppData((prev) => ({ ...prev, bus: data }));
+    setAppData((prev) => ({ ...prev, bus: data as AppData['bus'] }));
   },
   gps: async (data, { setAppData }) => {
-    setAppData((prev) => ({ ...prev, GPS: data }));
+    setAppData((prev) => ({ ...prev, GPS: data as AppData['GPS'] }));
   },
   notice: async (data, { setAppData }) => {
-    setAppData((prev) => ({ ...prev, notice: data }));
+    setAppData((prev) => ({ ...prev, notice: data as AppData['notice'] }));
   },
   station: async (data, { setAppData }) => {
-    setAppData((prev) => ({ ...prev, station: data }));
+    setAppData((prev) => ({ ...prev, station: data as AppData['station'] }));
   },
   'timetable.json': async (data, { setAppData }) => {
-    setAppData((prev) => ({ ...prev, ['timetable.json']: data }));
+    setAppData((prev) => ({ ...prev, 'timetable.json': data as AppData['timetable.json'] }));
   },
   token: async (data, { setAppData }) => {
-    setAppData((prev) => ({ ...prev, token: data }));
+    setAppData((prev) => ({ ...prev, token: data as AppData['token'] }));
   },
 };
 
@@ -54,7 +55,7 @@ export function normalizeTableName(name: string, seen: Set<string>): string | nu
 export function pickFromResponseOrLocal(
   table: string,
   response: ServerResponse,
-  localFallback: any,
+  localFallback: unknown,
 ) {
   return table in response ? response[table] : localFallback;
 }

@@ -1,5 +1,4 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { AppState } from 'react-native';
 import type {
   AppData,
   AppBootstrapStatus,
@@ -8,19 +7,25 @@ import type {
   ModificationDates,
   NetworkError,
   RealtimeData,
+  SearchStationTempState,
 } from '../../../src/shared-core/app/types';
 import { createRepository } from '../../../src/shared-core/data/repository';
 import { asyncStorageStore } from '../lib/storage';
-import { nativeApiClient } from '../lib/nativeApi';
+import { mobileApiClient } from '../lib/api';
 import { i18next } from '../lib/i18n';
+import { findMissingRequiredData } from './internal/requiredData';
+import { DEFAULT_APP_TEMP_DATA, useTempState } from './internal/tempState';
+import { usePollingLifecycle } from './internal/usePollingLifecycle';
 
-const Ctx = createContext<{
+type AppStateContextValue = {
   appData: AppData;
   setAppData: React.Dispatch<React.SetStateAction<AppData>>;
   appSettings: AppSettings;
   setAppSettings: React.Dispatch<React.SetStateAction<AppSettings>>;
   appTempData: AppTempData;
-  setAppTempData: (key: string, value: unknown) => void;
+  setRealtimeStation: (station: string | null) => void;
+  setSearchStation: (state: SearchStationTempState | null) => void;
+  clearTemporaryState: () => void;
   networkError: NetworkError;
   setNetworkError: React.Dispatch<React.SetStateAction<NetworkError>>;
   realtimeData: RealtimeData;
@@ -35,20 +40,9 @@ const Ctx = createContext<{
   refreshRealtime: () => Promise<void>;
   syncDelta: () => Promise<void>;
   resetApp: () => Promise<void>;
-} | null>(null);
+} | null;
 
-const REQUIRED_DATA_KEYS = [
-  'timetable.json',
-  'bus',
-  'notice',
-  'station',
-  'GPS',
-  'WebsiteLinks',
-] as const;
-
-function findMissingRequiredData(appData: AppData) {
-  return REQUIRED_DATA_KEYS.filter((key) => !appData[key]);
-}
+const AppStateContext = createContext<AppStateContextValue>(null);
 
 export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [bootStatus, setBootStatus] = useState<AppBootstrapStatus>('initializing');
@@ -57,11 +51,15 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
   const [appData, setAppData] = useState<AppData>({});
   const [appSettings, setAppSettings] = useState<AppSettings>({});
   const [networkError, setNetworkError] = useState<NetworkError>({ realtime: false, batch: false });
-  const [appTempDataRaw, setAppTempDataRaw] = useState<AppTempData>({
-    realTimeStation: null,
-    searchStation: null,
-  });
   const [realtimeData, setRealtimeData] = useState<RealtimeData>({});
+
+  const {
+    appTempData,
+    setAppTempData,
+    setRealtimeStation,
+    setSearchStation,
+    clearTemporaryState,
+  } = useTempState();
 
   const repoRef = useRef<ReturnType<typeof createRepository> | null>(null);
   const datesRef = useRef<ModificationDates | null>(null);
@@ -74,21 +72,10 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
     setAppData(next);
   }, []);
 
-  const setAppTempData = useCallback((key: string, value: unknown) => {
-    setAppTempDataRaw((prev) => ({ ...prev, [key]: value }));
-  }, []);
-
-  const bootApp = useCallback(async () => {
-    setBootStatus('initializing');
-    setDownloadedState(false);
-    setHint(i18next.t('DownloadFiles-Initializing', { ns: 'preset' }) as string);
-    setNetworkError({ realtime: false, batch: false });
-    const savedSettings = await asyncStorageStore.get<AppSettings>('appSettings');
-    if (savedSettings) setAppSettings(savedSettings);
-
-    repoRef.current = createRepository({
+  const createRepositoryInstance = useCallback(() => {
+    return createRepository({
       cache: asyncStorageStore,
-      api: nativeApiClient,
+      api: mobileApiClient,
       translator: {
         addBundle(lang, namespace, resources) {
           i18next.addResourceBundle(lang, namespace, resources, true, true);
@@ -100,6 +87,20 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
       setHint,
       t: (key: string) => i18next.t(key, { ns: 'preset' }) as string,
     });
+  }, [setTrackedAppData]);
+
+  const bootApp = useCallback(async () => {
+    setBootStatus('initializing');
+    setDownloadedState(false);
+    setHint(i18next.t('DownloadFiles-Initializing', { ns: 'preset' }) as string);
+    setNetworkError({ realtime: false, batch: false });
+
+    const savedSettings = await asyncStorageStore.get<AppSettings>('appSettings');
+    if (savedSettings) {
+      setAppSettings(savedSettings);
+    }
+
+    repoRef.current = createRepositoryInstance();
 
     try {
       const current = await repoRef.current.initAndWarm();
@@ -116,15 +117,11 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
       setBootStatus('ready');
       setHint(i18next.t('DownloadFiles-Complete', { ns: 'preset' }) as string);
 
-      if (repoRef.current) {
-        await repoRef.current.realtimeOnce();
-      }
+      await repoRef.current.realtimeOnce();
 
       setTimeout(() => {
-        const currentRepo = repoRef.current;
-        if (!currentRepo) return;
-        currentRepo
-          .syncDelta(datesRef.current)
+        repoRef.current
+          ?.syncDelta(datesRef.current)
           .then((dates) => {
             datesRef.current = dates ?? datesRef.current;
           })
@@ -134,7 +131,7 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
       setBootStatus('recoverable-error');
       setHint(i18next.t('StoreFile-Error', { ns: 'preset' }) as string);
     }
-  }, [setTrackedAppData]);
+  }, [createRepositoryInstance]);
 
   useEffect(() => {
     bootApp().catch(() => {
@@ -144,72 +141,24 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
   }, [bootApp]);
 
   useEffect(() => {
-    if (bootStatus !== 'ready') return;
+    if (bootStatus !== 'ready') {
+      return;
+    }
+
     asyncStorageStore.set('appSettings', appSettings).catch(() => {});
   }, [appSettings, bootStatus]);
 
-  useEffect(() => {
-    if (bootStatus !== 'ready') return;
-
-    let appState = AppState.currentState;
-    let realtimeTimer: ReturnType<typeof setInterval> | null = null;
-    let syncTimer: ReturnType<typeof setInterval> | null = null;
-
-    const startTimers = () => {
-      if (realtimeTimer || syncTimer) return;
-      realtimeTimer = setInterval(() => {
-        const currentRepo = repoRef.current;
-        if (!currentRepo) return;
-        currentRepo.realtimeOnce().catch(() => {});
-      }, 10_000);
-      syncTimer = setInterval(() => {
-        const currentRepo = repoRef.current;
-        if (!currentRepo) return;
-        currentRepo
-          .syncDelta(datesRef.current)
-          .then((dates) => {
-            datesRef.current = dates ?? datesRef.current;
-          })
-          .catch(() => {});
-      }, 5 * 60_000);
-    };
-
-    const stopTimers = () => {
-      if (realtimeTimer) clearInterval(realtimeTimer);
-      if (syncTimer) clearInterval(syncTimer);
-      realtimeTimer = null;
-      syncTimer = null;
-    };
-
-    startTimers();
-    const sub = AppState.addEventListener('change', (nextState) => {
-      if (appState.match(/inactive|background/) && nextState === 'active') {
-        startTimers();
-        const currentRepo = repoRef.current;
-        if (currentRepo) {
-          currentRepo.realtimeOnce().catch(() => {});
-        }
-      }
-      if (nextState.match(/inactive|background/)) {
-        stopTimers();
-      }
-      appState = nextState;
-    });
-
-    return () => {
-      stopTimers();
-      sub.remove();
-    };
-  }, [bootStatus]);
+  usePollingLifecycle({ bootStatus, repoRef, datesRef });
 
   const refreshRealtime = useCallback(async () => {
-    if (repoRef.current) {
-      await repoRef.current.realtimeOnce();
-    }
+    await repoRef.current?.realtimeOnce();
   }, []);
 
   const syncDelta = useCallback(async () => {
-    if (!repoRef.current) return;
+    if (!repoRef.current) {
+      return;
+    }
+
     const nextDates = await repoRef.current.syncDelta(datesRef.current);
     datesRef.current = nextDates ?? datesRef.current;
   }, []);
@@ -221,24 +170,26 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
     setAppSettings({});
     setRealtimeData({});
     setNetworkError({ realtime: false, batch: false });
-    setAppTempDataRaw({ realTimeStation: null, searchStation: null });
+    setAppTempData(DEFAULT_APP_TEMP_DATA);
     setDownloadedState(false);
     setBootStatus('initializing');
     await bootApp();
-  }, [bootApp]);
+  }, [bootApp, setAppTempData]);
 
   const retryBoot = useCallback(async () => {
     await bootApp();
   }, [bootApp]);
 
-  const value = useMemo(
+  const value = useMemo<AppStateContextValue>(
     () => ({
       appData,
       setAppData: setTrackedAppData,
       appSettings,
       setAppSettings,
-      appTempData: appTempDataRaw,
-      setAppTempData,
+      appTempData,
+      setRealtimeStation,
+      setSearchStation,
+      clearTemporaryState,
       networkError,
       setNetworkError,
       realtimeData,
@@ -257,26 +208,30 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
     [
       appData,
       appSettings,
-      appTempDataRaw,
+      appTempData,
       bootStatus,
+      clearTemporaryState,
       hint,
       isDownloaded,
       networkError,
-      realtimeData,
       refreshRealtime,
-      retryBoot,
       resetApp,
+      retryBoot,
+      realtimeData,
+      setRealtimeStation,
+      setSearchStation,
       setTrackedAppData,
-      setAppTempData,
       syncDelta,
     ],
   );
 
-  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+  return <AppStateContext.Provider value={value}>{children}</AppStateContext.Provider>;
 };
 
 export function useAppState() {
-  const ctx = useContext(Ctx);
-  if (!ctx) throw new Error('useAppState must be used within AppProvider');
+  const ctx = useContext(AppStateContext);
+  if (!ctx) {
+    throw new Error('useAppState must be used within AppProvider');
+  }
   return ctx;
 }

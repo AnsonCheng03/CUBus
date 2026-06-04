@@ -1,9 +1,11 @@
 import { localSeed, seedDates } from './initData';
 import { normalizeTableName, pickFromResponseOrLocal, processors } from './processors';
-import type { AppData, ModificationDates } from '../app/types';
+import type { AppData, ModificationDates, NetworkError, RealtimeData } from '../app/types';
 import type {
   AppDataUpdater,
   KeyValueStore,
+  NetworkErrorUpdater,
+  RealtimeDataSetter,
   RepositoryApi,
   ResourceTranslator,
 } from '../platform/types';
@@ -13,8 +15,8 @@ export type RepoDeps = {
   api: RepositoryApi;
   translator: ResourceTranslator;
   setAppData: AppDataUpdater;
-  setNetworkError: (updater: any) => void;
-  setRealtimeData: (data: any) => void;
+  setNetworkError: NetworkErrorUpdater;
+  setRealtimeData: RealtimeDataSetter;
   setHint: (hint: string) => void;
   t: (key: string) => string;
 };
@@ -22,7 +24,7 @@ export type RepoDeps = {
 export function createRepository(deps: RepoDeps) {
   const { cache, api, translator, setAppData, setNetworkError, setRealtimeData, setHint, t } = deps;
 
-  const processOne = async (table: string, data: any) => {
+  const processOne = async (table: string, data: unknown) => {
     if (table !== 'timetable.json') {
       await cache.set(`data-${table}`, data);
     }
@@ -33,8 +35,8 @@ export function createRepository(deps: RepoDeps) {
   };
 
   const loadLocalOrSeed = async (table: string) => {
-    const cached = await cache.get<any>(`data-${table}`);
-    return cached ?? localSeed[table];
+    const cached = await cache.get<unknown>(`data-${table}`);
+    return cached ?? localSeed[table as keyof typeof localSeed];
   };
 
   return {
@@ -59,11 +61,11 @@ export function createRepository(deps: RepoDeps) {
     async realtimeOnce() {
       try {
         const data = await api.fetchRealtime();
-        setRealtimeData(data);
-        setNetworkError((prev: any) => ({ ...prev, realtime: false }));
+        setRealtimeData(data as RealtimeData);
+        setNetworkError((prev: NetworkError) => ({ ...prev, realtime: false }));
         return data;
       } catch {
-        setNetworkError((prev: any) => ({ ...prev, realtime: true }));
+        setNetworkError((prev: NetworkError) => ({ ...prev, realtime: true }));
         return null;
       }
     },
@@ -77,9 +79,9 @@ export function createRepository(deps: RepoDeps) {
         let response;
         try {
           response = await api.fetchDelta(currentDates);
-          setNetworkError((prev: any) => ({ ...prev, batch: false }));
+          setNetworkError((prev: NetworkError) => ({ ...prev, batch: false }));
         } catch {
-          setNetworkError((prev: any) => ({ ...prev, batch: true }));
+          setNetworkError((prev: NetworkError) => ({ ...prev, batch: true }));
           response = { modificationDates: seedDates };
         }
 
@@ -106,7 +108,7 @@ export function createRepository(deps: RepoDeps) {
         return latestDates;
       } catch (error) {
         setHint(t('StoreFile-Error'));
-        setNetworkError((prev: any) => ({ ...prev, batch: true }));
+        setNetworkError((prev: NetworkError) => ({ ...prev, batch: true }));
         throw error;
       }
     },

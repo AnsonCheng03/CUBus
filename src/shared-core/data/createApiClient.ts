@@ -1,5 +1,11 @@
 import axios from 'axios';
-import type { ModificationDates, ServerResponse } from '../app/types';
+import type {
+  GenericLogPayload,
+  ModificationDates,
+  RealtimeLogPayload,
+  SearchLogPayload,
+  ServerResponse,
+} from '../app/types';
 
 export type ApiClientOptions = {
   baseUrl: string;
@@ -49,19 +55,13 @@ export function createApiClient(options: ApiClientOptions) {
       return response.data;
     },
 
-    async logEvent(payload: Record<string, any>) {
+    async logEvent(payload: GenericLogPayload) {
       await client.post(`${baseUrl}/logData.php`, payload, {
         timeout: devMode ? 0 : timeoutMs,
       });
     },
 
-    async logSearch(input: {
-      start: string;
-      dest: string;
-      departNow: boolean;
-      lang: string;
-      token: string;
-    }) {
+    async logSearch(input: SearchLogPayload) {
       if (!input.start || !input.dest) return;
       await client.post(
         `${baseUrl}/logData.php`,
@@ -77,7 +77,7 @@ export function createApiClient(options: ApiClientOptions) {
       );
     },
 
-    async logRealtime(input: { dest: string; lang: string; token: string }) {
+    async logRealtime(input: RealtimeLogPayload) {
       if (!input.dest) return;
       await client.post(
         `${baseUrl}/logData.php`,

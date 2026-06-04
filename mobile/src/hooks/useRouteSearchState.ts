@@ -1,48 +1,45 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import type { BusData, SearchStationTempState } from '../../../src/shared-core/app/types';
 import { capitalizeFirstLetter } from '../../../src/shared-core/utils/tools';
-import type { BusData } from '../../../src/shared-core/realtime/getRealTime';
 import { useAppState } from '../providers/AppProvider';
+
+function buildTranslatedBuildings(busData: BusData, stationData: Record<string, string[]>, t: (key: string) => string) {
+  const stops = Object.values(busData).flatMap((bus) => bus.stations?.name.filter(Boolean) ?? []);
+  const buildings = Object.values(stationData).flatMap((value) => value.filter(Boolean));
+  const merged = Array.from(new Set([...(stops ?? []), ...(buildings ?? [])])).sort();
+
+  return merged
+    .map((building) => {
+      const translatedName = t(building);
+      return translatedName ? `${translatedName} (${building.toUpperCase()})` : '';
+    })
+    .filter(Boolean);
+}
+
+function buildTravelDateOptions(busData: BusData) {
+  return Array.from(
+    new Set(
+      Object.values(busData)
+        .map((bus) => bus.schedule?.[3])
+        .filter(Boolean) as string[],
+    ),
+  ).filter((value) => !value.includes(','));
+}
 
 export function useRouteSearchState() {
   const { t } = useTranslation('global');
-  const { appData, appTempData, setAppTempData } = useAppState();
+  const { appData, appTempData, setSearchStation } = useAppState();
+
+  const busData = appData.bus ?? {};
+  const stationData = appData.station ?? {};
 
   const { translatedBuildings, travelDateOptions } = useMemo(() => {
-    const output = {
-      translatedBuildings: [] as string[],
-      travelDateOptions: [] as string[],
+    return {
+      translatedBuildings: buildTranslatedBuildings(busData as BusData, stationData, t),
+      travelDateOptions: buildTravelDateOptions(busData as BusData),
     };
-
-    try {
-      const stops = Object.values(appData?.bus as BusData).flatMap((bus) =>
-        bus.stations?.name.filter(Boolean),
-      );
-      const buildings = Object.values(appData?.station ?? {}).flatMap((value: any) =>
-        (value as string[]).filter(Boolean),
-      );
-      const merged = Array.from(new Set([...(stops ?? []), ...(buildings ?? [])])).sort() as string[];
-
-      output.translatedBuildings = merged
-        .map((building) => {
-          const name = t(building);
-          return name ? `${name} (${building.toUpperCase()})` : '';
-        })
-        .filter(Boolean);
-
-      output.travelDateOptions = Array.from(
-        new Set(
-          Object.values(appData?.bus as BusData)
-            .map((bus) => bus.schedule?.[3])
-            .filter(Boolean) as string[],
-        ),
-      ).filter((value) => !value.includes(','));
-    } catch {
-      // keep defaults
-    }
-
-    return output;
-  }, [appData?.bus, appData?.station, t]);
+  }, [busData, stationData, t]);
 
   const searchStation = appTempData.searchStation ?? {};
 
@@ -58,14 +55,14 @@ export function useRouteSearchState() {
   const [selectWeekday, setSelectWeekday] = useState<string>(
     typeof searchStation.selectWeekday === 'string'
       ? searchStation.selectWeekday
-      : 'WK-' + capitalizeFirstLetter(new Date().toLocaleDateString('en-US', { weekday: 'short' })),
+      : `WK-${capitalizeFirstLetter(new Date().toLocaleDateString('en-US', { weekday: 'short' }))}`,
   );
   const [selectDate, setSelectDate] = useState<string>(
     typeof searchStation.selectDate === 'string'
       ? searchStation.selectDate
       : new Date().getDay() === 0
         ? 'HD'
-        : travelDateOptions?.[0] ?? '',
+        : (travelDateOptions[0] ?? ''),
   );
   const [selectHour, setSelectHour] = useState<string>(
     typeof searchStation.selectHour === 'string'
@@ -79,7 +76,7 @@ export function useRouteSearchState() {
   );
 
   const persistTemp = () => {
-    setAppTempData('searchStation', {
+    const nextState: SearchStationTempState = {
       routeSearchStart,
       routeSearchDest,
       departNow,
@@ -87,7 +84,8 @@ export function useRouteSearchState() {
       selectDate,
       selectHour,
       selectMinute,
-    });
+    };
+    setSearchStation(nextState);
   };
 
   return {

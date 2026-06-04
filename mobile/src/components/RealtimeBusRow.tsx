@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { RouteBusIcon } from './RouteBusIcon';
+import type { RealtimeRowData } from '../types/mobile';
 
 export function RealtimeBusRow({
   bus,
@@ -8,7 +9,7 @@ export function RealtimeBusRow({
   t,
   showTopBorder = true,
 }: {
-  bus: any;
+  bus: RealtimeRowData;
   onPress: () => void;
   t: (key: string) => string;
   showTopBorder?: boolean;

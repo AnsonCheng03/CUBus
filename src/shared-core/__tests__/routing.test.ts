@@ -51,4 +51,65 @@ describe('shared routing core', () => {
     expect(processed.A.stats?.status).toBe('suspended');
     expect(processed.A.warning).toBe('Bus-suspended');
   });
+
+  it('rejects mismatched translated building inputs', () => {
+    const result = calculateRoute(
+      t,
+      'Wrong Name (MTR)',
+      `${t('NAC')} (NAC)`,
+      'building',
+      'WK-Mon',
+      'TD',
+      '10',
+      '00',
+      true,
+      routeSeed as any,
+      stationSeed as any,
+      timetableSeed as any,
+      {},
+      {},
+    ) as any;
+
+    expect(result).toEqual({
+      error: true,
+      message: t('warningBuildingMismatch'),
+    });
+  });
+
+  it('returns a no-bus error when no service can connect the requested buildings', () => {
+    const emptyBus = {
+      A: {
+        schedule: ['00:00', '00:05', '10', 'TD', 'WK-Mon', ''],
+        stations: { name: ['AAA', 'BBB'], attr: ['NULL', 'NULL'], time: [0, 600] },
+      },
+    };
+    const stationMap = { AAA: ['AAA'], ZZZ: ['ZZZ'] };
+    const timetable = {
+      'AAA|': {
+        A: ['00:00:00'],
+      },
+    };
+
+    const result = calculateRoute(
+      t,
+      'AAA (AAA)',
+      'ZZZ (ZZZ)',
+      'building',
+      'WK-Mon',
+      'TD',
+      '10',
+      '00',
+      true,
+      emptyBus as any,
+      stationMap as any,
+      timetable as any,
+      {},
+      {},
+    ) as any;
+
+    expect(result).toEqual({
+      error: true,
+      message: 'No-BUS',
+    });
+  });
 });

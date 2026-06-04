@@ -8,7 +8,7 @@ const mockState = {
   appData: { WebsiteLinks: [] },
   networkError: { batch: false, realtime: false },
   resetApp: jest.fn().mockResolvedValue(undefined),
-  setAppTempData: jest.fn(),
+  clearTemporaryState: jest.fn(),
   syncDelta: jest.fn().mockResolvedValue(undefined),
 };
 

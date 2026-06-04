@@ -3,39 +3,22 @@ import { Linking, Pressable, StyleSheet, Switch, Text, View } from 'react-native
 import { useTranslation } from 'react-i18next';
 import { BusMapModal } from '../components/BusMapModal';
 import { ScreenContainer } from '../components/ScreenContainer';
+import { SettingsRow, SettingsSection } from '../components/settings/SettingsSection';
 import { useAppState } from '../providers/AppProvider';
 import { i18next } from '../lib/i18n';
-
-type WebsiteLink = [string[], string];
-
-function Section({ children }: { children: React.ReactNode }) {
-  return <View style={styles.section}>{children}</View>;
-}
-
-function Row({
-  label,
-  onPress,
-  right,
-  noDivider = false,
-}: {
-  label: string;
-  onPress?: () => void;
-  right?: React.ReactNode;
-  noDivider?: boolean;
-}) {
-  const content = (
-    <View style={[styles.row, noDivider && styles.rowNoDivider]}>
-      <Text style={styles.rowLabel}>{label}</Text>
-      {right}
-    </View>
-  );
-
-  return onPress ? <Pressable onPress={onPress}>{content}</Pressable> : content;
-}
+import type { WebsiteLink } from '../types/mobile';
 
 export function SettingsScreen() {
   const { t } = useTranslation('global');
-  const { appSettings, setAppSettings, appData, networkError, resetApp, setAppTempData, syncDelta } =
+  const {
+    appSettings,
+    setAppSettings,
+    appData,
+    networkError,
+    resetApp,
+    clearTemporaryState,
+    syncDelta,
+  } =
     useAppState();
   const [busMapVisible, setBusMapVisible] = useState(false);
   const langIndex = i18next.language.includes('en') ? 0 : 1;
@@ -55,18 +38,17 @@ export function SettingsScreen() {
       <BusMapModal visible={busMapVisible} onClose={() => setBusMapVisible(false)} />
 
       <View style={styles.sectionGroup}>
-        <Section>
-          <Row
+        <SettingsSection>
+          <SettingsRow
             label={i18next.language.includes('en') ? '轉換語言' : 'Change Language'}
             onPress={() => {
               const next = i18next.language.includes('en') ? 'zh' : 'en';
               i18next.changeLanguage(next).then(() => {
-                setAppTempData('realTimeStation', null);
-                setAppTempData('searchStation', null);
+                clearTemporaryState();
               });
             }}
           />
-          <Row
+          <SettingsRow
             label={t('routeNoWaitTimeT')}
             right={
               <Switch
@@ -88,34 +70,41 @@ export function SettingsScreen() {
               </Pressable>
             </View>
           ) : null}
-          <Row label={t('Reload-Data')} onPress={() => syncDelta().catch(() => {})} />
-          <Row label={t('Delete-Storage')} onPress={() => resetApp().catch(() => {})} noDivider />
-        </Section>
+          <SettingsRow label={t('Reload-Data')} onPress={() => syncDelta().catch(() => {})} />
+          <SettingsRow
+            label={t('Delete-Storage')}
+            onPress={() => resetApp().catch(() => {})}
+            noDivider
+          />
+        </SettingsSection>
       </View>
 
       <View style={styles.sectionGroup}>
-        <Section>
-          <Row label={t('bus_map_page')} onPress={() => setBusMapVisible(true)} />
+        <SettingsSection>
+          <SettingsRow label={t('bus_map_page')} onPress={() => setBusMapVisible(true)} />
           {websiteLinks.map((row, index) => (
-            <Row
+            <SettingsRow
               key={`${row[0][langIndex]}-${index}`}
               label={row[0][langIndex]}
               onPress={() => Linking.openURL(row[1])}
               noDivider={index === websiteLinks.length - 1}
             />
           ))}
-        </Section>
+        </SettingsSection>
       </View>
 
       <View style={styles.sectionGroup}>
-        <Section>
-          <Row label={t('About-btn')} onPress={() => Linking.openURL('https://github.com/AnsonCheng03')} />
-          <Row
+        <SettingsSection>
+          <SettingsRow
+            label={t('About-btn')}
+            onPress={() => Linking.openURL('https://github.com/AnsonCheng03')}
+          />
+          <SettingsRow
             label={t('Designer-Abt-btn')}
             onPress={() => Linking.openURL('https://www.instagram.com/01.0720/')}
             noDivider
           />
-        </Section>
+        </SettingsSection>
       </View>
     </ScreenContainer>
   );
@@ -129,29 +118,6 @@ const styles = StyleSheet.create({
   sectionGroup: {
     paddingHorizontal: 16,
     marginBottom: 14,
-  },
-  section: {
-    backgroundColor: '#fff',
-    borderRadius: 8,
-    overflow: 'hidden',
-  },
-  row: {
-    minHeight: 50,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#dddddd',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  rowNoDivider: {
-    borderBottomWidth: 0,
-  },
-  rowLabel: {
-    flex: 1,
-    color: '#111',
-    fontSize: 16,
   },
   noteText: {
     paddingHorizontal: 16,

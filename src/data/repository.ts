@@ -1,13 +1,21 @@
 import { apiClient } from './api';
 import { kv } from './storage';
 import { createRepository as createSharedRepository } from '../shared-core/data/repository';
-import type { AppData } from '../shared-core/app/types';
+import type { AppData, NetworkError, RealtimeData } from '../shared-core/app/types';
 
 export type RepoDeps = {
-  i18next: any;
+  i18next: {
+    addResourceBundle: (
+      lang: 'en' | 'zh',
+      namespace: string,
+      resources: Record<string, string>,
+      deep?: boolean,
+      overwrite?: boolean,
+    ) => void;
+  };
   setAppData: (updater: (prev: AppData) => AppData) => void;
-  setNetworkError: (updater: any) => void;
-  setRealtimeData: (data: any) => void;
+  setNetworkError: (updater: (prev: NetworkError) => NetworkError) => void;
+  setRealtimeData: (data: RealtimeData) => void;
   setHint: (hint: string) => void;
   t: (key: string) => string;
 };

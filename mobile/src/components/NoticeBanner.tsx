@@ -4,12 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { usePathname } from 'expo-router';
 import { NAV_RESPONSIVE_BREAKPOINT } from '../lib/layout';
+import type { NoticeItem } from '../types/mobile';
 
 function stripHtml(input: string) {
   return input.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-export function NoticeBanner({ notice }: { notice: any }) {
+export function NoticeBanner({ notice }: { notice?: NoticeItem[] | null }) {
   const { i18n, t } = useTranslation('global');
   const [dismissedIds, setDismissedIds] = useState<number[]>([]);
   const { width } = useWindowDimensions();
@@ -19,13 +20,15 @@ export function NoticeBanner({ notice }: { notice: any }) {
 
   const currentNotice = useMemo(() => {
     const visible = (notice ?? [])
-      .filter((item: any) => item?.content?.[lang] && item?.pref?.hide !== 1)
+      .filter((item) => item?.content?.[lang] && item?.pref?.hide !== 1)
       .reverse()
-      .filter((item: any) => !dismissedIds.includes(item.id));
+      .filter((item) => !dismissedIds.includes(item.id));
     return visible[0] ?? null;
   }, [dismissedIds, lang, notice]);
 
   if (!currentNotice) return null;
+  const noticeContent = currentNotice.content?.[lang] ?? '';
+  const noticeLink = currentNotice.pref?.link;
 
   return (
     <SafeAreaView
@@ -34,13 +37,13 @@ export function NoticeBanner({ notice }: { notice: any }) {
       style={[styles.overlay, width >= NAV_RESPONSIVE_BREAKPOINT && inTabShell && styles.overlayWithTopNav]}
     >
       <View style={styles.banner}>
-        <Text style={styles.message}>{stripHtml(currentNotice.content[lang])}</Text>
+        <Text style={styles.message}>{stripHtml(noticeContent)}</Text>
         <View style={styles.actions}>
-          {!!currentNotice.pref?.link && (
-            <Pressable onPress={() => Linking.openURL(currentNotice.pref.link)}>
+          {noticeLink ? (
+            <Pressable onPress={() => Linking.openURL(noticeLink)}>
               <Text style={styles.link}>{t('toast_more_info')}</Text>
             </Pressable>
-          )}
+          ) : null}
           <Pressable onPress={() => setDismissedIds((prev) => [...prev, currentNotice.id])}>
             <Text style={styles.dismiss}>{t('toast_dismiss')}</Text>
           </Pressable>

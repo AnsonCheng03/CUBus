@@ -2,38 +2,23 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Image, ImageBackground, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ScreenContainer } from '../components/ScreenContainer';
+import {
+  EMPTY_PERMIT,
+  cuhkLogo,
+  meetClassBusImage,
+  permitBusRoutes,
+  shuttleBusImage,
+} from '../lib/permit';
 import { useAppState } from '../providers/AppProvider';
 import type { PermitData } from '../../../src/shared-core/app/types';
-
-const EMPTY: PermitData = { name: '', sid: '', major: '', expiry: '' };
-const shuttleBusImage = require('../../../src/assets/schbus_d.png');
-const meetClassBusImage = require('../../../src/assets/schbus_l.png');
-const cuhkLogo = require('../../../src/assets/cuhk_logo.png');
-
-const busRoutes = {
-  meet_class_bus: {
-    '5': ['#c2d6ea', '#29a1d8'],
-    '6A': ['#7c8644', '#585823'],
-    '6B': ['#4f88c1', '#3f438f'],
-    '7': ['#c2c2c2', '#666666'],
-  },
-  shuttle_bus: {
-    '1': ['#fff149', '#f3b53a'],
-    '2': ['#fff149', '#f3b53a'],
-    '3': ['#a4cc39', '#318761'],
-    '4': ['#f1a63b', '#e75a24'],
-    '8': ['#ffe3a8', '#ffc55a'],
-    'N': ['#d1b4d5', '#7961a8'],
-    'H': ['#896391', '#453087'],
-  },
-} as const;
+import type { PermitFormValue } from '../types/mobile';
 
 function PermitCard({
   permit,
   busMode,
 }: {
-  permit: Required<PermitData>;
-  busMode: keyof typeof busRoutes;
+  permit: PermitFormValue;
+  busMode: keyof typeof permitBusRoutes;
 }) {
   const title = busMode === 'meet_class_bus' ? '轉堂校巴證' : '穿梭校巴證';
   const subtitle = busMode === 'meet_class_bus' ? 'Meet-Class Bus Permit' : 'Shuttle Bus Permit';
@@ -74,7 +59,7 @@ function PermitCard({
                 The Permit Holder is allowed to ride on the following routes
               </Text>
               <View style={styles.routeRow}>
-                {Object.entries(busRoutes[busMode]).map(([route, colors]) => (
+                {Object.entries(permitBusRoutes[busMode]).map(([route, colors]) => (
                   <View
                     key={route}
                     style={[styles.routeChip, { backgroundColor: colors[0], borderColor: colors[1] }]}
@@ -108,7 +93,7 @@ function PermitCard({
 export function PermitScreen() {
   const { t, i18n } = useTranslation('global');
   const { appSettings, setAppSettings } = useAppState();
-  const saved = useMemo<Required<PermitData>>(
+  const saved = useMemo<PermitFormValue>(
     () => ({
       name: appSettings.schoolBusPermit?.name ?? '',
       sid: appSettings.schoolBusPermit?.sid ?? '',
@@ -130,7 +115,7 @@ export function PermitScreen() {
     : '本應用程式所展示的校巴證僅為創作作品，旨在提供趣味性及娛樂用途，並非由香港中文大學或其任何相關部門授權、認可或發行的正式證件。';
 
   const save = () => {
-    const trimmed: Required<PermitData> = {
+    const trimmed: PermitFormValue = {
       name: form.name.trim(),
       sid: form.sid.trim(),
       major: form.major.trim().toUpperCase(),
@@ -205,7 +190,7 @@ export function PermitScreen() {
             <Pressable
               style={styles.secondaryButton}
               onPress={() => {
-                setForm({ ...EMPTY });
+                setForm({ ...EMPTY_PERMIT });
                 setMode('edit');
               }}
             >

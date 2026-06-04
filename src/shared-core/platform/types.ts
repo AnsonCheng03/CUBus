@@ -1,8 +1,8 @@
-import type { AppData, ModificationDates, ServerResponse } from '../app/types';
+import type { AppData, ModificationDates, NetworkError, RealtimeData, ServerResponse } from '../app/types';
 
 export interface KeyValueStore {
-  get<T = any>(key: string): Promise<T | null>;
-  set(key: string, value: any): Promise<void>;
+  get<T = unknown>(key: string): Promise<T | null>;
+  set<T>(key: string, value: T): Promise<void>;
   clearAll(): Promise<void>;
   remove?(key: string): Promise<void>;
 }
@@ -18,3 +18,5 @@ export interface RepositoryApi {
 }
 
 export type AppDataUpdater = (updater: (prev: AppData) => AppData) => void;
+export type NetworkErrorUpdater = (updater: (prev: NetworkError) => NetworkError) => void;
+export type RealtimeDataSetter = (value: RealtimeData) => void;
