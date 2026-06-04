@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { FloatingStationSelector } from '../components/FloatingStationSelector';
@@ -13,10 +13,13 @@ import type { RouteMapSelection } from '../../../src/shared-core/app/types';
 import { generateRouteResult } from '../../../src/shared-core/realtime/getRealTime';
 import { nativeApiClient } from '../lib/nativeApi';
 import { getNearestStation } from '../lib/location';
+import { NAV_RESPONSIVE_BREAKPOINT } from '../lib/layout';
 
 export function RealtimeScreen() {
   const { t, i18n } = useTranslation('global');
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const isLargeScreen = width >= NAV_RESPONSIVE_BREAKPOINT;
   const { appData, appTempData, setAppTempData, realtimeData, networkError, refreshRealtime } =
     useAppState();
   const [selectedStation, setSelectedStation] = useState(appTempData.realTimeStation ?? 'MTR');
@@ -120,7 +123,7 @@ export function RealtimeScreen() {
         options={stationOptions}
         searchable
       />
-      <View style={[styles.redHeader, { paddingTop: insets.top + 15 }]}>
+      <View style={[styles.redHeader, { paddingTop: (isLargeScreen ? 0 : insets.top) + 15 }]}>
         <View style={styles.redHeaderBackdrop} />
         <FloatingStationSelector
           value={t(selectedStation)}

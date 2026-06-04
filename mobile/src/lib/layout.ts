@@ -1,0 +1,1 @@
+export const NAV_RESPONSIVE_BREAKPOINT = 768;

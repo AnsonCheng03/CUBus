@@ -5,6 +5,7 @@ import {
   StyleSheet,
   Switch,
   Text,
+  useWindowDimensions,
   View,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -18,6 +19,7 @@ import { getNearestStation } from '../lib/location';
 import { useAppState } from '../providers/AppProvider';
 import { useRouteSearchState } from '../hooks/useRouteSearchState';
 import { useRouteCompute } from '../hooks/useRouteCompute';
+import { NAV_RESPONSIVE_BREAKPOINT } from '../lib/layout';
 
 const hours = Array.from({ length: 24 }, (_, index) => String(index).padStart(2, '0'));
 const minutes = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'];
@@ -26,6 +28,8 @@ const weekdays = ['WK-Mon', 'WK-Tue', 'WK-Wed', 'WK-Thu', 'WK-Fri', 'WK-Sat', 'W
 export function RouteSearchScreen() {
   const { t } = useTranslation('global');
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const isLargeScreen = width >= NAV_RESPONSIVE_BREAKPOINT;
   const { appData, networkError, refreshRealtime } = useAppState();
   const state = useRouteSearchState();
   const { routeResult, routeMap, setRouteMap, fetchError, generate } = useRouteCompute();
@@ -90,7 +94,7 @@ export function RouteSearchScreen() {
         }}
       />
 
-      <View style={[styles.redHeader, { paddingTop: insets.top + 15 }]}>
+      <View style={[styles.redHeader, { paddingTop: (isLargeScreen ? 0 : insets.top) + 15 }]}>
         <View style={styles.redHeaderBackdrop} />
         <View style={styles.selectorFloat}>
           <View style={styles.formCard}>
@@ -226,7 +230,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#911f27',
   },
   pageContent: {
-    paddingBottom: 90,
+    paddingBottom: 24,
     backgroundColor: '#911f27',
   },
   redHeader: {

@@ -220,7 +220,7 @@ export function PermitScreen() {
 
 const styles = StyleSheet.create({
   pageContent: {
-    paddingBottom: 90,
+    paddingBottom: 24,
   },
   formPage: {
     gap: 12,

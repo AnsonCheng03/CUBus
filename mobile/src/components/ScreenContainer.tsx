@@ -4,10 +4,12 @@ import {
   StyleProp,
   StyleSheet,
   Text,
+  useWindowDimensions,
   ViewStyle,
   View,
 } from 'react-native';
 import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
+import { NAV_RESPONSIVE_BREAKPOINT } from '../lib/layout';
 
 export function ScreenContainer({
   title,
@@ -21,7 +23,7 @@ export function ScreenContainer({
   contentStyle,
   scrollStyle,
   safeAreaBackgroundColor = '#f2f2f2',
-  safeAreaEdges = ['top'],
+  safeAreaEdges,
 }: {
   title: string;
   subtitle?: string;
@@ -36,8 +38,11 @@ export function ScreenContainer({
   safeAreaBackgroundColor?: string;
   safeAreaEdges?: Edge[];
 }) {
+  const { width } = useWindowDimensions();
+  const resolvedEdges = safeAreaEdges ?? (width >= NAV_RESPONSIVE_BREAKPOINT ? [] : ['top']);
+
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: safeAreaBackgroundColor }]} edges={safeAreaEdges}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: safeAreaBackgroundColor }]} edges={resolvedEdges}>
       <ScrollView
         style={scrollStyle}
         contentContainerStyle={[

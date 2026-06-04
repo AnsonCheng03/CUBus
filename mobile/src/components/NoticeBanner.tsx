@@ -1,7 +1,9 @@
 import React, { useMemo, useState } from 'react';
-import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
+import { usePathname } from 'expo-router';
+import { NAV_RESPONSIVE_BREAKPOINT } from '../lib/layout';
 
 function stripHtml(input: string) {
   return input.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -10,7 +12,10 @@ function stripHtml(input: string) {
 export function NoticeBanner({ notice }: { notice: any }) {
   const { i18n, t } = useTranslation('global');
   const [dismissedIds, setDismissedIds] = useState<number[]>([]);
+  const { width } = useWindowDimensions();
+  const pathname = usePathname();
   const lang = i18n.language.includes('en') ? 1 : 0;
+  const inTabShell = pathname === '/' || pathname.startsWith('/route') || pathname.startsWith('/permit') || pathname.startsWith('/settings');
 
   const currentNotice = useMemo(() => {
     const visible = (notice ?? [])
@@ -23,7 +28,11 @@ export function NoticeBanner({ notice }: { notice: any }) {
   if (!currentNotice) return null;
 
   return (
-    <SafeAreaView pointerEvents="box-none" edges={['top']} style={styles.overlay}>
+    <SafeAreaView
+      pointerEvents="box-none"
+      edges={['top']}
+      style={[styles.overlay, width >= NAV_RESPONSIVE_BREAKPOINT && inTabShell && styles.overlayWithTopNav]}
+    >
       <View style={styles.banner}>
         <Text style={styles.message}>{stripHtml(currentNotice.content[lang])}</Text>
         <View style={styles.actions}>
@@ -51,6 +60,9 @@ const styles = StyleSheet.create({
     elevation: 10,
     paddingHorizontal: 16,
     paddingTop: 8,
+  },
+  overlayWithTopNav: {
+    marginTop: 75,
   },
   banner: {
     backgroundColor: '#fff7d6',

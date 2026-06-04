@@ -9,6 +9,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "mobile:start": "npm --prefix mobile start",
+    "mobile:web": "npm --prefix mobile run web",
+    "mobile:build:web": "npm --prefix mobile run build:web",
     "mobile:ios": "npm --prefix mobile run ios",
     "mobile:android": "npm --prefix mobile run android",
     "mobile:test": "npm --prefix mobile test",

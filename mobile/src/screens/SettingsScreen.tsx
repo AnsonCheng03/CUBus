@@ -124,7 +124,7 @@ export function SettingsScreen() {
 const styles = StyleSheet.create({
   pageContent: {
     paddingTop: 8,
-    paddingBottom: 90,
+    paddingBottom: 24,
   },
   sectionGroup: {
     paddingHorizontal: 16,
