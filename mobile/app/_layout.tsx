@@ -10,10 +10,13 @@ import { env } from '../src/lib/config';
 import { NoticeBanner } from '../src/components/NoticeBanner';
 import { mobileQueryClient } from '../src/query/client';
 import { useReactQueryAppFocus } from '../src/query/focusManager';
+import { applyGlobalTypographyDefaults } from '../src/lib/typography';
 
 if (env.sentryDsn) {
   Sentry.init({ dsn: env.sentryDsn, tracesSampleRate: 1.0 });
 }
+
+applyGlobalTypographyDefaults();
 
 function AppFrame() {
   useReactQueryAppFocus();

@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { G, Path, Rect, Text as SvgText } from 'react-native-svg';
 import { getTextColor } from '../../../src/shared-core/utils/tools';
+import { APP_FONT_FAMILY_SANS, APP_FONT_WEIGHT_BOLD } from '../lib/typography';
 
 export function RouteBusIcon({
   busNo,
@@ -29,6 +30,8 @@ export function RouteBusIcon({
             x="12"
             y="10"
             fontSize="7"
+            fontFamily={APP_FONT_FAMILY_SANS}
+            fontWeight={APP_FONT_WEIGHT_BOLD}
             fill={getTextColor(fillColor)}
             textAnchor="middle"
             alignmentBaseline="middle"

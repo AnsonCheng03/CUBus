@@ -15,7 +15,7 @@ export function RealtimeHeader({
 }) {
   return (
     <View style={[styles.redHeader, { paddingTop }]}>
-      <View style={styles.redHeaderBackdrop} />
+      <View style={styles.whiteHeaderBackdrop} />
       <FloatingStationSelector value={stationLabel} onOpen={onOpen} onLocate={onLocate} />
     </View>
   );
@@ -25,14 +25,15 @@ const styles = StyleSheet.create({
   redHeader: {
     position: 'relative',
     paddingHorizontal: '3%',
-    paddingBottom: 15,
+    paddingBottom: 10,
+    overflow: 'visible',
   },
-  redHeaderBackdrop: {
+  whiteHeaderBackdrop: {
     position: 'absolute',
-    top: 0,
     left: 0,
     right: 0,
-    bottom: 35,
-    backgroundColor: '#911f27',
+    bottom: 0,
+    height: '70%',
+    backgroundColor: '#fff',
   },
 });

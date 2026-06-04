@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { RefreshControl, StyleSheet, View, useWindowDimensions } from 'react-native';
+import { RefreshControl, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import type { RealtimeRow, RouteMapSelection } from '../../../src/shared-core/app/types';
@@ -21,14 +21,8 @@ export function RealtimeScreen() {
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
   const isLargeScreen = width >= NAV_RESPONSIVE_BREAKPOINT;
-  const {
-    appData,
-    appTempData,
-    setRealtimeStation,
-    realtimeData,
-    networkError,
-    refreshRealtime,
-  } = useAppState();
+  const { appData, appTempData, setRealtimeStation, realtimeData, networkError, refreshRealtime } =
+    useAppState();
   const logRealtimeMutation = useLogRealtimeMutation();
 
   const [selectedStation, setSelectedStation] = useState(appTempData.realTimeStation ?? 'MTR');
@@ -123,6 +117,7 @@ export function RealtimeScreen() {
         options={stationOptions}
         searchable
       />
+
       <RealtimeHeader
         paddingTop={(isLargeScreen ? 0 : insets.top) + 15}
         stationLabel={t(selectedStation)}
