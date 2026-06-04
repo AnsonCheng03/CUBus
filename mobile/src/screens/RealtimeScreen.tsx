@@ -7,7 +7,6 @@ import { generateRouteResult } from '../../../src/shared-core/realtime/getRealTi
 import { RealtimeHeader } from '../components/realtime/RealtimeHeader';
 import { RealtimeResultsList } from '../components/realtime/RealtimeResultsList';
 import { RouteMapModal } from '../components/RouteMapModal';
-import { SelectionModal } from '../components/SelectionModal';
 import { MOBILE_BOTTOM_NAV_OVERLAP } from '../components/CustomNavBar';
 import { useNearestStation } from '../hooks/useNearestStation';
 import { createRealtimeRouteMapSelection } from '../hooks/useRouteMapSelection';
@@ -107,22 +106,19 @@ export function RealtimeScreen() {
   return (
     <SafeAreaView style={styles.safeArea} edges={[]}>
       <RouteMapModal routeMap={routeMapVisible} onClose={() => setRouteMapVisible(null)} />
-      <SelectionModal
-        title={t('DescTxt-yrloc')}
-        visible={pickerVisible}
-        onClose={() => setPickerVisible(false)}
-        onSelect={(value) => {
-          selectStation(value).catch(() => {});
-        }}
-        options={stationOptions}
-        searchable
-      />
 
       <RealtimeHeader
         paddingTop={isLargeScreen ? 0 : insets.top}
         stationLabel={t(selectedStation)}
-        onOpen={() => setPickerVisible(true)}
+        pickerOpen={pickerVisible}
+        stationOptions={stationOptions}
+        onTogglePicker={() => setPickerVisible((value) => !value)}
+        onSelectStation={(value) => {
+          setPickerVisible(false);
+          selectStation(value).catch(() => {});
+        }}
         onLocate={() => {
+          setPickerVisible(false);
           selectNearestStation().catch(() => {});
         }}
       />

@@ -1,17 +1,24 @@
 import React, { useState } from 'react';
 import { LayoutChangeEvent, StyleSheet, View } from 'react-native';
 import { FloatingStationSelector } from '../FloatingStationSelector';
+import type { SelectionOption } from '../SelectionModal';
 import { BusMovingImage } from './BusMovingImage';
 
 export function RealtimeHeader({
   paddingTop,
   stationLabel,
-  onOpen,
+  pickerOpen,
+  stationOptions,
+  onTogglePicker,
+  onSelectStation,
   onLocate,
 }: {
   paddingTop: number;
   stationLabel: string;
-  onOpen: () => void;
+  pickerOpen: boolean;
+  stationOptions: SelectionOption[];
+  onTogglePicker: () => void;
+  onSelectStation: (value: string) => void;
   onLocate: () => void;
 }) {
   const [selectorHeight, setSelectorHeight] = useState(0);
@@ -30,7 +37,14 @@ export function RealtimeHeader({
       />
       <BusMovingImage />
       <View onLayout={onSelectorLayout}>
-        <FloatingStationSelector value={stationLabel} onOpen={onOpen} onLocate={onLocate} />
+        <FloatingStationSelector
+          value={stationLabel}
+          open={pickerOpen}
+          options={stationOptions}
+          onToggle={onTogglePicker}
+          onSelect={onSelectStation}
+          onLocate={onLocate}
+        />
       </View>
     </View>
   );
@@ -42,6 +56,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: '3%',
     paddingBottom: 10,
     overflow: 'visible',
+    zIndex: 20,
+    elevation: 20,
   },
   whiteHeaderBackdrop: {
     position: 'absolute',

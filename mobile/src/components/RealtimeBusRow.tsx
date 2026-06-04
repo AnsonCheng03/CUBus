@@ -75,12 +75,12 @@ const styles = StyleSheet.create({
     borderTopWidth: 0,
   },
   busLeft: {
-    width: 60,
+    width: 50,
     alignItems: 'center',
   },
   busIconWrap: {
-    width: 60,
-    height: 44,
+    width: 50,
+    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
   },
