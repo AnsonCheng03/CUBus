@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import {
   FlatList,
   Modal,
@@ -8,7 +8,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaInsetsContext, SafeAreaView } from 'react-native-safe-area-context';
 
 export type SelectionOption = {
   label: string;
@@ -31,6 +31,7 @@ export function SelectionModal({
   searchable?: boolean;
 }) {
   const [query, setQuery] = useState('');
+  const insets = useContext(SafeAreaInsetsContext) ?? { top: 0, bottom: 0, left: 0, right: 0 };
 
   const filtered = useMemo(() => {
     if (!searchable || !query.trim()) return options;
@@ -39,9 +40,14 @@ export function SelectionModal({
   }, [options, query, searchable]);
 
   return (
-    <Modal animationType="slide" visible={visible} onRequestClose={onClose}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
+    <Modal
+      animationType="slide"
+      visible={visible}
+      onRequestClose={onClose}
+      statusBarTranslucent
+    >
+      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+        <View style={[styles.header, { paddingTop: Math.max(insets.top, 8) }]}>
           <Text style={styles.title}>{title}</Text>
           <Pressable onPress={onClose}>
             <Text style={styles.close}>Close</Text>
@@ -59,7 +65,10 @@ export function SelectionModal({
         <FlatList
           data={filtered}
           keyExtractor={(item) => item.value}
-          contentContainerStyle={styles.list}
+          contentContainerStyle={[
+            styles.list,
+            { paddingBottom: Math.max(insets.bottom, 20) },
+          ]}
           renderItem={({ item }) => (
             <Pressable
               style={styles.option}
@@ -88,7 +97,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingBottom: 16,
   },
   title: {
     fontSize: 22,

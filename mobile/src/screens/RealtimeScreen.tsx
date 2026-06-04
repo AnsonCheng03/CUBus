@@ -1,15 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  Pressable,
-  RefreshControl,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ScreenContainer } from '../components/ScreenContainer';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { FloatingStationSelector } from '../components/FloatingStationSelector';
+import { InlineNoticeRow } from '../components/InlineNoticeRow';
+import { RealtimeBusRow } from '../components/RealtimeBusRow';
 import { SelectionModal, type SelectionOption } from '../components/SelectionModal';
 import { RouteMapModal } from '../components/RouteMapModal';
 import { useAppState } from '../providers/AppProvider';
@@ -22,7 +17,8 @@ import { getNearestStation } from '../lib/location';
 export function RealtimeScreen() {
   const { t, i18n } = useTranslation('global');
   const insets = useSafeAreaInsets();
-  const { appData, appTempData, setAppTempData, realtimeData, networkError, refreshRealtime } = useAppState();
+  const { appData, appTempData, setAppTempData, realtimeData, networkError, refreshRealtime } =
+    useAppState();
   const [selectedStation, setSelectedStation] = useState(appTempData.realTimeStation ?? 'MTR');
   const [realtimeResult, setRealtimeResult] = useState<any[]>([]);
   const [routeMap, setRouteMap] = useState<RouteMapSelection | null>(null);
@@ -42,7 +38,10 @@ export function RealtimeScreen() {
   }, [appData?.bus]);
 
   const importantStations = useMemo(
-    () => Object.keys((appData.GPS as Record<string, any>) ?? {}).filter((key) => appData.GPS?.[key]?.ImportantStation !== null),
+    () =>
+      Object.keys((appData.GPS as Record<string, any>) ?? {}).filter(
+        (key) => appData.GPS?.[key]?.ImportantStation !== null,
+      ),
     [appData.GPS],
   );
 
@@ -52,7 +51,9 @@ export function RealtimeScreen() {
   }));
 
   const groupedNearbyStops = useMemo(
-    () => ((appData.GPS as Record<string, any>)?.[selectedStation]?.Grouped as string[] | undefined) ?? [],
+    () =>
+      ((appData.GPS as Record<string, any>)?.[selectedStation]?.Grouped as string[] | undefined) ??
+      [],
     [appData.GPS, selectedStation],
   );
 
@@ -109,18 +110,7 @@ export function RealtimeScreen() {
   };
 
   return (
-    <ScreenContainer
-      title={t('title_realtime')}
-      subtitle={t('meta_desc_realtime')}
-      showHeader={false}
-      contentPadding={0}
-      contentGap={0}
-      contentStyle={styles.pageContent}
-      scrollStyle={styles.scroll}
-      safeAreaBackgroundColor="#911f27"
-      safeAreaEdges={[]}
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#0f766e" />}
-    >
+    <SafeAreaView style={styles.safeArea} edges={[]}>
       <RouteMapModal routeMap={routeMap} onClose={() => setRouteMap(null)} />
       <SelectionModal
         title={t('DescTxt-yrloc')}
@@ -130,181 +120,109 @@ export function RealtimeScreen() {
         options={stationOptions}
         searchable
       />
-
       <View style={[styles.redHeader, { paddingTop: insets.top + 15 }]}>
-        <View style={styles.selectorFloat}>
-          <View style={styles.selectorBox}>
-            <View style={styles.selectorIcon}>
-              <Ionicons name="bus-outline" size={22} color="#111" />
-            </View>
-            <Pressable style={styles.selectorButton} onPress={() => setPickerVisible(true)}>
-              <Text style={styles.selectorValue} numberOfLines={1}>
-                {t(selectedStation)}
-              </Text>
-              <Ionicons name="chevron-down" size={20} color="#666" />
-            </Pressable>
-            <Pressable
-              style={styles.gpsButton}
-              onPress={() => {
-                getNearestStation(t, (appData.GPS as Record<string, any>) ?? {})
-                  .then((result) => {
-                    const candidate = result?.[0]?.[0];
-                    if (candidate && !result?.[0]?.[1]?.error) setSelectedStation(candidate);
-                  })
-                  .catch(() => {});
-              }}
-            >
-              <Ionicons name="navigate" size={20} color="#111" />
-            </Pressable>
-          </View>
-        </View>
+        <View style={styles.redHeaderBackdrop} />
+        <FloatingStationSelector
+          value={t(selectedStation)}
+          onOpen={() => setPickerVisible(true)}
+          onLocate={() => {
+            getNearestStation(t, (appData.GPS as Record<string, any>) ?? {})
+              .then((result) => {
+                const candidate = result?.[0]?.[0];
+                if (candidate && !result?.[0]?.[1]?.error) setSelectedStation(candidate);
+              })
+              .catch(() => {});
+          }}
+        />
       </View>
-      <View style={styles.resultsSection}>
-        {networkError.realtime ? <Text style={styles.warning}>{t('internet_offline')}</Text> : null}
-        {fetchError ? <Text style={styles.warning}>{t('fetch-error')}</Text> : null}
+      <View style={styles.resultsShell}>
+        <ScrollView
+          style={styles.resultsScroll}
+          contentContainerStyle={[styles.resultsContent]}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#0f766e" />
+          }
+        >
+          {networkError.realtime ? (
+            <InlineNoticeRow text={t('internet_offline')} variant="alert" />
+          ) : null}
+          {fetchError ? <InlineNoticeRow text={t('fetch-error')} variant="alert" /> : null}
 
-        {groupedNearbyStops.length > 0 ? (
-          <View style={styles.infoBanner}>
-            <Text style={styles.infoBannerText}>
-              {t('DescTxt-yrloc')}：
-              {groupedNearbyStops.map((group, index) => (
-                <Text key={group} style={styles.infoLink} onPress={() => setSelectedStation(group)}>
-                  {`${t(group)}${index !== groupedNearbyStops.length - 1 ? ', ' : ''}`}
-                </Text>
-              ))}
-            </Text>
-          </View>
-        ) : null}
-
-        {realtimeResult.length === 0 ? (
-          <View style={styles.emptyRow}>
-            <Text style={styles.emptyTitle}>{t('No-bus-time')}</Text>
-          </View>
-        ) : (
-          realtimeResult.map((bus, index) => (
-            <Pressable
-              key={`${bus.busno}-${bus.time}-${index}`}
-              style={[styles.busRow, bus.arrived && styles.busRowArrived]}
-              onPress={() => {
-                if (!bus.nextStation) return;
-                setRouteMap({
-                  route: bus.nextStation.route,
-                  currentIndex: bus.nextStation.startIndex,
-                  details: {
-                    busNo: bus.busno,
-                    stationIndex: bus.nextStation.startIndex,
-                    token: appData.token,
-                  },
-                });
-              }}
-            >
-              <View style={styles.busLeft}>
-                <View style={[styles.busBadge, { backgroundColor: bus.config?.colorCode || '#f6d365' }]}>
-                  <Text style={styles.busBadgeText}>{bus.busno}</Text>
-                </View>
-                {bus.direction ? (
-                  <Text style={styles.directionText}>{bus.direction === 'DOWNST' ? '↓' : '↑'}</Text>
-                ) : null}
-              </View>
-
-              <View style={styles.nextStationDisplay}>
-                <Text style={styles.nextStationLabel}>
-                  {bus.nextStation?.importantStationAfter?.[0] ? t('next-important-station') : t('next-station')}
-                </Text>
-                <Text style={styles.nextStationValue} numberOfLines={1}>
-                  {bus.nextStation?.importantStationAfter?.[0] ?? t(bus.nextStation?.stationName ?? '')}
-                </Text>
-                {bus.config?.scheduleType === 'reported' ? (
-                  <Text style={styles.infoText}>
-                    {(bus.config?.scheduleConfig?.count ?? 1) + ' ' + t('bus-reported-by-user')}
+          {groupedNearbyStops.length > 0 ? (
+            <InlineNoticeRow variant="info">
+              <Text style={styles.infoBannerText}>
+                {t('DescTxt-yrloc')}：
+                {groupedNearbyStops.map((group, index) => (
+                  <Text
+                    key={group}
+                    style={styles.infoLink}
+                    onPress={() => setSelectedStation(group)}
+                  >
+                    {`${t(group)}${index !== groupedNearbyStops.length - 1 ? ', ' : ''}`}
                   </Text>
-                ) : bus.warning ? (
-                  <Text style={styles.warningText}>{t(bus.warning)}</Text>
-                ) : null}
-              </View>
+                ))}
+              </Text>
+            </InlineNoticeRow>
+          ) : null}
 
-              <Text style={styles.arrivalTime}>{bus.time}</Text>
-            </Pressable>
-          ))
-        )}
+          {realtimeResult.length === 0 ? (
+            <InlineNoticeRow text={t('No-bus-time')} variant="alert" />
+          ) : (
+            realtimeResult.map((bus, index) => (
+              <RealtimeBusRow
+                key={`${bus.busno}-${bus.time}-${index}`}
+                bus={bus}
+                t={t}
+                showTopBorder={!(index === 0 && (networkError.realtime || fetchError || groupedNearbyStops.length > 0))}
+                onPress={() => {
+                  if (!bus.nextStation) return;
+                  setRouteMap({
+                    route: bus.nextStation.route,
+                    currentIndex: bus.nextStation.startIndex,
+                    details: {
+                      busNo: bus.busno,
+                      stationIndex: bus.nextStation.startIndex,
+                      token: appData.token,
+                    },
+                  });
+                }}
+              />
+            ))
+          )}
+        </ScrollView>
       </View>
-    </ScreenContainer>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  scroll: {
-    backgroundColor: '#911f27',
-  },
-  pageContent: {
-    paddingBottom: 90,
+  safeArea: {
+    flex: 1,
     backgroundColor: '#911f27',
   },
   redHeader: {
-    backgroundColor: '#911f27',
+    position: 'relative',
     paddingHorizontal: '3%',
-    paddingBottom: 35,
+    paddingBottom: 15,
   },
-  selectorFloat: {
-    marginBottom: -20,
+  redHeaderBackdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 35,
+    backgroundColor: '#911f27',
   },
-  selectorBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 15,
-    paddingVertical: 5,
-    paddingHorizontal: '2%',
-    shadowColor: '#a6adc9',
-    shadowOpacity: 0.35,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 4,
-  },
-  selectorIcon: {
-    width: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  selectorButton: {
+  resultsShell: {
     flex: 1,
-    minHeight: 42,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingRight: 4,
-  },
-  selectorValue: {
-    flex: 1,
-    color: '#000',
-    fontSize: 20,
-    marginRight: 8,
-  },
-  gpsButton: {
-    width: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  resultsSection: {
     backgroundColor: '#fff',
-    paddingTop: 28,
-    paddingBottom: 16,
-    minHeight: 500,
   },
-  warning: {
-    color: '#6f5200',
-    padding: 12,
-    marginHorizontal: 16,
-    marginTop: 12,
-    backgroundColor: '#ddd',
-    borderRadius: 5,
+  resultsScroll: {
+    flex: 1,
+    backgroundColor: '#fff',
   },
-  infoBanner: {
-    marginHorizontal: 16,
-    marginTop: 12,
-    backgroundColor: '#ddd',
-    borderRadius: 5,
-    padding: 10,
+  resultsContent: {
+    flexGrow: 0,
   },
   infoBannerText: {
     color: '#333',
@@ -312,85 +230,5 @@ const styles = StyleSheet.create({
   },
   infoLink: {
     color: '#630a10',
-  },
-  emptyRow: {
-    padding: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 200,
-  },
-  emptyTitle: {
-    color: '#333',
-    fontSize: 16,
-  },
-  busRow: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 8,
-    paddingHorizontal: '7%',
-    borderTopWidth: 1,
-    borderTopColor: '#ddd',
-    minHeight: 65,
-    gap: 18,
-  },
-  busRowArrived: {
-    opacity: 0.5,
-  },
-  busLeft: {
-    width: 50,
-    alignItems: 'center',
-  },
-  busBadge: {
-    width: 38,
-    minHeight: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  busBadgeText: {
-    color: '#111',
-    fontWeight: '700',
-    fontSize: 14,
-  },
-  directionText: {
-    marginTop: 4,
-    fontSize: 16,
-    color: '#333',
-  },
-  nextStationDisplay: {
-    flex: 1,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    alignItems: 'center',
-    columnGap: 10,
-  },
-  nextStationLabel: {
-    width: 27,
-    fontSize: 12,
-    color: '#333',
-    textAlign: 'right',
-  },
-  nextStationValue: {
-    flex: 1,
-    color: '#111',
-    fontSize: 19,
-  },
-  infoText: {
-    marginLeft: 37,
-    color: '#2196f3',
-    fontSize: 11,
-    width: '100%',
-  },
-  warningText: {
-    marginLeft: 37,
-    color: 'red',
-    fontSize: 11,
-    width: '100%',
-  },
-  arrivalTime: {
-    width: 80,
-    textAlign: 'right',
-    fontSize: 24,
-    color: '#111',
   },
 });

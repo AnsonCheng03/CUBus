@@ -1,11 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image, ImageBackground, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ScreenContainer } from '../components/ScreenContainer';
 import { useAppState } from '../providers/AppProvider';
 import type { PermitData } from '../../../src/shared-core/app/types';
 
 const EMPTY: PermitData = { name: '', sid: '', major: '', expiry: '' };
+const shuttleBusImage = require('../../../src/assets/schbus_d.png');
+const meetClassBusImage = require('../../../src/assets/schbus_l.png');
+const cuhkLogo = require('../../../src/assets/cuhk_logo.png');
 
 const busRoutes = {
   meet_class_bus: {
@@ -34,59 +37,70 @@ function PermitCard({
 }) {
   const title = busMode === 'meet_class_bus' ? '轉堂校巴證' : '穿梭校巴證';
   const subtitle = busMode === 'meet_class_bus' ? 'Meet-Class Bus Permit' : 'Shuttle Bus Permit';
+  const busImage = busMode === 'meet_class_bus' ? meetClassBusImage : shuttleBusImage;
 
   return (
     <View style={styles.cardPreview}>
-      <View style={[styles.card, busMode === 'meet_class_bus' ? styles.meetClassCard : styles.shuttleCard]}>
-        <View style={styles.cardInner}>
-          <View style={styles.cardHeader}>
-            <View style={styles.logo}>
-              <View style={styles.logoRing}>
-                <Text style={styles.logoText}>CU</Text>
+      <ImageBackground
+        source={busImage}
+        resizeMode="cover"
+        style={styles.card}
+        imageStyle={styles.cardImage}
+      >
+        <View style={styles.cardOverlay}>
+          <View style={styles.cardInner}>
+            <View style={styles.cardHeader}>
+              <View style={styles.logo}>
+                <Image source={cuhkLogo} style={styles.logoImage} resizeMode="contain" />
+              </View>
+              <View style={styles.schoolBlock}>
+                <Text style={styles.schoolZh}>香港中文大學</Text>
+                <Text style={styles.schoolEn}>The Chinese University of Hong Kong</Text>
+              </View>
+              <View style={styles.hintBlock}>
+                <Text style={styles.hintZh}>落車前請按鐘一次</Text>
+                <Text style={styles.hintEn}>To Stop Press The Bell Once</Text>
               </View>
             </View>
-            <View style={styles.schoolBlock}>
-              <Text style={styles.schoolZh}>香港中文大學</Text>
-              <Text style={styles.schoolEn}>The Chinese University of Hong Kong</Text>
-            </View>
-            <View style={styles.hintBlock}>
-              <Text style={styles.hintZh}>落車前請按鐘一次</Text>
-              <Text style={styles.hintEn}>To Stop Press The Bell Once</Text>
-            </View>
-          </View>
 
-          <View style={styles.cardNameBlock}>
-            <Text style={styles.cardTitle}>{title}</Text>
-            <Text style={styles.cardSubtitle}>{subtitle}</Text>
-          </View>
+            <View style={styles.cardNameBlock}>
+              <Text style={styles.cardTitle}>{title}</Text>
+              <Text style={styles.cardSubtitle}>{subtitle}</Text>
+            </View>
 
-          <View style={styles.routeSection}>
-            <Text style={styles.routeDesc}>持證者獲交通事務處批准乘搭下列的穿梭校巴路線</Text>
-            <Text style={styles.routeDesc}>The Permit Holder is allowed to ride on the following routes</Text>
-            <View style={styles.routeRow}>
-              {Object.entries(busRoutes[busMode]).map(([route, colors]) => (
-                <View key={route} style={[styles.routeChip, { backgroundColor: colors[0], borderColor: colors[1] }]}>
-                  <Text style={styles.routeChipText}>{route}</Text>
+            <View style={styles.routeSection}>
+              <Text style={styles.routeDesc}>持證者獲交通事務處批准乘搭下列的穿梭校巴路線</Text>
+              <Text style={styles.routeDesc}>
+                The Permit Holder is allowed to ride on the following routes
+              </Text>
+              <View style={styles.routeRow}>
+                {Object.entries(busRoutes[busMode]).map(([route, colors]) => (
+                  <View
+                    key={route}
+                    style={[styles.routeChip, { backgroundColor: colors[0], borderColor: colors[1] }]}
+                  >
+                    <Text style={styles.routeChipText}>{route}</Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+
+            <View style={styles.dataSection}>
+              {[
+                ['學生姓名\nName', permit.name],
+                ['學生編號\nStudent ID', permit.sid],
+                ['主修科目\nMajor', permit.major],
+                ['有效期至\nValid Until', permit.expiry],
+              ].map(([label, value]) => (
+                <View key={label} style={styles.dataRow}>
+                  <Text style={styles.dataLabel}>{label}</Text>
+                  <Text style={styles.dataValue}>{value}</Text>
                 </View>
               ))}
             </View>
           </View>
-
-          <View style={styles.dataSection}>
-            {[
-              ['學生姓名\nName', permit.name],
-              ['學生編號\nStudent ID', permit.sid],
-              ['主修科目\nMajor', permit.major],
-              ['有效期至\nValid Until', permit.expiry],
-            ].map(([label, value]) => (
-              <View key={label} style={styles.dataRow}>
-                <Text style={styles.dataLabel}>{label}</Text>
-                <Text style={styles.dataValue}>{value}</Text>
-              </View>
-            ))}
-          </View>
         </View>
-      </View>
+      </ImageBackground>
     </View>
   );
 }
@@ -285,12 +299,14 @@ const styles = StyleSheet.create({
   },
   card: {
     minHeight: 270,
+    justifyContent: 'flex-start',
   },
-  shuttleCard: {
-    backgroundColor: '#0f3459',
+  cardImage: {
+    borderRadius: 10,
   },
-  meetClassCard: {
-    backgroundColor: '#3d4b73',
+  cardOverlay: {
+    minHeight: 270,
+    backgroundColor: 'rgba(0, 0, 0, 0.08)',
   },
   cardInner: {
     paddingVertical: 18,
@@ -303,19 +319,9 @@ const styles = StyleSheet.create({
   logo: {
     width: 42,
   },
-  logoRing: {
+  logoImage: {
     width: 34,
     height: 34,
-    borderRadius: 17,
-    borderWidth: 1,
-    borderColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoText: {
-    color: '#fff',
-    fontSize: 11,
-    fontWeight: '700',
   },
   schoolBlock: {
     flex: 1,

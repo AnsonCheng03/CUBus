@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaInsetsContext, SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import type { RouteMapSelection } from '../../../src/shared-core/app/types';
 
@@ -13,6 +13,7 @@ export function RouteMapModal({
   onClose: () => void;
 }) {
   const { t } = useTranslation('global');
+  const insets = useContext(SafeAreaInsetsContext) ?? { top: 0, bottom: 0, left: 0, right: 0 };
   const route = routeMap?.route ?? [];
   const currentIndex = routeMap?.currentIndex ?? -1;
 
@@ -22,7 +23,9 @@ export function RouteMapModal({
 
     return (
       <View key={`${station}-${index}`} style={styles.stationWrapper}>
-        {!isLast ? <View style={[styles.connector, completed && styles.connectorCompleted]} /> : null}
+        {!isLast ? (
+          <View style={[styles.connector, completed && styles.connectorCompleted]} />
+        ) : null}
         <View style={styles.stationRow}>
           <View style={styles.iconSlot}>
             {isCurrent ? (
@@ -38,14 +41,22 @@ export function RouteMapModal({
               ]}
             />
           </View>
-          <Text style={[styles.stationText, completed && styles.stationTextCompleted]}>{station}</Text>
+          <Text style={[styles.stationText, completed && styles.stationTextCompleted]}>
+            {station}
+          </Text>
         </View>
       </View>
     );
   };
 
   return (
-    <Modal visible={route.length > 0} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal
+      visible={route.length > 0}
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
+      statusBarTranslucent
+    >
       <View style={styles.overlay}>
         <Pressable style={styles.backdrop} onPress={onClose} />
         <SafeAreaView style={styles.safeArea} edges={['bottom']}>
@@ -56,8 +67,14 @@ export function RouteMapModal({
                 <Text style={styles.close}>Close</Text>
               </Pressable>
             </View>
-            <View style={styles.detailContainer}>
-              <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+            <View style={[styles.detailContainer, { paddingBottom: Math.max(insets.bottom, 20) }]}>
+              <ScrollView
+                style={styles.scroll}
+                contentContainerStyle={[
+                  styles.scrollContent,
+                  { paddingBottom: Math.max(insets.bottom, 4) },
+                ]}
+              >
                 <View style={[styles.mapGroup, styles.completedGroup]}>
                   {route
                     .slice(0, Math.max(0, currentIndex))
@@ -119,7 +136,6 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#fff',
     paddingHorizontal: 20,
-    paddingBottom: 20,
   },
   scroll: {
     maxHeight: 420,

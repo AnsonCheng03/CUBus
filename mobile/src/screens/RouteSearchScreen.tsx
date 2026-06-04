@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ScreenContainer } from '../components/ScreenContainer';
 import { AutocompleteField } from '../components/AutocompleteField';
+import { InlineNoticeRow } from '../components/InlineNoticeRow';
 import { RouteMapModal } from '../components/RouteMapModal';
 import { SelectionModal, type SelectionOption } from '../components/SelectionModal';
 import { getNearestStation } from '../lib/location';
@@ -90,6 +91,7 @@ export function RouteSearchScreen() {
       />
 
       <View style={[styles.redHeader, { paddingTop: insets.top + 15 }]}>
+        <View style={styles.redHeaderBackdrop} />
         <View style={styles.selectorFloat}>
           <View style={styles.formCard}>
             <View style={styles.locationBlock}>
@@ -176,9 +178,13 @@ export function RouteSearchScreen() {
           <Text style={styles.submitButtonText}>{t('Btn-Adv')}</Text>
         </Pressable>
 
-        {networkError.realtime ? <Text style={styles.warning}>{t('internet_offline')}</Text> : null}
-        {fetchError ? <Text style={styles.warning}>{t('fetch-error')}</Text> : null}
-        {routeResult.samestation ? <Text style={styles.warning}>{t('samestation-info')}</Text> : null}
+        {networkError.realtime ? (
+          <InlineNoticeRow text={t('internet_offline')} variant="alert" />
+        ) : null}
+        {fetchError ? <InlineNoticeRow text={t('fetch-error')} variant="alert" /> : null}
+        {routeResult.samestation ? (
+          <InlineNoticeRow text={t('samestation-info')} variant="info" />
+        ) : null}
 
         {routeResult.sortedResults ? (
           routeResult.sortedResults.slice(0, 15).map((result: any, index: number) => (
@@ -224,12 +230,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#911f27',
   },
   redHeader: {
-    backgroundColor: '#911f27',
+    position: 'relative',
     paddingHorizontal: '3%',
-    paddingBottom: 38,
+    paddingBottom: 15,
+  },
+  redHeaderBackdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 35,
+    backgroundColor: '#911f27',
   },
   selectorFloat: {
-    marginBottom: -24,
+    position: 'relative',
+    zIndex: 1,
   },
   formCard: {
     backgroundColor: '#fff',
@@ -238,9 +253,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     shadowColor: '#a6adc9',
     shadowOpacity: 0.4,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 4,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 6,
   },
   locationBlock: {
     paddingVertical: 4,
@@ -273,7 +288,7 @@ const styles = StyleSheet.create({
   },
   resultsSection: {
     backgroundColor: '#fff',
-    paddingTop: 36,
+    paddingTop: 10,
     paddingHorizontal: 16,
     paddingBottom: 16,
     minHeight: 500,
@@ -312,13 +327,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: '800',
     letterSpacing: 0.5,
-  },
-  warning: {
-    backgroundColor: '#fff7d6',
-    color: '#6f5200',
-    padding: 12,
-    borderRadius: 5,
-    marginTop: 12,
   },
   resultCard: {
     backgroundColor: '#fffdf8',
