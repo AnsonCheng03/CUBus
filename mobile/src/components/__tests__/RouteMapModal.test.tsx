@@ -25,9 +25,9 @@ describe('RouteMapModal', () => {
       />,
     );
 
-    expect(getByText('Passed stop')).toBeTruthy();
-    expect(getByText('next-station')).toBeTruthy();
-    expect(getByText('Terminal')).toBeTruthy();
+    expect(getByText('modal-map-title')).toBeTruthy();
+    expect(getByText('MTR')).toBeTruthy();
     expect(getByText('Library')).toBeTruthy();
+    expect(getByText('College')).toBeTruthy();
   });
 });

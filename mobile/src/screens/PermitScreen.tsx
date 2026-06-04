@@ -32,43 +32,60 @@ function PermitCard({
   permit: Required<PermitData>;
   busMode: keyof typeof busRoutes;
 }) {
-  const title = busMode === 'meet_class_bus' ? 'Meet-Class Bus Permit' : 'Shuttle Bus Permit';
-  const routeText = busMode === 'meet_class_bus' ? 'Routes 5, 6A, 6B, 7' : 'Routes 1, 2, 3, 4, 8, N, H';
+  const title = busMode === 'meet_class_bus' ? '轉堂校巴證' : '穿梭校巴證';
+  const subtitle = busMode === 'meet_class_bus' ? 'Meet-Class Bus Permit' : 'Shuttle Bus Permit';
 
   return (
-    <View style={[styles.card, busMode === 'meet_class_bus' ? styles.cardMeetClass : styles.cardShuttle]}>
-      <View style={styles.cardHeader}>
-        <View>
-          <Text style={styles.cardEyebrow}>The Chinese University of Hong Kong</Text>
-          <Text style={styles.cardTitle}>{title}</Text>
-          <Text style={styles.cardSubtitle}>{routeText}</Text>
-        </View>
-        <View style={styles.headerSeal}>
-          <Text style={styles.headerSealText}>CU</Text>
-        </View>
-      </View>
-
-      <Text style={styles.routeIntro}>The Permit Holder is allowed to ride on the following routes</Text>
-      <View style={styles.routeBadgeRow}>
-        {Object.entries(busRoutes[busMode]).map(([route, colors]) => (
-          <View key={route} style={[styles.routeBadge, { backgroundColor: colors[0], borderColor: colors[1] }]}>
-            <Text style={styles.routeBadgeText}>{route}</Text>
+    <View style={styles.cardPreview}>
+      <View style={[styles.card, busMode === 'meet_class_bus' ? styles.meetClassCard : styles.shuttleCard]}>
+        <View style={styles.cardInner}>
+          <View style={styles.cardHeader}>
+            <View style={styles.logo}>
+              <View style={styles.logoRing}>
+                <Text style={styles.logoText}>CU</Text>
+              </View>
+            </View>
+            <View style={styles.schoolBlock}>
+              <Text style={styles.schoolZh}>香港中文大學</Text>
+              <Text style={styles.schoolEn}>The Chinese University of Hong Kong</Text>
+            </View>
+            <View style={styles.hintBlock}>
+              <Text style={styles.hintZh}>落車前請按鐘一次</Text>
+              <Text style={styles.hintEn}>To Stop Press The Bell Once</Text>
+            </View>
           </View>
-        ))}
-      </View>
 
-      <View style={styles.detailsPanel}>
-        {[
-          ['Name', permit.name],
-          ['Student ID', permit.sid],
-          ['Major', permit.major],
-          ['Valid Until', permit.expiry],
-        ].map(([label, value]) => (
-          <View key={label} style={styles.detailRow}>
-            <Text style={styles.detailLabel}>{label}</Text>
-            <Text style={styles.detailValue}>{value}</Text>
+          <View style={styles.cardNameBlock}>
+            <Text style={styles.cardTitle}>{title}</Text>
+            <Text style={styles.cardSubtitle}>{subtitle}</Text>
           </View>
-        ))}
+
+          <View style={styles.routeSection}>
+            <Text style={styles.routeDesc}>持證者獲交通事務處批准乘搭下列的穿梭校巴路線</Text>
+            <Text style={styles.routeDesc}>The Permit Holder is allowed to ride on the following routes</Text>
+            <View style={styles.routeRow}>
+              {Object.entries(busRoutes[busMode]).map(([route, colors]) => (
+                <View key={route} style={[styles.routeChip, { backgroundColor: colors[0], borderColor: colors[1] }]}>
+                  <Text style={styles.routeChipText}>{route}</Text>
+                </View>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.dataSection}>
+            {[
+              ['學生姓名\nName', permit.name],
+              ['學生編號\nStudent ID', permit.sid],
+              ['主修科目\nMajor', permit.major],
+              ['有效期至\nValid Until', permit.expiry],
+            ].map(([label, value]) => (
+              <View key={label} style={styles.dataRow}>
+                <Text style={styles.dataLabel}>{label}</Text>
+                <Text style={styles.dataValue}>{value}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
       </View>
     </View>
   );
@@ -95,8 +112,8 @@ export function PermitScreen() {
   }, [saved]);
 
   const desc = i18n.language.includes('en')
-    ? 'The bus pass provided in this app is a creative local-only card for entertainment and convenience. It is not an official CUHK identification document.'
-    : '本應用程式內展示的校巴證僅為本地創作卡片，方便查閱及娛樂用途，並非香港中文大學正式身份證明文件。';
+    ? 'The bus pass provided on this app is a creative work intended solely for entertainment purposes and is not an official document issued, endorsed, or authorized by The Chinese University of Hong Kong or any of its affiliated departments.'
+    : '本應用程式所展示的校巴證僅為創作作品，旨在提供趣味性及娛樂用途，並非由香港中文大學或其任何相關部門授權、認可或發行的正式證件。';
 
   const save = () => {
     const trimmed: Required<PermitData> = {
@@ -114,16 +131,22 @@ export function PermitScreen() {
   };
 
   return (
-    <ScreenContainer title={t('NAV-Permit')} subtitle={desc}>
+    <ScreenContainer
+      title={t('NAV-Permit')}
+      showHeader={false}
+      contentPadding={20}
+      contentStyle={styles.pageContent}
+    >
       {mode === 'edit' ? (
-        <View style={styles.formCard}>
+        <View style={styles.formPage}>
+          <Text style={styles.disclaimerEdit}>{desc}</Text>
           {[
-            ['School_Bus_Permit_Name', 'name'],
-            ['School_Bus_Permit_SID', 'sid'],
-            ['School_Bus_Permit_Major', 'major'],
-            ['School_Bus_Permit_Exp', 'expiry'],
-          ].map(([key, field]) => (
-            <View key={field} style={styles.inputGroup}>
+            ['School_Bus_Permit_Name', 'name', 'Vanessa'],
+            ['School_Bus_Permit_SID', 'sid', '1155123456'],
+            ['School_Bus_Permit_Major', 'major', 'CSCIN'],
+            ['School_Bus_Permit_Exp', 'expiry', '4/1989'],
+          ].map(([key, field, placeholder]) => (
+            <View key={field} style={styles.inputRow}>
               <Text style={styles.inputLabel}>{t(key)}</Text>
               <TextInput
                 value={form[field as keyof typeof form]}
@@ -133,177 +156,253 @@ export function PermitScreen() {
                     [field]: field === 'major' ? value.toUpperCase() : value,
                   }))
                 }
+                placeholder={placeholder}
+                placeholderTextColor="#999"
                 style={styles.input}
-                placeholderTextColor="#7b8d87"
               />
             </View>
           ))}
-          <Pressable style={styles.primaryButton} onPress={save}>
-            <Text style={styles.primaryButtonText}>{t('Permit_Save')}</Text>
-          </Pressable>
-          {saved.name ? (
+          <View style={styles.buttonColumn}>
+            <Pressable style={styles.primaryButton} onPress={save}>
+              <Text style={styles.primaryButtonText}>{t('Permit_Save')}</Text>
+            </Pressable>
+            {saved.name ? (
+              <Pressable
+                style={styles.secondaryButton}
+                onPress={() => {
+                  setForm(saved);
+                  setMode('view');
+                }}
+              >
+                <Text style={styles.secondaryButtonText}>{t('Cancel')}</Text>
+              </Pressable>
+            ) : null}
+          </View>
+        </View>
+      ) : (
+        <View style={styles.viewPage}>
+          <Text style={styles.disclaimerView}>{desc}</Text>
+          <PermitCard permit={form} busMode="shuttle_bus" />
+          <PermitCard permit={form} busMode="meet_class_bus" />
+          <View style={styles.buttonColumn}>
+            <Pressable style={styles.primaryButton} onPress={() => setMode('edit')}>
+              <Text style={styles.primaryButtonText}>{t('Permit_Edit')}</Text>
+            </Pressable>
             <Pressable
               style={styles.secondaryButton}
               onPress={() => {
-                setForm(saved);
-                setMode('view');
+                setForm({ ...EMPTY });
+                setMode('edit');
               }}
             >
-              <Text style={styles.secondaryButtonText}>{t('Cancel')}</Text>
+              <Text style={styles.secondaryButtonText}>{t('Clear')}</Text>
             </Pressable>
-          ) : null}
+          </View>
         </View>
-      ) : (
-        <>
-          <PermitCard permit={form} busMode="shuttle_bus" />
-          <PermitCard permit={form} busMode="meet_class_bus" />
-          <Pressable style={styles.primaryButton} onPress={() => setMode('edit')}>
-            <Text style={styles.primaryButtonText}>{t('Permit_Edit')}</Text>
-          </Pressable>
-          <Pressable
-            style={styles.secondaryButton}
-            onPress={() => {
-              setForm({ ...EMPTY });
-              setAppSettings((prev) => ({ ...prev, schoolBusPermit: { ...EMPTY } }));
-              setMode('edit');
-            }}
-          >
-            <Text style={styles.secondaryButtonText}>{t('Clear')}</Text>
-          </Pressable>
-        </>
       )}
     </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  formCard: {
-    backgroundColor: '#fffdf8',
-    borderRadius: 22,
-    padding: 16,
-    gap: 14,
-    borderWidth: 1,
-    borderColor: '#ddd5c4',
+  pageContent: {
+    paddingBottom: 90,
   },
-  inputGroup: {
-    gap: 8,
-  },
-  inputLabel: {
-    color: '#30534c',
-    fontSize: 13,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-  },
-  input: {
-    backgroundColor: '#f8f4ea',
-    borderRadius: 16,
-    paddingHorizontal: 14,
-    paddingVertical: 14,
-    color: '#173f35',
-  },
-  card: {
-    borderRadius: 26,
-    padding: 18,
-    gap: 14,
-  },
-  cardShuttle: {
-    backgroundColor: '#1d7b6f',
-  },
-  cardMeetClass: {
-    backgroundColor: '#465f97',
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  formPage: {
     gap: 12,
   },
-  cardEyebrow: {
-    color: '#d8f8ed',
-    fontSize: 12,
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
+  viewPage: {
+    gap: 10,
   },
-  cardTitle: {
-    color: '#fff8df',
-    fontSize: 24,
-    fontWeight: '800',
-  },
-  cardSubtitle: {
-    color: '#d9fff2',
-    fontSize: 13,
-  },
-  headerSeal: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(255,255,255,0.14)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerSealText: {
-    color: '#fff8df',
-    fontWeight: '900',
-    fontSize: 16,
-  },
-  routeIntro: {
-    color: '#eefef7',
+  disclaimerEdit: {
+    marginHorizontal: 6,
+    marginVertical: 10,
+    color: '#666',
+    fontSize: 14,
     lineHeight: 20,
   },
-  routeBadgeRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
+  disclaimerView: {
+    marginHorizontal: '10%',
+    marginVertical: 12,
+    color: '#666',
+    fontSize: 14,
+    lineHeight: 20,
   },
-  routeBadge: {
-    minWidth: 42,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-    borderRadius: 999,
-    borderWidth: 2,
-    alignItems: 'center',
+  inputRow: {
+    backgroundColor: '#fff',
+    paddingHorizontal: 14,
+    paddingTop: 10,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e5e5',
   },
-  routeBadgeText: {
-    color: '#173f35',
-    fontWeight: '900',
+  inputLabel: {
+    color: '#444',
+    fontSize: 13,
+    marginBottom: 6,
   },
-  detailsPanel: {
+  input: {
+    color: '#111',
+    fontSize: 18,
+    paddingVertical: 4,
+  },
+  buttonColumn: {
     gap: 10,
-    backgroundColor: 'rgba(255,255,255,0.12)',
-    borderRadius: 18,
-    padding: 14,
-  },
-  detailRow: {
-    gap: 2,
-  },
-  detailLabel: {
-    color: '#d9fff2',
-    fontSize: 12,
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-  },
-  detailValue: {
-    color: '#fffdf8',
-    fontSize: 17,
-    fontWeight: '700',
+    marginVertical: 8,
   },
   primaryButton: {
-    backgroundColor: '#0f766e',
-    borderRadius: 18,
-    paddingVertical: 14,
+    backgroundColor: '#630a10',
+    borderRadius: 8,
+    paddingVertical: 12,
     alignItems: 'center',
   },
   primaryButtonText: {
     color: '#fff',
-    fontWeight: '800',
+    fontWeight: '700',
   },
   secondaryButton: {
-    backgroundColor: '#efe8d8',
-    borderRadius: 18,
-    paddingVertical: 14,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    paddingVertical: 12,
     alignItems: 'center',
   },
   secondaryButtonText: {
-    color: '#21463e',
-    fontWeight: '800',
+    color: '#444',
+    fontWeight: '700',
+  },
+  cardPreview: {
+    width: '80%',
+    alignSelf: 'center',
+    marginVertical: 10,
+    borderRadius: 10,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOpacity: 0.35,
+    shadowRadius: 15,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 5,
+    maxWidth: 640,
+  },
+  card: {
+    minHeight: 270,
+  },
+  shuttleCard: {
+    backgroundColor: '#0f3459',
+  },
+  meetClassCard: {
+    backgroundColor: '#3d4b73',
+  },
+  cardInner: {
+    paddingVertical: 18,
+    paddingHorizontal: 28,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  logo: {
+    width: 42,
+  },
+  logoRing: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    borderWidth: 1,
+    borderColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoText: {
+    color: '#fff',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  schoolBlock: {
+    flex: 1,
+    marginHorizontal: 8,
+  },
+  schoolZh: {
+    color: '#fff',
+    fontSize: 12,
+    letterSpacing: 3,
+  },
+  schoolEn: {
+    color: '#fff',
+    fontSize: 10,
+  },
+  hintBlock: {
+    width: 94,
+    alignItems: 'center',
+  },
+  hintZh: {
+    color: '#fff',
+    fontSize: 10,
+  },
+  hintEn: {
+    color: '#fff',
+    fontSize: 8,
+    textTransform: 'uppercase',
+  },
+  cardNameBlock: {
+    marginTop: 8,
+    marginBottom: 8,
+  },
+  cardTitle: {
+    color: '#fff',
+    fontSize: 36,
+    letterSpacing: 2,
+    fontWeight: '700',
+    marginLeft: -2,
+  },
+  cardSubtitle: {
+    color: '#fff',
+    fontSize: 16,
+    textTransform: 'uppercase',
+    marginTop: -2,
+  },
+  routeSection: {
+    marginTop: 2,
+  },
+  routeDesc: {
+    color: 'rgb(236, 240, 241)',
+    fontSize: 10,
+  },
+  routeRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 3,
+    marginTop: 8,
+    marginBottom: 6,
+  },
+  routeChip: {
+    width: 31,
+    paddingVertical: 1,
+    borderWidth: 1,
+    alignItems: 'center',
+  },
+  routeChipText: {
+    color: '#111',
+    fontSize: 15,
+    fontWeight: '700',
+  },
+  dataSection: {
+    marginTop: 12,
+    gap: 8,
+  },
+  dataRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  dataLabel: {
+    width: 118,
+    color: '#fff',
+    fontSize: 11,
+    lineHeight: 12,
+  },
+  dataValue: {
+    flex: 1,
+    color: '#fff',
+    fontSize: 13,
+    lineHeight: 14,
   },
 });

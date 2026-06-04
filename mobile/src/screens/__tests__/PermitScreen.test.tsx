@@ -48,6 +48,7 @@ describe('PermitScreen', () => {
     const { getByText } = render(<PermitScreen />);
     expect(getByText('Shuttle Bus Permit')).toBeTruthy();
     expect(getByText('Meet-Class Bus Permit')).toBeTruthy();
-    expect(getByText('Routes 1, 2, 3, 4, 8, N, H')).toBeTruthy();
+    expect(getByText('穿梭校巴證')).toBeTruthy();
+    expect(getByText('轉堂校巴證')).toBeTruthy();
   });
 });

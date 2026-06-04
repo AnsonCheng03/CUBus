@@ -1,8 +1,8 @@
 import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import type { RouteMapSelection } from '../../../src/shared-core/app/types';
 
 export function RouteMapModal({
@@ -16,169 +16,188 @@ export function RouteMapModal({
   const route = routeMap?.route ?? [];
   const currentIndex = routeMap?.currentIndex ?? -1;
 
-  return (
-    <Modal visible={route.length > 0} animationType="slide" onRequestClose={onClose}>
-      <SafeAreaView style={styles.safeArea}>
-        <View style={styles.header}>
-          <Text style={styles.title}>{t('modal-map-title')}</Text>
-          <Pressable onPress={onClose}>
-            <Text style={styles.close}>Close</Text>
-          </Pressable>
+  const renderStation = (station: string, index: number, completed: boolean) => {
+    const isCurrent = index === currentIndex;
+    const isLast = index === route.length - 1;
+
+    return (
+      <View key={`${station}-${index}`} style={styles.stationWrapper}>
+        {!isLast ? <View style={[styles.connector, completed && styles.connectorCompleted]} /> : null}
+        <View style={styles.stationRow}>
+          <View style={styles.iconSlot}>
+            {isCurrent ? (
+              <Ionicons name="bus" size={20} color="#fff" style={styles.busIcon} />
+            ) : isLast ? (
+              <Ionicons name="flag" size={20} color="#911f27" style={styles.flagIcon} />
+            ) : null}
+            <View
+              style={[
+                styles.stationDot,
+                completed && styles.stationDotCompleted,
+                isCurrent && styles.stationDotCurrent,
+              ]}
+            />
+          </View>
+          <Text style={[styles.stationText, completed && styles.stationTextCompleted]}>{station}</Text>
         </View>
-        <ScrollView contentContainerStyle={styles.content}>
-          {route.map((station: string, index: number) => {
-            const isCompleted = index < currentIndex;
-            const isCurrent = index === currentIndex;
-            return (
-              <View
-                key={`${station}-${index}`}
-                style={[
-                  styles.stationRow,
-                  isCompleted && styles.stationCompleted,
-                  isCurrent && styles.stationCurrent,
-                ]}
-              >
-                <View style={styles.stationRail}>
-                  <View
-                    style={[
-                      styles.stationMarker,
-                      isCompleted && styles.stationMarkerCompleted,
-                      isCurrent && styles.stationMarkerCurrent,
-                    ]}
-                  >
-                    {isCurrent ? (
-                      <Ionicons name="bus" size={16} color="#fff" />
-                    ) : route.length - 1 === index ? (
-                      <Ionicons name="flag" size={14} color={isCompleted ? '#dbeee8' : '#21463e'} />
-                    ) : (
-                      <Text style={[styles.stationIndex, isCompleted && styles.stationIndexCompleted]}>
-                        {index + 1}
-                      </Text>
+      </View>
+    );
+  };
+
+  return (
+    <Modal visible={route.length > 0} transparent animationType="fade" onRequestClose={onClose}>
+      <View style={styles.overlay}>
+        <Pressable style={styles.backdrop} onPress={onClose} />
+        <SafeAreaView style={styles.safeArea} edges={['bottom']}>
+          <View style={styles.sheet}>
+            <View style={styles.header}>
+              <Text style={styles.title}>{t('modal-map-title')}</Text>
+              <Pressable onPress={onClose}>
+                <Text style={styles.close}>Close</Text>
+              </Pressable>
+            </View>
+            <View style={styles.detailContainer}>
+              <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+                <View style={[styles.mapGroup, styles.completedGroup]}>
+                  {route
+                    .slice(0, Math.max(0, currentIndex))
+                    .map((station, index) => renderStation(station, index, true))}
+                </View>
+                <View style={styles.mapGroup}>
+                  {route
+                    .slice(Math.max(0, currentIndex))
+                    .map((station, offset) =>
+                      renderStation(station, offset + Math.max(0, currentIndex), false),
                     )}
-                  </View>
-                  {index < route.length - 1 ? <View style={[styles.stationLine, isCompleted && styles.stationLineCompleted]} /> : null}
                 </View>
-                <View style={styles.stationBody}>
-                  <Text style={[styles.stationStatus, isCurrent && styles.stationStatusCurrent]}>
-                    {isCurrent
-                      ? t('next-station')
-                      : isCompleted
-                        ? 'Passed stop'
-                        : route.length - 1 === index
-                          ? 'Terminal'
-                          : 'Upcoming stop'}
-                  </Text>
-                  <Text style={styles.stationText}>{station}</Text>
-                </View>
-              </View>
-            );
-          })}
-        </ScrollView>
-      </SafeAreaView>
+              </ScrollView>
+            </View>
+          </View>
+        </SafeAreaView>
+      </View>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: {
+  overlay: {
     flex: 1,
-    backgroundColor: '#f3efe4',
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(50, 50, 50, 0.77)',
+  },
+  backdrop: {
+    flex: 1,
+  },
+  safeArea: {
+    justifyContent: 'flex-end',
+  },
+  sheet: {
+    backgroundColor: '#fff',
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    maxHeight: '72%',
+    overflow: 'hidden',
   },
   header: {
+    paddingHorizontal: 30,
+    paddingVertical: 20,
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 16,
+    alignItems: 'center',
+    minHeight: 84,
   },
   title: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: '#183a33',
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#111',
   },
   close: {
-    color: '#0f766e',
-    fontWeight: '700',
+    color: '#666',
+    fontSize: 16,
   },
-  content: {
-    padding: 20,
-    gap: 4,
+  detailContainer: {
+    width: '100%',
+    backgroundColor: '#fff',
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
+  scroll: {
+    maxHeight: 420,
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+  },
+  mapGroup: {
+    position: 'relative',
+    paddingLeft: 0,
+  },
+  completedGroup: {
+    opacity: 1,
+  },
+  stationWrapper: {
+    position: 'relative',
+  },
+  connector: {
+    position: 'absolute',
+    left: 16.5,
+    top: 40,
+    bottom: 0,
+    width: 7,
+    borderRadius: 5,
+    backgroundColor: '#630a10',
+  },
+  connectorCompleted: {
+    backgroundColor: '#aaa',
   },
   stationRow: {
     flexDirection: 'row',
-    gap: 12,
-    paddingVertical: 4,
-  },
-  stationRail: {
     alignItems: 'center',
   },
-  stationMarker: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#fffdf8',
-    borderWidth: 1,
-    borderColor: '#ddd5c4',
+  iconSlot: {
+    width: 30,
     alignItems: 'center',
-    justifyContent: 'center',
+    marginRight: 4,
   },
-  stationMarkerCompleted: {
-    backgroundColor: '#6c8d84',
-    borderColor: '#6c8d84',
-  },
-  stationMarkerCurrent: {
-    backgroundColor: '#0f766e',
-    borderColor: '#0f766e',
-  },
-  stationLine: {
-    width: 3,
-    flex: 1,
-    minHeight: 36,
-    marginVertical: 4,
+  busIcon: {
+    backgroundColor: '#630a10',
     borderRadius: 999,
-    backgroundColor: '#ddd5c4',
+    padding: 10,
+    overflow: 'hidden',
+    marginBottom: 6,
   },
-  stationLineCompleted: {
-    backgroundColor: '#6c8d84',
+  flagIcon: {
+    backgroundColor: '#fff',
+    borderRadius: 999,
+    padding: 10,
+    overflow: 'hidden',
+    marginBottom: 6,
   },
-  stationBody: {
-    flex: 1,
-    borderRadius: 16,
-    backgroundColor: '#fffdf8',
-    borderWidth: 1,
-    borderColor: '#ddd5c4',
-    padding: 14,
-    gap: 4,
+  stationDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    borderWidth: 3,
+    borderColor: '#630a10',
+    backgroundColor: '#fff',
+    position: 'absolute',
+    top: 28,
   },
-  stationCompleted: {
-    opacity: 0.72,
+  stationDotCompleted: {
+    borderColor: '#aaa',
   },
-  stationCurrent: {
-    opacity: 1,
-  },
-  stationStatus: {
-    color: '#5b6f68',
-    fontSize: 12,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.8,
-  },
-  stationStatusCurrent: {
-    color: '#0f766e',
-  },
-  stationIndex: {
-    color: '#21463e',
-    fontWeight: '800',
-    fontSize: 12,
-  },
-  stationIndexCompleted: {
-    color: '#dbeee8',
+  stationDotCurrent: {
+    backgroundColor: '#fff149',
   },
   stationText: {
     flex: 1,
-    color: '#21463e',
-    lineHeight: 22,
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 18,
+    color: '#333',
+    paddingVertical: 25,
+    paddingLeft: 35,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#efefef',
+  },
+  stationTextCompleted: {
+    color: '#aaa',
   },
 });

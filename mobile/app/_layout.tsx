@@ -1,21 +1,40 @@
 import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import { Stack } from 'expo-router';
 import { I18nextProvider } from 'react-i18next';
 import * as Sentry from '@sentry/react-native';
 import { i18next } from '../src/lib/i18n';
-import { AppProvider } from '../src/providers/AppProvider';
+import { AppProvider, useAppState } from '../src/providers/AppProvider';
 import { env } from '../src/lib/config';
+import { NoticeBanner } from '../src/components/NoticeBanner';
 
 if (env.sentryDsn) {
   Sentry.init({ dsn: env.sentryDsn, tracesSampleRate: 1.0 });
+}
+
+function AppFrame() {
+  const { appData } = useAppState();
+
+  return (
+    <View style={styles.container}>
+      <Stack screenOptions={{ headerShown: false }} />
+      <NoticeBanner notice={appData.notice} />
+    </View>
+  );
 }
 
 export default function RootLayout() {
   return (
     <I18nextProvider i18n={i18next}>
       <AppProvider>
-        <Stack screenOptions={{ headerShown: false }} />
+        <AppFrame />
       </AppProvider>
     </I18nextProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});

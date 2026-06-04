@@ -8,6 +8,31 @@ import { i18next } from '../lib/i18n';
 
 type WebsiteLink = [string[], string];
 
+function Section({ children }: { children: React.ReactNode }) {
+  return <View style={styles.section}>{children}</View>;
+}
+
+function Row({
+  label,
+  onPress,
+  right,
+  noDivider = false,
+}: {
+  label: string;
+  onPress?: () => void;
+  right?: React.ReactNode;
+  noDivider?: boolean;
+}) {
+  const content = (
+    <View style={[styles.row, noDivider && styles.rowNoDivider]}>
+      <Text style={styles.rowLabel}>{label}</Text>
+      {right}
+    </View>
+  );
+
+  return onPress ? <Pressable onPress={onPress}>{content}</Pressable> : content;
+}
+
 export function SettingsScreen() {
   const { t } = useTranslation('global');
   const { appSettings, setAppSettings, appData, networkError, resetApp, setAppTempData, syncDelta } =
@@ -20,91 +45,138 @@ export function SettingsScreen() {
   );
 
   return (
-    <ScreenContainer title={t('NAV-Settings')} subtitle={t('meta_desc_settings') || 'Preferences and links'}>
+    <ScreenContainer
+      title={t('NAV-Settings')}
+      subtitle={t('meta_desc_settings') || 'Preferences and links'}
+      contentPadding={0}
+      headerSpacing={12}
+      contentStyle={styles.pageContent}
+    >
       <BusMapModal visible={busMapVisible} onClose={() => setBusMapVisible(false)} />
-      <View style={styles.card}>
-        <Pressable
-          style={styles.row}
-          onPress={async () => {
-            const next = i18next.language.includes('en') ? 'zh' : 'en';
-            await i18next.changeLanguage(next);
-            setAppTempData('realTimeStation', null);
-            setAppTempData('searchStation', null);
-          }}
-        >
-          <Text style={styles.rowLabel}>{i18next.language.includes('en') ? '轉換語言' : 'Change Language'}</Text>
-        </Pressable>
 
-        <View style={styles.row}>
-          <Text style={styles.rowLabel}>{t('routeNoWaitTimeT')}</Text>
-          <Switch
-            value={!!appSettings.searchSortDontIncludeWaitTime}
-            onValueChange={(value) =>
-              setAppSettings((prev) => ({ ...prev, searchSortDontIncludeWaitTime: value }))
-            }
-            trackColor={{ true: '#0f766e' }}
+      <View style={styles.sectionGroup}>
+        <Section>
+          <Row
+            label={i18next.language.includes('en') ? '轉換語言' : 'Change Language'}
+            onPress={() => {
+              const next = i18next.language.includes('en') ? 'zh' : 'en';
+              i18next.changeLanguage(next).then(() => {
+                setAppTempData('realTimeStation', null);
+                setAppTempData('searchStation', null);
+              });
+            }}
           />
-        </View>
-
-        {networkError.batch ? <Text style={styles.warning}>{t('batch_fetch_err')}</Text> : null}
-
-        <Pressable style={styles.row} onPress={() => syncDelta().catch(() => {})}>
-          <Text style={styles.rowLabel}>{t('Reload-Data')}</Text>
-        </Pressable>
-
-        <Pressable style={styles.row} onPress={() => resetApp().catch(() => {})}>
-          <Text style={styles.rowLabel}>{t('Delete-Storage')}</Text>
-        </Pressable>
+          <Row
+            label={t('routeNoWaitTimeT')}
+            right={
+              <Switch
+                value={!!appSettings.searchSortDontIncludeWaitTime}
+                onValueChange={(value) =>
+                  setAppSettings((prev) => ({ ...prev, searchSortDontIncludeWaitTime: value }))
+                }
+                trackColor={{ true: '#630a10' }}
+              />
+            }
+            noDivider
+          />
+          <Text style={styles.noteText}>{t('routeNoWaitTimeD')}</Text>
+          {networkError.batch ? (
+            <View style={styles.errorRow}>
+              <Text style={styles.errorText}>{t('batch_fetch_err')}</Text>
+              <Pressable onPress={() => syncDelta().catch(() => {})}>
+                <Text style={styles.retryText}>{t('retry_btn')}</Text>
+              </Pressable>
+            </View>
+          ) : null}
+          <Row label={t('Reload-Data')} onPress={() => syncDelta().catch(() => {})} />
+          <Row label={t('Delete-Storage')} onPress={() => resetApp().catch(() => {})} noDivider />
+        </Section>
       </View>
 
-      <View style={styles.card}>
-        <Pressable style={styles.row} onPress={() => setBusMapVisible(true)}>
-          <Text style={styles.rowLabel}>{t('bus_map_page')}</Text>
-        </Pressable>
-        {websiteLinks.map((row, index) => (
-          <Pressable key={`${row[0][langIndex]}-${index}`} style={styles.row} onPress={() => Linking.openURL(row[1])}>
-            <Text style={styles.rowLabel}>{row[0][langIndex]}</Text>
-          </Pressable>
-        ))}
+      <View style={styles.sectionGroup}>
+        <Section>
+          <Row label={t('bus_map_page')} onPress={() => setBusMapVisible(true)} />
+          {websiteLinks.map((row, index) => (
+            <Row
+              key={`${row[0][langIndex]}-${index}`}
+              label={row[0][langIndex]}
+              onPress={() => Linking.openURL(row[1])}
+              noDivider={index === websiteLinks.length - 1}
+            />
+          ))}
+        </Section>
       </View>
 
-      <View style={styles.card}>
-        <Pressable style={styles.row} onPress={() => Linking.openURL('https://github.com/AnsonCheng03')}>
-          <Text style={styles.rowLabel}>{t('About-btn')}</Text>
-        </Pressable>
-        <Pressable style={styles.row} onPress={() => Linking.openURL('https://www.instagram.com/01.0720/')}>
-          <Text style={styles.rowLabel}>{t('Designer-Abt-btn')}</Text>
-        </Pressable>
+      <View style={styles.sectionGroup}>
+        <Section>
+          <Row label={t('About-btn')} onPress={() => Linking.openURL('https://github.com/AnsonCheng03')} />
+          <Row
+            label={t('Designer-Abt-btn')}
+            onPress={() => Linking.openURL('https://www.instagram.com/01.0720/')}
+            noDivider
+          />
+        </Section>
       </View>
     </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#fffdf8',
-    borderRadius: 22,
-    borderWidth: 1,
-    borderColor: '#ddd5c4',
+  pageContent: {
+    paddingTop: 8,
+    paddingBottom: 90,
+  },
+  sectionGroup: {
+    paddingHorizontal: 16,
+    marginBottom: 14,
+  },
+  section: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
     overflow: 'hidden',
   },
   row: {
+    minHeight: 50,
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingVertical: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#e4decf',
+    borderBottomColor: '#dddddd',
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  rowNoDivider: {
+    borderBottomWidth: 0,
   },
   rowLabel: {
-    color: '#21463e',
-    fontWeight: '700',
     flex: 1,
+    color: '#111',
+    fontSize: 16,
   },
-  warning: {
-    color: '#7d5b00',
+  noteText: {
     paddingHorizontal: 16,
-    paddingBottom: 14,
+    paddingTop: 0,
+    paddingBottom: 12,
+    color: '#666',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  errorRow: {
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  errorText: {
+    flex: 1,
+    color: '#666',
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  retryText: {
+    color: '#630a10',
+    fontWeight: '700',
   },
 });

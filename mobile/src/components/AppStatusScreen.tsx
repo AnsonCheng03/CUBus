@@ -20,7 +20,7 @@ export function AppStatusScreen({
   }>;
 }) {
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.container}>
         {loading ? <ActivityIndicator size="large" color="#0f766e" /> : null}
         <Text style={styles.title}>{title}</Text>
@@ -57,56 +57,56 @@ export function AppStatusScreen({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f3efe4',
+    backgroundColor: '#f2f2f2',
   },
   container: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
+    alignItems: 'stretch',
+    padding: 20,
     gap: 12,
   },
   title: {
-    fontSize: 28,
+    fontSize: 26,
     fontWeight: '800',
-    color: '#173f35',
+    color: '#111',
     textAlign: 'center',
   },
   hint: {
-    color: '#4a5f58',
-    fontSize: 16,
+    color: '#666',
+    fontSize: 14,
     textAlign: 'center',
-    lineHeight: 24,
+    lineHeight: 20,
   },
   body: {
     width: '100%',
-    maxWidth: 360,
     marginTop: 8,
   },
   actions: {
     width: '100%',
-    maxWidth: 320,
     gap: 12,
     marginTop: 8,
   },
   button: {
-    borderRadius: 18,
-    paddingVertical: 14,
+    borderRadius: 8,
+    paddingVertical: 12,
     alignItems: 'center',
   },
   primaryButton: {
-    backgroundColor: '#0f766e',
+    backgroundColor: '#630a10',
   },
   secondaryButton: {
-    backgroundColor: '#efe8d8',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#d6d6d6',
   },
   buttonText: {
-    fontWeight: '800',
+    fontWeight: '700',
   },
   primaryButtonText: {
     color: '#fff',
   },
   secondaryButtonText: {
-    color: '#21463e',
+    color: '#333',
   },
 });

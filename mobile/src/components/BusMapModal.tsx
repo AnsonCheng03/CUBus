@@ -10,7 +10,7 @@ export function BusMapModal({ visible, onClose }: { visible: boolean; onClose: (
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
-      <SafeAreaView style={styles.safeArea}>
+      <SafeAreaView style={styles.safeArea} edges={['bottom']}>
         <View style={styles.header}>
           <Text style={styles.title}>{t('bus_map_page')}</Text>
           <Pressable onPress={onClose}>
@@ -23,9 +23,6 @@ export function BusMapModal({ visible, onClose }: { visible: boolean; onClose: (
           maximumZoomScale={3}
           minimumZoomScale={1}
         >
-          <Text style={styles.subtitle}>
-            Explore the campus shuttle area map and pinch to inspect stops and pathways more closely.
-          </Text>
           <Image source={campusMapImage} style={styles.mapImage} resizeMode="contain" />
         </ScrollView>
       </SafeAreaView>
@@ -36,39 +33,36 @@ export function BusMapModal({ visible, onClose }: { visible: boolean; onClose: (
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f3efe4',
+    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
-    paddingVertical: 16,
+    paddingVertical: 12,
+    backgroundColor: '#fff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e5e5',
   },
   title: {
-    fontSize: 22,
-    fontWeight: '800',
-    color: '#183a33',
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111',
   },
   close: {
-    color: '#0f766e',
+    color: '#666',
     fontWeight: '700',
   },
   scroll: {
     flex: 1,
   },
   content: {
-    padding: 20,
-    gap: 14,
-  },
-  subtitle: {
-    color: '#5a6c65',
-    lineHeight: 22,
+    padding: 0,
   },
   mapImage: {
     width: '100%',
-    height: 520,
-    borderRadius: 22,
-    backgroundColor: '#fffdf8',
+    height: 700,
+    backgroundColor: '#fff',
   },
 });

@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
 function stripHtml(input: string) {
@@ -22,30 +23,46 @@ export function NoticeBanner({ notice }: { notice: any }) {
   if (!currentNotice) return null;
 
   return (
-    <View style={styles.banner}>
-      <Text style={styles.message}>{stripHtml(currentNotice.content[lang])}</Text>
-      <View style={styles.actions}>
-        {!!currentNotice.pref?.link && (
-          <Pressable onPress={() => Linking.openURL(currentNotice.pref.link)}>
-            <Text style={styles.link}>{t('toast_more_info')}</Text>
+    <SafeAreaView pointerEvents="box-none" edges={['top']} style={styles.overlay}>
+      <View style={styles.banner}>
+        <Text style={styles.message}>{stripHtml(currentNotice.content[lang])}</Text>
+        <View style={styles.actions}>
+          {!!currentNotice.pref?.link && (
+            <Pressable onPress={() => Linking.openURL(currentNotice.pref.link)}>
+              <Text style={styles.link}>{t('toast_more_info')}</Text>
+            </Pressable>
+          )}
+          <Pressable onPress={() => setDismissedIds((prev) => [...prev, currentNotice.id])}>
+            <Text style={styles.dismiss}>{t('toast_dismiss')}</Text>
           </Pressable>
-        )}
-        <Pressable onPress={() => setDismissedIds((prev) => [...prev, currentNotice.id])}>
-          <Text style={styles.dismiss}>{t('toast_dismiss')}</Text>
-        </Pressable>
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 50,
+    elevation: 10,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+  },
   banner: {
     backgroundColor: '#fff7d6',
-    borderRadius: 18,
+    borderRadius: 12,
     padding: 14,
     gap: 10,
     borderWidth: 1,
     borderColor: '#e7d79d',
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
   },
   message: {
     color: '#5b4a08',

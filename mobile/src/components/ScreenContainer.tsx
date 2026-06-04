@@ -1,35 +1,63 @@
 import React from 'react';
 import {
   ScrollView,
+  StyleProp,
   StyleSheet,
   Text,
+  ViewStyle,
   View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAppState } from '../providers/AppProvider';
-import { NoticeBanner } from './NoticeBanner';
+import { SafeAreaView, type Edge } from 'react-native-safe-area-context';
 
 export function ScreenContainer({
   title,
   subtitle,
   children,
   refreshControl,
+  contentPadding = 16,
+  contentGap = 16,
+  headerSpacing = 12,
+  showHeader = true,
+  contentStyle,
+  scrollStyle,
+  safeAreaBackgroundColor = '#f2f2f2',
+  safeAreaEdges = ['top'],
 }: {
   title: string;
   subtitle?: string;
   children: React.ReactNode;
   refreshControl?: React.ReactElement;
+  contentPadding?: number;
+  contentGap?: number;
+  headerSpacing?: number;
+  showHeader?: boolean;
+  contentStyle?: StyleProp<ViewStyle>;
+  scrollStyle?: StyleProp<ViewStyle>;
+  safeAreaBackgroundColor?: string;
+  safeAreaEdges?: Edge[];
 }) {
-  const { appData } = useAppState();
-
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.content} refreshControl={refreshControl}>
-        <View style={styles.header}>
-          <Text style={styles.title}>{title}</Text>
-          {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
-        </View>
-        <NoticeBanner notice={appData.notice} />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: safeAreaBackgroundColor }]} edges={safeAreaEdges}>
+      <ScrollView
+        style={scrollStyle}
+        contentContainerStyle={[
+          styles.content,
+          {
+            gap: contentGap,
+            paddingHorizontal: contentPadding,
+            paddingTop: contentPadding,
+            paddingBottom: contentPadding,
+          },
+          contentStyle,
+        ]}
+        refreshControl={refreshControl}
+      >
+        {showHeader ? (
+          <View style={[styles.header, { marginBottom: headerSpacing }]}>
+            <Text style={styles.title}>{title}</Text>
+            {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+          </View>
+        ) : null}
         {children}
       </ScrollView>
     </SafeAreaView>
@@ -39,23 +67,19 @@ export function ScreenContainer({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f3efe4',
   },
-  content: {
-    padding: 18,
-    gap: 16,
-  },
+  content: {},
   header: {
-    gap: 6,
+    gap: 4,
   },
   title: {
-    fontSize: 30,
+    fontSize: 28,
     fontWeight: '800',
-    color: '#183a33',
+    color: '#111',
   },
   subtitle: {
-    color: '#5a6c65',
-    fontSize: 15,
-    lineHeight: 22,
+    color: '#666',
+    fontSize: 14,
+    lineHeight: 21,
   },
 });
