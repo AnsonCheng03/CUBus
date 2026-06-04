@@ -14,7 +14,8 @@
       "typedRoutes": true
     },
     "ios": {
-      "bundleIdentifier": "com.anson12666.cu-bus-native"
+      "bundleIdentifier": "com.anson12666.cu-bus-native",
+      "deploymentTarget": "15.1"
     }
   }
 }

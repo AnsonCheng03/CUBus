@@ -5,6 +5,10 @@ PODS:
     - ExpoModulesCore
   - Expo (52.0.49):
     - ExpoModulesCore
+  - ExpoAsset (11.0.5):
+    - ExpoModulesCore
+  - ExpoFont (13.0.4):
+    - ExpoModulesCore
   - ExpoHead (4.0.22):
     - ExpoModulesCore
   - ExpoLinking (7.0.5):
@@ -1621,6 +1625,8 @@ DEPENDENCIES:
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
   - Expo (from `../node_modules/expo`)
+  - ExpoAsset (from `../node_modules/expo-asset/ios`)
+  - ExpoFont (from `../node_modules/expo-font/ios`)
   - ExpoHead (from `../node_modules/expo-router/ios`)
   - ExpoLinking (from `../node_modules/expo-linking/ios`)
   - ExpoLocation (from `../node_modules/expo-location/ios`)
@@ -1708,6 +1714,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-constants/ios"
   Expo:
     :path: "../node_modules/expo"
+  ExpoAsset:
+    :path: "../node_modules/expo-asset/ios"
+  ExpoFont:
+    :path: "../node_modules/expo-font/ios"
   ExpoHead:
     :path: "../node_modules/expo-router/ios"
   ExpoLinking:
@@ -1855,6 +1865,8 @@ SPEC CHECKSUMS:
   DoubleConversion: f16ae600a246532c4020132d54af21d0ddb2a385
   EXConstants: fcfc75800824ac2d5c592b5bc74130bad17b146b
   Expo: 4bb70893882e6382b41d1e910d7226c6a1b85f0a
+  ExpoAsset: 48386d40d53a8c1738929b3ed509bcad595b5516
+  ExpoFont: f354e926f8feae5e831ec8087f36652b44a0b188
   ExpoHead: 2a14db58219c0a506e4a409ea83f884eab23f555
   ExpoLinking: 8d12bee174ba0cdf31239706578e29e74a417402
   ExpoLocation: de58a60756fad907139ec422ccabb1ba734e080d
