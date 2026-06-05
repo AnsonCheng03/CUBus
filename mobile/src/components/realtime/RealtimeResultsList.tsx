@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, ScrollView, StyleSheet, type RefreshControlProps } from 'react-native';
 import { InlineNoticeRow } from '../InlineNoticeRow';
 import { RealtimeBusRow } from '../RealtimeBusRow';
@@ -11,19 +11,16 @@ type NoticeItem = {
   key: string;
   text: string;
   variant: NoticeVariant;
+  instanceKey: string;
 };
 
 type RenderedNotice = NoticeItem & {
-  renderKey: string;
   progress: Animated.Value;
 };
-
-let noticeInstanceCount = 0;
 
 function createRenderedNotice(notice: NoticeItem, initialValue: number) {
   return {
     ...notice,
-    renderKey: `${notice.key}-${noticeInstanceCount++}`,
     progress: new Animated.Value(initialValue),
   };
 }
@@ -51,8 +48,13 @@ export function RealtimeResultsList({
   contentBottomPadding?: number;
   t: (value: string) => string;
 }) {
+  const noticeVersionRef = useRef(new Map<string, number>());
+  const previousNoticeRef = useRef(
+    new Map<string, Pick<NoticeItem, 'text' | 'variant' | 'instanceKey'>>(),
+  );
+
   const notices = useMemo<NoticeItem[]>(() => {
-    const nextNotices: NoticeItem[] = [];
+    const nextNotices: Omit<NoticeItem, 'instanceKey'>[] = [];
 
     if (networkError) {
       nextNotices.push({ key: 'network', text: t('internet_offline'), variant: 'alert' });
@@ -66,7 +68,23 @@ export function RealtimeResultsList({
       nextNotices.push({ key: 'gps', text: gpsErrorText, variant: 'alert' });
     }
 
-    return nextNotices;
+    return nextNotices.map((notice) => {
+      const previous = previousNoticeRef.current.get(notice.key);
+      const previousVersion = noticeVersionRef.current.get(notice.key) ?? 0;
+      const version =
+        previous &&
+        previous.text === notice.text &&
+        previous.variant === notice.variant
+          ? previousVersion
+          : previousVersion + 1;
+
+      noticeVersionRef.current.set(notice.key, version);
+
+      return {
+        ...notice,
+        instanceKey: `${notice.key}:${version}`,
+      };
+    });
   }, [fetchError, gpsErrorText, networkError, t]);
 
   const [renderedNotices, setRenderedNotices] = useState<RenderedNotice[]>(() =>
@@ -74,13 +92,31 @@ export function RealtimeResultsList({
   );
 
   useEffect(() => {
+    previousNoticeRef.current = new Map(
+      notices.map((notice) => [
+        notice.key,
+        {
+          text: notice.text,
+          variant: notice.variant,
+          instanceKey: notice.instanceKey,
+        },
+      ]),
+    );
+  }, [notices]);
+
+  useEffect(() => {
     setRenderedNotices((current) => {
-      const currentMap = new Map(current.map((notice) => [notice.key, notice]));
-      const nextKeys = new Set(notices.map((notice) => notice.key));
+      const currentInstanceMap = new Map(current.map((notice) => [notice.instanceKey, notice]));
+      const nextLogicalKeys = new Set(notices.map((notice) => notice.key));
+      const nextInstanceKeys = new Set(notices.map((notice) => notice.instanceKey));
       const nextRendered = [...current];
 
       notices.forEach((notice) => {
-        const existing = currentMap.get(notice.key);
+        if (currentInstanceMap.has(notice.instanceKey)) {
+          return;
+        }
+
+        const existing = current.find((item) => item.key === notice.key);
         if (existing) {
           Animated.timing(existing.progress, {
             toValue: 0,
@@ -91,7 +127,7 @@ export function RealtimeResultsList({
             const replacement = createRenderedNotice(notice, 0);
 
             setRenderedNotices((latest) => [
-              ...latest.filter((item) => item.renderKey !== existing.renderKey),
+              ...latest.filter((item) => item.instanceKey !== existing.instanceKey),
               replacement,
             ]);
 
@@ -115,7 +151,7 @@ export function RealtimeResultsList({
       });
 
       current.forEach((notice) => {
-        if (nextKeys.has(notice.key)) {
+        if (nextInstanceKeys.has(notice.instanceKey) || nextLogicalKeys.has(notice.key)) {
           return;
         }
 
@@ -126,7 +162,7 @@ export function RealtimeResultsList({
         }).start(({ finished }) => {
           if (!finished) return;
           setRenderedNotices((latest) =>
-            latest.filter((item) => item.renderKey !== notice.renderKey),
+            latest.filter((item) => item.instanceKey !== notice.instanceKey),
           );
         });
       });
@@ -145,7 +181,7 @@ export function RealtimeResultsList({
     >
       {renderedNotices.map((notice) => (
         <Animated.View
-          key={notice.renderKey}
+          key={notice.instanceKey}
           style={{
             opacity: notice.progress,
             transform: [

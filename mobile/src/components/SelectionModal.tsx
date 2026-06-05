@@ -13,6 +13,7 @@ import { SafeAreaInsetsContext, SafeAreaView } from 'react-native-safe-area-cont
 export type SelectionOption = {
   label: string;
   value: string;
+  subtitle?: string;
 };
 
 export function SelectionModal({
@@ -78,7 +79,10 @@ export function SelectionModal({
                 onClose();
               }}
             >
-              <Text style={styles.optionLabel}>{item.label}</Text>
+              <View style={styles.optionRow}>
+                <Text style={styles.optionLabel}>{item.label}</Text>
+                {item.subtitle ? <Text style={styles.optionSubtitle}>{item.subtitle}</Text> : null}
+              </View>
             </Pressable>
           )}
         />
@@ -131,9 +135,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd5c4',
   },
+  optionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
   optionLabel: {
+    flex: 1,
     color: '#21463e',
     fontSize: 16,
     fontWeight: '600',
+  },
+  optionSubtitle: {
+    color: '#6c7f79',
+    fontSize: 13,
+    textAlign: 'right',
   },
 });

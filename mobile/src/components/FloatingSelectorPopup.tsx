@@ -51,7 +51,12 @@ export function FloatingSelectorPopup({
                 onSelect(option.value);
               }}
             >
-              <Text style={styles.popupOptionLabel}>{option.label}</Text>
+              <View style={styles.popupOptionRow}>
+                <Text style={styles.popupOptionLabel}>{option.label}</Text>
+                {option.subtitle ? (
+                  <Text style={styles.popupOptionSubtitle}>{option.subtitle}</Text>
+                ) : null}
+              </View>
             </Pressable>
           ))}
         </ScrollView>
@@ -86,8 +91,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 12,
   },
+  popupOptionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
   popupOptionLabel: {
+    flex: 1,
     color: '#21463e',
     fontSize: 16,
+  },
+  popupOptionSubtitle: {
+    color: '#6c7f79',
+    fontSize: 13,
+    textAlign: 'right',
   },
 });

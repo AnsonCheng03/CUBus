@@ -25,7 +25,7 @@ export type RouteSearchPickerValues = {
 export type RouteSearchFormValue = Required<SearchStationTempState>;
 
 export type RealtimeStationViewModel = {
-  stationOptions: Array<{ label: string; value: string }>;
+  stationOptions: Array<{ label: string; value: string; subtitle?: string }>;
   groupedNearbyStops: string[];
   importantStations: string[];
 };

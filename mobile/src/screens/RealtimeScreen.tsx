@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { RefreshControl, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
+import { RefreshControl, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import type { RealtimeRow, RouteMapSelection } from '../../../src/shared-core/app/types';
+import type { Coordinates } from '../../../src/shared-core/location/nearestStations';
 import { generateRouteResult } from '../../../src/shared-core/realtime/getRealTime';
 import { RealtimeHeader } from '../components/realtime/RealtimeHeader';
 import { RealtimeResultsList } from '../components/realtime/RealtimeResultsList';
 import { RouteMapModal } from '../components/RouteMapModal';
 import { MOBILE_BOTTOM_NAV_OVERLAP } from '../components/CustomNavBar';
-import { useNearestStation } from '../hooks/useNearestStation';
+import { resolveNearestStationCodeFromCoordinates } from '../hooks/useNearestStation';
+import { getCurrentCoordinates } from '../lib/location';
 import { createRealtimeRouteMapSelection } from '../hooks/useRouteMapSelection';
 import { useRealtimeStationOptions } from '../hooks/useRealtimeStationOptions';
 import { useAppState } from '../providers/AppProvider';
@@ -29,13 +31,14 @@ export function RealtimeScreen() {
   const [routeMapVisible, setRouteMapVisible] = useState<RouteMapSelection | null>(null);
   const [fetchError, setFetchError] = useState(false);
   const [gpsErrorText, setGpsErrorText] = useState<string | null>(null);
+  const [currentCoords, setCurrentCoords] = useState<Coordinates | null>(null);
   const [pickerVisible, setPickerVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  const resolveNearestStation = useNearestStation(t, appData.GPS ?? {});
   const { stationOptions, groupedNearbyStops, importantStations } = useRealtimeStationOptions(
     appData,
     selectedStation,
+    currentCoords,
     t,
   );
 
@@ -68,18 +71,32 @@ export function RealtimeScreen() {
     await refreshResults(stationName, shouldLog);
   };
 
+  const refreshCurrentCoords = async () => {
+    const coords = await getCurrentCoordinates(t);
+    setCurrentCoords(coords);
+    return coords;
+  };
+
   const selectNearestStation = async () => {
+    console.log('[gps] realtime locate button pressed');
     setGpsErrorText(null);
-    const nearestStation = await resolveNearestStation().catch((error: unknown) => {
-      setGpsErrorText(error instanceof Error ? error.message : t('GPS-error'));
-      return null;
-    });
+    const nearestStation = await refreshCurrentCoords()
+      .then((coords) => {
+        return resolveNearestStationCodeFromCoordinates(t, appData.GPS ?? {}, coords);
+      })
+      .catch((error: unknown) => {
+        console.error('[gps] realtime locate failed', error);
+        setGpsErrorText(error instanceof Error ? error.message : t('GPS-error'));
+        return null;
+      });
 
     if (nearestStation) {
+      console.log('[gps] realtime locate resolved station', { nearestStation });
       await selectStation(nearestStation);
       return;
     }
 
+    console.warn('[gps] realtime locate returned no nearest station');
     setGpsErrorText((current) => current ?? t('GPS-error'));
   };
 
@@ -89,8 +106,9 @@ export function RealtimeScreen() {
       return;
     }
 
-    resolveNearestStation()
-      .then((candidate) => {
+    refreshCurrentCoords()
+      .then((coords) => {
+        const candidate = resolveNearestStationCodeFromCoordinates(t, appData.GPS ?? {}, coords);
         if (candidate) {
           return selectStation(candidate);
         }
@@ -122,7 +140,15 @@ export function RealtimeScreen() {
         stationLabel={t(selectedStation)}
         pickerOpen={pickerVisible}
         stationOptions={stationOptions}
-        onTogglePicker={() => setPickerVisible((value) => !value)}
+        onTogglePicker={() => {
+          setPickerVisible((value) => {
+            const nextValue = !value;
+            if (nextValue) {
+              refreshCurrentCoords().catch(() => {});
+            }
+            return nextValue;
+          });
+        }}
         onSelectStation={(value) => {
           setPickerVisible(false);
           selectStation(value).catch(() => {});
