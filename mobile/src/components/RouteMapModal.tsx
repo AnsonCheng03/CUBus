@@ -1,6 +1,15 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
-import { Animated, Easing, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Animated,
+  Easing,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaInsetsContext, SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import type { RouteMapSelection } from '../../../src/shared-core/app/types';
@@ -10,6 +19,19 @@ type SheetAnimationMode = 'fade' | 'slide-bottom';
 const BACKDROP_ANIMATION_MS = 220;
 const SHEET_ANIMATION_MS = 260;
 const SHEET_OFFSCREEN_Y = 420;
+const TIMELINE_RAIL_LEFT = 15;
+const TIMELINE_RAIL_WIDTH = 5;
+const TIMELINE_DOT_INNER_SIZE = 12;
+const TIMELINE_DOT_BORDER = 3;
+const TIMELINE_DOT_SIZE = TIMELINE_DOT_INNER_SIZE + TIMELINE_DOT_BORDER * 2;
+const TIMELINE_MARKER_LEFT = -12;
+const TIMELINE_MARKER_TOP = 25;
+const TIMELINE_MARKER_CENTER_Y = TIMELINE_MARKER_TOP + TIMELINE_DOT_SIZE / 2;
+const TIMELINE_RAIL_TOP = TIMELINE_MARKER_CENTER_Y / 2;
+const TIMELINE_RAIL_BOTTOM_OFFSET = 70;
+const TIMELINE_ICON_LEFT = -22;
+const TIMELINE_ICON_TOP = 14;
+const TIMELINE_ICON_SIZE = 40;
 
 export function RouteMapModal({
   routeMap,
@@ -97,25 +119,30 @@ export function RouteMapModal({
 
     return (
       <View key={`${station}-${index}`} style={styles.stationWrapper}>
-        {!isLast ? (
-          <View style={[styles.connector, completed && styles.connectorCompleted]} />
-        ) : null}
-        <View style={styles.stationRow}>
-          <View style={styles.iconSlot}>
-            {isCurrent ? (
-              <Ionicons name="bus" size={20} color="#fff" style={styles.busIcon} />
-            ) : isLast ? (
-              <Ionicons name="flag" size={20} color="#911f27" style={styles.flagIcon} />
-            ) : null}
+        <View style={styles.stationContainer}>
+          {!isCurrent && !isLast ? (
             <View
               style={[
-                styles.stationDot,
-                completed && styles.stationDotCompleted,
-                isCurrent && styles.stationDotCurrent,
+                styles.stationTextMarker,
+                completed && styles.stationTextMarkerCompleted,
+                isCurrent && styles.stationTextMarkerCurrent,
               ]}
             />
-          </View>
-          <Text style={[styles.stationText, completed && styles.stationTextCompleted]}>
+          ) : null}
+          {isCurrent ? (
+            <View style={styles.busIconMarker}>
+              <Ionicons name="bus" size={20} color="#fff" style={styles.busIcon} />
+            </View>
+          ) : isLast ? (
+            <View style={styles.flagIconMarker}>
+              <Ionicons name="flag" size={20} color="#911f27" style={styles.flagIcon} />
+            </View>
+          ) : null}
+          <Text
+            style={[styles.stationText, completed && styles.stationTextCompleted]}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+          >
             {station}
           </Text>
         </View>
@@ -124,38 +151,39 @@ export function RouteMapModal({
   };
 
   return (
-    <Modal
-      visible
-      transparent
-      animationType="none"
-      onRequestClose={onClose}
-      statusBarTranslucent
-    >
+    <Modal visible transparent animationType="none" onRequestClose={onClose} statusBarTranslucent>
       <SafeAreaView style={styles.modalRoot} edges={['top']}>
         <Animated.View style={[styles.overlay, { opacity: backdropOpacity }]}>
           <Pressable style={styles.backdrop} onPress={onClose} />
         </Animated.View>
         <View style={styles.safeArea}>
           <Animated.View
-            style={[styles.sheet, sheetAnimatedStyle, { paddingBottom: Math.max(insets.bottom, 0) }]}
+            style={[
+              styles.sheet,
+              sheetAnimatedStyle,
+              { paddingBottom: Math.max(insets.bottom, 0) },
+            ]}
           >
             <View style={styles.header}>
               <Text style={styles.title}>{t('modal-map-title')}</Text>
               <Pressable onPress={onClose}>
-                <Text style={styles.close}>Close</Text>
+                <Text style={styles.close}>{t('toast_dismiss')}</Text>
               </Pressable>
             </View>
             <View style={styles.detailContainer}>
-              <ScrollView
-                style={styles.scroll}
-                contentContainerStyle={styles.scrollContent}
-              >
-                <View style={[styles.mapGroup, styles.completedGroup]}>
+              <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+                <View style={[styles.mapGroup, styles.mapGroupCompleted]}>
+                  {currentIndex > 0 ? (
+                    <View style={[styles.mapGroupRail, styles.mapGroupRailCompleted]} />
+                  ) : null}
                   {route
                     .slice(0, Math.max(0, currentIndex))
                     .map((station, index) => renderStation(station, index, true))}
                 </View>
                 <View style={styles.mapGroup}>
+                  {route.length - Math.max(0, currentIndex) > 1 ? (
+                    <View style={styles.mapGroupRail} />
+                  ) : null}
                   {route
                     .slice(Math.max(0, currentIndex))
                     .map((station, offset) =>
@@ -223,75 +251,84 @@ const styles = StyleSheet.create({
   },
   mapGroup: {
     position: 'relative',
-    paddingLeft: 0,
+    paddingHorizontal: 20,
   },
-  completedGroup: {
-    opacity: 1,
+  mapGroupCompleted: {
+    paddingBottom: 0,
   },
   stationWrapper: {
     position: 'relative',
   },
-  connector: {
+  stationContainer: {
+    position: 'relative',
+  },
+  mapGroupRail: {
     position: 'absolute',
-    left: 16.5,
-    top: 40,
-    bottom: 0,
-    width: 7,
+    left: TIMELINE_RAIL_LEFT,
+    top: TIMELINE_RAIL_TOP,
+    bottom: TIMELINE_RAIL_BOTTOM_OFFSET,
+    width: TIMELINE_RAIL_WIDTH,
     borderRadius: 5,
     backgroundColor: '#630a10',
   },
-  connectorCompleted: {
+  mapGroupRailCompleted: {
     backgroundColor: '#aaa',
+    top: TIMELINE_MARKER_CENTER_Y,
+    bottom: -TIMELINE_MARKER_CENTER_Y,
   },
-  stationRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  iconSlot: {
-    width: 30,
-    alignItems: 'center',
-    marginRight: 4,
-  },
-  busIcon: {
+  busIconMarker: {
+    position: 'absolute',
+    left: TIMELINE_ICON_LEFT,
+    top: TIMELINE_ICON_TOP,
+    width: TIMELINE_ICON_SIZE,
+    height: TIMELINE_ICON_SIZE,
     backgroundColor: '#630a10',
     borderRadius: 999,
-    padding: 10,
-    overflow: 'hidden',
-    marginBottom: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  flagIcon: {
+  flagIconMarker: {
+    position: 'absolute',
+    left: TIMELINE_ICON_LEFT,
+    top: TIMELINE_ICON_TOP,
+    width: TIMELINE_ICON_SIZE,
+    height: TIMELINE_ICON_SIZE,
     backgroundColor: '#fff',
     borderRadius: 999,
-    padding: 10,
-    overflow: 'hidden',
-    marginBottom: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  stationDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    borderWidth: 3,
-    borderColor: '#630a10',
-    backgroundColor: '#fff',
-    position: 'absolute',
-    top: 28,
+  busIcon: {
+    marginLeft: 1,
   },
-  stationDotCompleted: {
-    borderColor: '#aaa',
-  },
-  stationDotCurrent: {
-    backgroundColor: '#fff149',
+  flagIcon: {
+    marginLeft: 1,
   },
   stationText: {
-    flex: 1,
     fontSize: 18,
     color: '#333',
     paddingVertical: 25,
     paddingLeft: 35,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#efefef',
+    flex: 1,
   },
   stationTextCompleted: {
     color: '#aaa',
+  },
+  stationTextMarker: {
+    position: 'absolute',
+    left: TIMELINE_MARKER_LEFT,
+    top: TIMELINE_MARKER_TOP,
+    width: TIMELINE_DOT_SIZE,
+    height: TIMELINE_DOT_SIZE,
+    borderRadius: TIMELINE_DOT_SIZE / 2,
+    borderWidth: TIMELINE_DOT_BORDER,
+    borderColor: '#630a10',
+    backgroundColor: '#fff',
+  },
+  stationTextMarkerCompleted: {
+    borderColor: '#aaa',
+  },
+  stationTextMarkerCurrent: {
+    backgroundColor: '#fff149',
   },
 });

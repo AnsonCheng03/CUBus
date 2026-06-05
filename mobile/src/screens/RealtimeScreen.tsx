@@ -131,6 +131,26 @@ export function RealtimeScreen() {
     setRefreshing(false);
   };
 
+  const openRouteMapForRow = (row: RealtimeRow) => {
+    const selection = createRealtimeRouteMapSelection(row, appData.token);
+
+    if (!selection || selection.route.length === 0) {
+      console.warn('[route-map] unable to open route map for realtime row', {
+        busNo: row.busno,
+        hasNextStation: Boolean(row.nextStation),
+        routeLength: row.nextStation?.route?.length ?? 0,
+      });
+      return;
+    }
+
+    console.log('[route-map] opening realtime route map', {
+      busNo: row.busno,
+      routeLength: selection.route.length,
+      currentIndex: selection.currentIndex,
+    });
+    setRouteMapVisible(selection);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea} edges={[]}>
       <RouteMapModal routeMap={routeMapVisible} onClose={() => setRouteMapVisible(null)} />
@@ -168,9 +188,7 @@ export function RealtimeScreen() {
           onSelectGroupedStop={(value) => {
             selectStation(value, false).catch(() => {});
           }}
-          onSelectRow={(row) => {
-            setRouteMapVisible(createRealtimeRouteMapSelection(row, appData.token));
-          }}
+          onSelectRow={openRouteMapForRow}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#0f766e" />
           }

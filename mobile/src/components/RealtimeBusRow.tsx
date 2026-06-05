@@ -14,13 +14,17 @@ export function RealtimeBusRow({
   t: (key: string) => string;
   showTopBorder?: boolean;
 }) {
+  const canOpenRouteMap = Boolean(bus.nextStation?.route?.length);
+
   return (
     <Pressable
       style={[
         styles.busRow,
         !showTopBorder && styles.busRowNoBorder,
         bus.arrived && styles.busRowArrived,
+        !canOpenRouteMap && styles.busRowDisabled,
       ]}
+      disabled={!canOpenRouteMap}
       onPress={onPress}
     >
       <View style={styles.busLeft}>
@@ -70,6 +74,9 @@ const styles = StyleSheet.create({
   },
   busRowArrived: {
     opacity: 0.5,
+  },
+  busRowDisabled: {
+    opacity: 0.75,
   },
   busRowNoBorder: {
     borderTopWidth: 0,

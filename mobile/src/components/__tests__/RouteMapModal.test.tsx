@@ -14,7 +14,7 @@ jest.mock('react-i18next', () => ({
 
 describe('RouteMapModal', () => {
   it('renders current, completed, and upcoming route stops', () => {
-    const { getByText } = render(
+    const { getByText, queryByText } = render(
       <RouteMapModal
         routeMap={{
           route: ['MTR', 'Library', 'College'],
@@ -29,5 +29,55 @@ describe('RouteMapModal', () => {
     expect(getByText('MTR')).toBeTruthy();
     expect(getByText('Library')).toBeTruthy();
     expect(getByText('College')).toBeTruthy();
+    expect(queryByText('next-station')).toBeNull();
+  });
+
+  it('renders correctly when the current station is first', () => {
+    const { getByText } = render(
+      <RouteMapModal
+        routeMap={{
+          route: ['MTR', 'Library', 'College'],
+          currentIndex: 0,
+          details: { busNo: '1', stationIndex: 0, token: 'abc' },
+        }}
+        onClose={() => {}}
+      />,
+    );
+
+    expect(getByText('MTR')).toBeTruthy();
+    expect(getByText('Library')).toBeTruthy();
+    expect(getByText('College')).toBeTruthy();
+  });
+
+  it('renders correctly when the current station is last', () => {
+    const { getByText } = render(
+      <RouteMapModal
+        routeMap={{
+          route: ['MTR', 'Library', 'College'],
+          currentIndex: 2,
+          details: { busNo: '1', stationIndex: 2, token: 'abc' },
+        }}
+        onClose={() => {}}
+      />,
+    );
+
+    expect(getByText('MTR')).toBeTruthy();
+    expect(getByText('Library')).toBeTruthy();
+    expect(getByText('College')).toBeTruthy();
+  });
+
+  it('renders a one-stop route', () => {
+    const { getByText } = render(
+      <RouteMapModal
+        routeMap={{
+          route: ['MTR'],
+          currentIndex: 0,
+          details: { busNo: '1', stationIndex: 0, token: 'abc' },
+        }}
+        onClose={() => {}}
+      />,
+    );
+
+    expect(getByText('MTR')).toBeTruthy();
   });
 });
