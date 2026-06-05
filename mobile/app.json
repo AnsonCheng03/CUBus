@@ -3,7 +3,7 @@
     "name": "CU Bus",
     "slug": "cu-bus-native",
     "scheme": "cubus",
-    "version": "0.1.0",
+    "version": "1.0.11",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "icon": "../resources/icon.png",
