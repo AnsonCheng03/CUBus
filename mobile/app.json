@@ -6,6 +6,12 @@
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
+    "icon": "../resources/icon.png",
+    "splash": {
+      "image": "../resources/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
     "web": {
       "bundler": "metro",
       "output": "static"
@@ -18,8 +24,24 @@
       "typedRoutes": true
     },
     "ios": {
-      "bundleIdentifier": "com.anson12666.cu-bus-native",
-      "deploymentTarget": "15.1"
+      "bundleIdentifier": "com.cubus.app",
+      "deploymentTarget": "15.1",
+      "infoPlist": {
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Display Nearby Bus Stops",
+        "NSLocationAlwaysUsageDescription": "Display Nearby Bus Stops",
+        "NSLocationWhenInUseUsageDescription": "Display Nearby Bus Stops"
+      }
+    },
+    "android": {
+      "package": "com.cubus.app",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ],
+      "adaptiveIcon": {
+        "foregroundImage": "../resources/icon.png",
+        "backgroundColor": "#ffffff"
+      }
     }
   }
 }

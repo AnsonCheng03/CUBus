@@ -9,6 +9,7 @@ export function RealtimeResultsList({
   rows,
   networkError,
   fetchError,
+  gpsErrorText,
   groupedNearbyStops,
   onSelectGroupedStop,
   onSelectRow,
@@ -19,6 +20,7 @@ export function RealtimeResultsList({
   rows: RealtimeRowData[];
   networkError: boolean;
   fetchError: boolean;
+  gpsErrorText?: string | null;
   groupedNearbyStops: string[];
   onSelectGroupedStop: (value: string) => void;
   onSelectRow: (row: RealtimeRowData) => void;
@@ -26,7 +28,8 @@ export function RealtimeResultsList({
   contentBottomPadding?: number;
   t: (value: string) => string;
 }) {
-  const hasInlineNotice = networkError || fetchError || groupedNearbyStops.length > 0;
+  const hasInlineNotice =
+    networkError || fetchError || Boolean(gpsErrorText) || groupedNearbyStops.length > 0;
 
   return (
     <ScrollView
@@ -36,6 +39,7 @@ export function RealtimeResultsList({
     >
       {networkError ? <InlineNoticeRow text={t('internet_offline')} variant="alert" /> : null}
       {fetchError ? <InlineNoticeRow text={t('fetch-error')} variant="alert" /> : null}
+      {gpsErrorText ? <InlineNoticeRow text={gpsErrorText} variant="alert" /> : null}
       <RealtimeNearbyNotice
         title={t('DescTxt-yrloc')}
         groups={groupedNearbyStops}

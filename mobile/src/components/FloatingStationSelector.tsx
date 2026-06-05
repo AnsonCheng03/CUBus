@@ -123,11 +123,11 @@ export function FloatingStationSelector({
             style={styles.chevron}
           />
         </Pressable>
-        <Pressable style={styles.gpsButton} onPress={onLocate}>
+        <Pressable hitSlop={8} style={styles.gpsButton} onPress={onLocate}>
           <Ionicons name="navigate-circle" size={26} color="#2196f3" />
         </Pressable>
       </Animated.View>
-      <View style={styles.popupOverlay}>
+      <View pointerEvents="box-none" style={styles.popupOverlay}>
         <FloatingSelectorPopup
           open={open}
           height={popupHeight}

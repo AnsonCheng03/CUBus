@@ -28,6 +28,7 @@ export function RealtimeScreen() {
   const [realtimeResult, setRealtimeResult] = useState<RealtimeRow[]>([]);
   const [routeMapVisible, setRouteMapVisible] = useState<RouteMapSelection | null>(null);
   const [fetchError, setFetchError] = useState(false);
+  const [gpsErrorText, setGpsErrorText] = useState<string | null>(null);
   const [pickerVisible, setPickerVisible] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -61,16 +62,25 @@ export function RealtimeScreen() {
   };
 
   const selectStation = async (stationName: string, shouldLog = true) => {
+    setGpsErrorText(null);
     setSelectedStation(stationName);
     setRealtimeStation(stationName);
     await refreshResults(stationName, shouldLog);
   };
 
   const selectNearestStation = async () => {
-    const nearestStation = await resolveNearestStation().catch(() => null);
+    setGpsErrorText(null);
+    const nearestStation = await resolveNearestStation().catch((error: unknown) => {
+      setGpsErrorText(error instanceof Error ? error.message : t('GPS-error'));
+      return null;
+    });
+
     if (nearestStation) {
       await selectStation(nearestStation);
+      return;
     }
+
+    setGpsErrorText((current) => current ?? t('GPS-error'));
   };
 
   useEffect(() => {
@@ -127,6 +137,7 @@ export function RealtimeScreen() {
           rows={realtimeResult}
           networkError={networkError.realtime}
           fetchError={fetchError}
+          gpsErrorText={gpsErrorText}
           groupedNearbyStops={groupedNearbyStops}
           onSelectGroupedStop={(value) => {
             selectStation(value, false).catch(() => {});
