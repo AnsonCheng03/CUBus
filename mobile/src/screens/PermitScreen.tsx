@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Image,
-  ImageBackground,
+  Modal,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -11,99 +11,16 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { MOBILE_BOTTOM_NAV_OVERLAP } from '../components/CustomNavBar';
+import { PermitCard, PERMIT_CARD_RATIO } from '../components/PermitCard';
 import { ScreenContainer } from '../components/ScreenContainer';
-import {
-  EMPTY_PERMIT,
-  cuhkLogo,
-  meetClassBusImage,
-  permitBusRoutes,
-  shuttleBusImage,
-} from '../lib/permit';
+import { EMPTY_PERMIT, permitBusRoutes } from '../lib/permit';
 import { useAppState } from '../providers/AppProvider';
 import { NAV_RESPONSIVE_BREAKPOINT } from '../lib/layout';
-import type { PermitData } from '../../../src/shared-core/app/types';
 import type { PermitFormValue } from '../types/mobile';
-
-function PermitCard({
-  permit,
-  busMode,
-}: {
-  permit: PermitFormValue;
-  busMode: keyof typeof permitBusRoutes;
-}) {
-  const title = busMode === 'meet_class_bus' ? '轉堂校巴證' : '穿梭校巴證';
-  const subtitle = busMode === 'meet_class_bus' ? 'Meet-Class Bus Permit' : 'Shuttle Bus Permit';
-  const busImage = busMode === 'meet_class_bus' ? meetClassBusImage : shuttleBusImage;
-
-  return (
-    <View style={styles.cardPreview}>
-      <ImageBackground
-        source={busImage}
-        resizeMode="cover"
-        style={styles.card}
-        imageStyle={styles.cardImage}
-      >
-        <View style={styles.cardOverlay}>
-          <View style={styles.cardInner}>
-            <View style={styles.cardHeader}>
-              <View style={styles.logo}>
-                <Image source={cuhkLogo} style={styles.logoImage} resizeMode="contain" />
-              </View>
-              <View style={styles.schoolBlock}>
-                <Text style={styles.schoolZh}>香港中文大學</Text>
-                <Text style={styles.schoolEn}>The Chinese University of Hong Kong</Text>
-              </View>
-              <View style={styles.hintBlock}>
-                <Text style={styles.hintZh}>落車前請按鐘一次</Text>
-                <Text style={styles.hintEn}>To Stop Press The Bell Once</Text>
-              </View>
-            </View>
-
-            <View style={styles.cardNameBlock}>
-              <Text style={styles.cardTitle}>{title}</Text>
-              <Text style={styles.cardSubtitle}>{subtitle}</Text>
-            </View>
-
-            <View style={styles.routeSection}>
-              <Text style={styles.routeDesc}>持證者獲交通事務處批准乘搭下列的穿梭校巴路線</Text>
-              <Text style={styles.routeDesc}>
-                The Permit Holder is allowed to ride on the following routes
-              </Text>
-              <View style={styles.routeRow}>
-                {Object.entries(permitBusRoutes[busMode]).map(([route, colors]) => (
-                  <View
-                    key={route}
-                    style={[styles.routeChip, { backgroundColor: colors[0], borderColor: colors[1] }]}
-                  >
-                    <Text style={styles.routeChipText}>{route}</Text>
-                  </View>
-                ))}
-              </View>
-            </View>
-
-            <View style={styles.dataSection}>
-              {[
-                ['學生姓名\nName', permit.name],
-                ['學生編號\nStudent ID', permit.sid],
-                ['主修科目\nMajor', permit.major],
-                ['有效期至\nValid Until', permit.expiry],
-              ].map(([label, value]) => (
-                <View key={label} style={styles.dataRow}>
-                  <Text style={styles.dataLabel}>{label}</Text>
-                  <Text style={styles.dataValue}>{value}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        </View>
-      </ImageBackground>
-    </View>
-  );
-}
 
 export function PermitScreen() {
   const { t, i18n } = useTranslation('global');
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const isLargeScreen = width >= NAV_RESPONSIVE_BREAKPOINT;
   const { appSettings, setAppSettings } = useAppState();
   const saved = useMemo<PermitFormValue>(
@@ -118,6 +35,9 @@ export function PermitScreen() {
 
   const [form, setForm] = useState(saved);
   const [mode, setMode] = useState<'edit' | 'view'>(saved.name ? 'view' : 'edit');
+  const [fullscreenBusMode, setFullscreenBusMode] = useState<keyof typeof permitBusRoutes | null>(
+    null,
+  );
 
   useEffect(() => {
     setForm(saved);
@@ -141,6 +61,12 @@ export function PermitScreen() {
     setForm(trimmed);
     setMode('view');
   };
+
+  const previewWidth = Math.min(width * 0.8, 720);
+  const isPortrait = height > width;
+  const fullscreenCardWidth = isPortrait
+    ? Math.min(height * 0.92, width * PERMIT_CARD_RATIO * 0.92)
+    : Math.min(width * 0.92, height * PERMIT_CARD_RATIO * 0.92);
 
   return (
     <ScreenContainer
@@ -197,24 +123,67 @@ export function PermitScreen() {
       ) : (
         <View style={styles.viewPage}>
           <Text style={styles.disclaimerView}>{desc}</Text>
-          <PermitCard permit={form} busMode="shuttle_bus" />
-          <PermitCard permit={form} busMode="meet_class_bus" />
+          <PermitCard
+            permit={form}
+            busMode="shuttle_bus"
+            targetWidth={previewWidth}
+            onPress={() => setFullscreenBusMode('shuttle_bus')}
+            testID="permit-card-shuttle"
+          />
+          <PermitCard
+            permit={form}
+            busMode="meet_class_bus"
+            targetWidth={previewWidth}
+            onPress={() => setFullscreenBusMode('meet_class_bus')}
+            testID="permit-card-meet-class"
+          />
           <View style={styles.buttonColumn}>
             <Pressable style={styles.primaryButton} onPress={() => setMode('edit')}>
               <Text style={styles.primaryButtonText}>{t('Permit_Edit')}</Text>
             </Pressable>
-            <Pressable
-              style={styles.secondaryButton}
-              onPress={() => {
-                setForm({ ...EMPTY_PERMIT });
-                setMode('edit');
-              }}
-            >
-              <Text style={styles.secondaryButtonText}>{t('Clear')}</Text>
-            </Pressable>
           </View>
         </View>
       )}
+      <Modal
+        visible={fullscreenBusMode !== null}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setFullscreenBusMode(null)}
+      >
+        <View style={styles.modalOverlay}>
+          <Pressable style={styles.modalBackdrop} onPress={() => setFullscreenBusMode(null)} />
+          <ScrollView
+            contentContainerStyle={styles.modalScrollContent}
+            horizontal={false}
+            maximumZoomScale={1}
+          >
+            <View
+              style={[
+                styles.modalCardFrame,
+                isPortrait && {
+                  width: fullscreenCardWidth / PERMIT_CARD_RATIO,
+                  height: fullscreenCardWidth,
+                },
+              ]}
+            >
+              {fullscreenBusMode ? (
+                <View style={isPortrait ? { transform: [{ rotate: '90deg' }] } : null}>
+                  <PermitCard
+                    permit={form}
+                    busMode={fullscreenBusMode}
+                    targetWidth={fullscreenCardWidth}
+                    withShadow={false}
+                    testID="permit-card-fullscreen"
+                  />
+                </View>
+              ) : null}
+            </View>
+            <Pressable style={styles.modalCloseButton} onPress={() => setFullscreenBusMode(null)}>
+              <Text style={styles.modalCloseText}>{t('Permit_Close')}</Text>
+            </Pressable>
+          </ScrollView>
+        </View>
+      </Modal>
     </ScreenContainer>
   );
 }
@@ -285,131 +254,33 @@ const styles = StyleSheet.create({
     color: '#444',
     fontWeight: '700',
   },
-  cardPreview: {
-    width: '80%',
-    alignSelf: 'center',
-    marginVertical: 10,
-    borderRadius: 10,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOpacity: 0.35,
-    shadowRadius: 15,
-    shadowOffset: { width: 0, height: 5 },
-    elevation: 5,
-    maxWidth: 640,
-  },
-  card: {
-    minHeight: 270,
-    justifyContent: 'flex-start',
-  },
-  cardImage: {
-    borderRadius: 10,
-  },
-  cardOverlay: {
-    minHeight: 270,
-    backgroundColor: 'rgba(0, 0, 0, 0.08)',
-  },
-  cardInner: {
-    paddingVertical: 18,
-    paddingHorizontal: 28,
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  logo: {
-    width: 42,
-  },
-  logoImage: {
-    width: 34,
-    height: 34,
-  },
-  schoolBlock: {
+  modalOverlay: {
     flex: 1,
-    marginHorizontal: 8,
+    backgroundColor: 'rgba(240, 240, 240, 0.95)',
   },
-  schoolZh: {
-    color: '#fff',
-    fontSize: 12,
-    letterSpacing: 3,
+  modalBackdrop: {
+    ...StyleSheet.absoluteFillObject,
   },
-  schoolEn: {
-    color: '#fff',
-    fontSize: 10,
+  modalScrollContent: {
+    flexGrow: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 24,
+    gap: 16,
   },
-  hintBlock: {
-    width: 94,
+  modalCardFrame: {
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  hintZh: {
-    color: '#fff',
-    fontSize: 10,
+  modalCloseButton: {
+    paddingHorizontal: 18,
+    paddingVertical: 10,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255, 255, 255, 0.92)',
   },
-  hintEn: {
-    color: '#fff',
-    fontSize: 8,
-    textTransform: 'uppercase',
-  },
-  cardNameBlock: {
-    marginTop: 8,
-    marginBottom: 8,
-  },
-  cardTitle: {
-    color: '#fff',
-    fontSize: 36,
-    letterSpacing: 2,
+  modalCloseText: {
+    color: '#444',
     fontWeight: '700',
-    marginLeft: -2,
-  },
-  cardSubtitle: {
-    color: '#fff',
-    fontSize: 16,
-    textTransform: 'uppercase',
-    marginTop: -2,
-  },
-  routeSection: {
-    marginTop: 2,
-  },
-  routeDesc: {
-    color: 'rgb(236, 240, 241)',
-    fontSize: 10,
-  },
-  routeRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 3,
-    marginTop: 8,
-    marginBottom: 6,
-  },
-  routeChip: {
-    width: 31,
-    paddingVertical: 1,
-    borderWidth: 1,
-    alignItems: 'center',
-  },
-  routeChipText: {
-    color: '#111',
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  dataSection: {
-    marginTop: 12,
-    gap: 8,
-  },
-  dataRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  dataLabel: {
-    width: 118,
-    color: '#fff',
-    fontSize: 11,
-    lineHeight: 12,
-  },
-  dataValue: {
-    flex: 1,
-    color: '#fff',
-    fontSize: 13,
-    lineHeight: 14,
   },
 });
