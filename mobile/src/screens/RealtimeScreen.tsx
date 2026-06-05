@@ -108,7 +108,7 @@ export function RealtimeScreen() {
       <RouteMapModal routeMap={routeMapVisible} onClose={() => setRouteMapVisible(null)} />
 
       <RealtimeHeader
-        paddingTop={isLargeScreen ? 0 : insets.top}
+        paddingTop={isLargeScreen ? 0 : 10 + insets.top}
         stationLabel={t(selectedStation)}
         pickerOpen={pickerVisible}
         stationOptions={stationOptions}

@@ -1,13 +1,15 @@
-import React from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Path } from 'react-native-svg';
+import { FloatingSelectorPopup } from './FloatingSelectorPopup';
 import type { SelectionOption } from './SelectionModal';
 
 export function FloatingStationSelector({
   value,
   open,
   options,
+  popupHeight = 280,
   onToggle,
   onSelect,
   onLocate,
@@ -15,13 +17,50 @@ export function FloatingStationSelector({
   value: string;
   open: boolean;
   options: SelectionOption[];
+  popupHeight?: number;
   onToggle: () => void;
   onSelect: (value: string) => void;
   onLocate: () => void;
 }) {
+  const openProgress = useRef(new Animated.Value(open ? 1 : 0)).current;
+
+  useEffect(() => {
+    Animated.timing(openProgress, {
+      toValue: open ? 1 : 0,
+      duration: 220,
+      useNativeDriver: false,
+    }).start();
+  }, [open, openProgress]);
+
   return (
     <View style={styles.selectorFloat}>
-      <View style={[styles.selectorBox, open && styles.selectorBoxOpen]}>
+      <Animated.View
+        style={[
+          styles.selectorBox,
+          open && styles.selectorBoxOpen,
+          {
+            shadowOpacity: openProgress.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0.4, 0],
+            }),
+            shadowRadius: openProgress.interpolate({
+              inputRange: [0, 1],
+              outputRange: [1.5, 0],
+            }),
+            shadowOffset: {
+              width: 0,
+              height: openProgress.interpolate({
+                inputRange: [0, 1],
+                outputRange: [4, 0],
+              }),
+            },
+            elevation: openProgress.interpolate({
+              inputRange: [0, 1],
+              outputRange: [6, 0],
+            }),
+          },
+        ]}
+      >
         <View style={styles.selectorIcon}>
           <Svg width={24} height={24} viewBox="0 0 24 24" fill="none">
             <Path
@@ -87,31 +126,15 @@ export function FloatingStationSelector({
         <Pressable style={styles.gpsButton} onPress={onLocate}>
           <Ionicons name="navigate-circle" size={26} color="#2196f3" />
         </Pressable>
+      </Animated.View>
+      <View style={styles.popupOverlay}>
+        <FloatingSelectorPopup
+          open={open}
+          height={popupHeight}
+          options={options}
+          onSelect={onSelect}
+        />
       </View>
-      {open ? (
-        <View style={styles.popup}>
-          <View style={styles.popupSurface}>
-            <ScrollView
-              style={styles.popupScroll}
-              contentContainerStyle={styles.popupContent}
-              nestedScrollEnabled
-              showsVerticalScrollIndicator={false}
-            >
-              {options.map((option) => (
-                <Pressable
-                  key={option.value}
-                  style={styles.popupOption}
-                  onPress={() => {
-                    onSelect(option.value);
-                  }}
-                >
-                  <Text style={styles.popupOptionLabel}>{option.label}</Text>
-                </Pressable>
-              ))}
-            </ScrollView>
-          </View>
-        </View>
-      ) : null}
     </View>
   );
 }
@@ -119,6 +142,7 @@ export function FloatingStationSelector({
 const styles = StyleSheet.create({
   selectorFloat: {
     position: 'relative',
+    overflow: 'visible',
     zIndex: 30,
     elevation: 30,
   },
@@ -131,14 +155,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: '2%',
     shadowColor: '#a6adc9',
     shadowOpacity: 0.4,
-    shadowRadius: 2,
-    shadowOffset: { width: 0, height: 5 },
+    shadowRadius: 1.5,
+    shadowOffset: { width: 0, height: 4 },
     elevation: 6,
   },
-  selectorBoxOpen: {
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
-  },
+  selectorBoxOpen: {},
   selectorIcon: {
     width: 50,
     alignItems: 'center',
@@ -166,41 +187,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  popup: {
+  popupOverlay: {
     position: 'absolute',
     top: '100%',
     left: 0,
     right: 0,
     marginTop: -10,
-    borderRadius: 16,
-    shadowColor: '#7f8aa3',
-    shadowOpacity: 0.28,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 30 },
-    elevation: 14,
-    zIndex: 40,
-    maxHeight: 280,
-    overflow: 'visible',
-  },
-  popupSurface: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    borderTopLeftRadius: 0,
-    borderTopRightRadius: 0,
-    overflow: 'hidden',
-  },
-  popupScroll: {
-    maxHeight: 280,
-  },
-  popupContent: {
-    paddingVertical: 8,
-  },
-  popupOption: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-  },
-  popupOptionLabel: {
-    color: '#21463e',
-    fontSize: 16,
   },
 });
