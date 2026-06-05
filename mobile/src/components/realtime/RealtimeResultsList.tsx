@@ -72,9 +72,7 @@ export function RealtimeResultsList({
       const previous = previousNoticeRef.current.get(notice.key);
       const previousVersion = noticeVersionRef.current.get(notice.key) ?? 0;
       const version =
-        previous &&
-        previous.text === notice.text &&
-        previous.variant === notice.variant
+        previous && previous.text === notice.text && previous.variant === notice.variant
           ? previousVersion
           : previousVersion + 1;
 
@@ -212,7 +210,7 @@ export function RealtimeResultsList({
             key={`${bus.busno}-${bus.time}-${index}`}
             bus={bus}
             t={t}
-            showTopBorder={!(index === 0 && hasInlineNotice)}
+            showTopBorder={!(index === 0)}
             onPress={() => onSelectRow(bus)}
           />
         ))
