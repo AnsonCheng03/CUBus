@@ -1,12 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Animated,
-  Easing,
-  ScrollView,
-  StyleSheet,
-  View,
-  useWindowDimensions,
-} from 'react-native';
+import { Animated, Easing, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { MOBILE_BOTTOM_NAV_OVERLAP } from '../components/CustomNavBar';
 import { PERMIT_CARD_RATIO } from '../components/PermitCard';
@@ -137,11 +130,7 @@ export function PermitScreen() {
       contentStyle={styles.pageContent}
     >
       <View style={styles.pageFrame}>
-        <PermitHero
-          badge={t('school_bus_permit_title')}
-          title={t('NAV-Permit')}
-          subtitle={desc}
-        />
+        <PermitHero badge={t('school_bus_permit_title')} title={t('NAV-Permit')} subtitle={desc} />
 
         <View style={styles.surfaceSection}>
           <Animated.View

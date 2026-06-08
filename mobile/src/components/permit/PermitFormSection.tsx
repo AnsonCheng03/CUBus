@@ -41,6 +41,7 @@ export function PermitFormSection({
             <TextInput
               value={form[field]}
               onChangeText={(value) => onChangeField(field, value)}
+              maxLength={20}
               placeholder={placeholder}
               placeholderTextColor="#ab9d95"
               selectionColor="#911f27"

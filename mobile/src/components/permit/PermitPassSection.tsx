@@ -48,7 +48,11 @@ export function PermitPassSection({
   onEdit: () => void;
 }) {
   return (
-    <View style={styles.viewPage}>
+    <ScrollView
+      style={styles.viewPage}
+      contentContainerStyle={styles.viewPageContent}
+      showsVerticalScrollIndicator={false}
+    >
       <View style={styles.passStageCard}>
         <View style={styles.passStageMeta}>
           <Text style={styles.passStageLabel}>{t('school_bus_permit_title')}</Text>
@@ -130,14 +134,18 @@ export function PermitPassSection({
           <Text style={styles.primaryButtonText}>{t('Permit_Edit')}</Text>
         </Pressable>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   viewPage: {
     flex: 1,
+  },
+  viewPageContent: {
+    flexGrow: 1,
     gap: 12,
+    paddingBottom: 8,
   },
   passStageCard: {
     borderRadius: 26,
