@@ -1,4 +1,5 @@
 import React from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { InlineNoticeRow } from '../InlineNoticeRow';
 import type { RouteSearchResultCard } from '../../types/mobile';
@@ -35,25 +36,57 @@ export function RouteSearchResultsList({
             style={styles.resultCard}
             onPress={() => onSelect(result)}
           >
-            <View style={styles.resultTopRow}>
+            <View style={styles.resultBusNoContainer}>
               <View
-                style={[styles.resultBadge, { backgroundColor: result.config?.colorCode || '#f3d37c' }]}
+                style={[styles.resultBusNoSquare, { backgroundColor: result.config?.colorCode || '#f3d37c' }]}
               >
-                <Text style={styles.resultBadgeText}>{result.busNo}</Text>
+                <Text style={styles.resultBusNoText}>{result.busNo}</Text>
               </View>
-              <Text style={styles.resultTime}>
-                {result.outputTime > 1000 ? 'N/A' : `${result.outputTime} min`}
-              </Text>
             </View>
-            <Text style={styles.resultRoute}>{result.start}</Text>
-            <Text style={styles.resultMeta}>{`${t('next-bus-arrival-info')}: ${result.arrivalTime}`}</Text>
-            <Text style={styles.resultMeta}>{`${t('wait-time-desc')}: ${result.waitTime} min`}</Text>
-            {result.warning ? <Text style={styles.resultWarning}>{t(result.warning)}</Text> : null}
+
+            <View style={styles.resultDetails}>
+              <View style={styles.resultRouteBlock}>
+                <Text style={styles.resultLabel}>{t('bus-start-station')}</Text>
+                <View style={styles.resultTextContainer}>
+                  <Ionicons name="locate-outline" size={17} color="rgb(49, 112, 246)" />
+                  <Text style={styles.resultDetailText} numberOfLines={1}>
+                    {result.start}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.resultRouteBlock}>
+                <Text style={styles.resultLabel}>{t('next-bus-arrival-info')}</Text>
+                <View style={styles.resultTextContainer}>
+                  <Ionicons name="time-outline" size={17} color="rgb(212, 119, 45)" />
+                  <Text style={styles.resultDetailText} numberOfLines={1}>
+                    {result.arrivalTime}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.resultTotalTime}>
+              <View style={styles.resultTotalTimeRow}>
+                <Text style={styles.resultTotalTimeValue}>
+                  {result.outputTime > 1000 ? 'N/A' : result.outputTime}
+                </Text>
+                <Text style={styles.resultTotalTimeUnit}> min</Text>
+              </View>
+              <Text style={styles.resultWaitLabel}>{t('wait-time-desc')}</Text>
+            </View>
+
+            {result.warning ? (
+              <View style={styles.resultWarningRow}>
+                <Ionicons name="warning-outline" size={16} color="#555" />
+                <Text style={styles.resultWarningText}>{t(result.warning)}</Text>
+              </View>
+            ) : null}
           </Pressable>
         ))
       ) : routeError ? (
         <View style={styles.resultCard}>
-          <Text style={styles.resultRoute}>{t(routeMessage ?? '')}</Text>
+          <Text style={styles.resultDetailText}>{t(routeMessage ?? '')}</Text>
         </View>
       ) : null}
     </>
@@ -62,41 +95,96 @@ export function RouteSearchResultsList({
 
 const styles = StyleSheet.create({
   resultCard: {
-    backgroundColor: '#fffdf8',
-    borderRadius: 22,
-    padding: 16,
-    gap: 8,
-    borderWidth: 1,
-    borderColor: '#ddd5c4',
-  },
-  resultTopRow: {
+    display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexWrap: 'wrap',
     alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    marginHorizontal: 20,
+    marginVertical: 10,
+    gap: 10,
+    shadowColor: '#a6adc9',
+    shadowOpacity: 0.2,
+    shadowRadius: 20,
+    shadowOffset: { width: 2, height: 15 },
+    elevation: 4,
   },
-  resultBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 999,
+  resultBusNoContainer: {
+    width: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  resultBadgeText: {
-    color: '#173f35',
-    fontWeight: '800',
+  resultBusNoSquare: {
+    width: 42,
+    height: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 2,
   },
-  resultTime: {
-    color: '#173f35',
-    fontWeight: '800',
-    fontSize: 24,
+  resultBusNoText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: '700',
   },
-  resultRoute: {
-    color: '#173f35',
-    fontSize: 18,
-    fontWeight: '800',
+  resultDetails: {
+    flex: 1,
+    minWidth: 0,
+    gap: 5,
   },
-  resultMeta: {
-    color: '#50655e',
+  resultRouteBlock: {
+    gap: 2,
   },
-  resultWarning: {
-    color: '#7d5b00',
+  resultLabel: {
+    color: '#aaa',
+    fontSize: 12,
+    paddingLeft: 21,
+  },
+  resultTextContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  resultDetailText: {
+    flex: 1,
+    color: '#222',
+    fontSize: 16,
+  },
+  resultTotalTime: {
+    width: 60,
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+  },
+  resultTotalTimeRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+  },
+  resultTotalTimeValue: {
+    fontSize: 21,
+    fontWeight: '700',
+    color: '#111',
+    lineHeight: 22,
+  },
+  resultTotalTimeUnit: {
+    color: '#111',
+    fontSize: 12,
+    marginBottom: 2,
+  },
+  resultWaitLabel: {
+    fontSize: 12,
+    color: '#aaa',
+    textAlign: 'right',
+  },
+  resultWarningRow: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  resultWarningText: {
+    color: '#555',
+    fontSize: 12,
   },
 });

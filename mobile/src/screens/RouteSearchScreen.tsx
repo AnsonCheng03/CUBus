@@ -7,7 +7,6 @@ import { RouteMapModal } from '../components/RouteMapModal';
 import { SelectionModal, type SelectionOption } from '../components/SelectionModal';
 import { RouteSearchFormCard } from '../components/route-search/RouteSearchFormCard';
 import { RouteSearchResultsList } from '../components/route-search/RouteSearchResultsList';
-import { RouteSearchTimeGrid } from '../components/route-search/RouteSearchTimeGrid';
 import { ScreenContainer } from '../components/ScreenContainer';
 import { MOBILE_BOTTOM_NAV_OVERLAP } from '../components/CustomNavBar';
 import { useNearestStation, formatTranslatedStationLabel } from '../hooks/useNearestStation';
@@ -132,23 +131,18 @@ export function RouteSearchScreen() {
           }}
           departNow={state.departNow}
           onToggleDepartNow={state.setDepartNow}
+          timeValues={{
+            weekday: state.selectWeekday,
+            date: state.selectDate,
+            hour: state.selectHour,
+            minute: state.selectMinute,
+          }}
+          onSelectTimeField={setPickerType}
           t={t}
         />
       </View>
 
       <View style={styles.resultsSection}>
-        {!state.departNow ? (
-          <RouteSearchTimeGrid
-            values={{
-              weekday: state.selectWeekday,
-              date: state.selectDate,
-              hour: state.selectHour,
-              minute: state.selectMinute,
-            }}
-            onSelect={setPickerType}
-          />
-        ) : null}
-
         <Pressable style={styles.submitButton} onPress={onSubmit}>
           <Text style={styles.submitButtonText}>{t('Btn-Adv')}</Text>
         </Pressable>
@@ -176,12 +170,12 @@ const styles = StyleSheet.create({
   },
   pageContent: {
     paddingBottom: 24,
-    backgroundColor: '#911f27',
+    backgroundColor: '#fff',
   },
   redHeader: {
     position: 'relative',
     paddingHorizontal: '3%',
-    paddingBottom: 15,
+    paddingBottom: 50,
   },
   redHeaderBackdrop: {
     position: 'absolute',
@@ -192,18 +186,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#911f27',
   },
   resultsSection: {
-    gap: 12,
-    paddingHorizontal: 16,
+    marginTop: -25,
+    paddingBottom: 16,
   },
   submitButton: {
     backgroundColor: '#630a10',
-    borderRadius: 999,
-    paddingVertical: 14,
+    width: '75%',
+    alignSelf: 'center',
+    borderRadius: 5,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
     alignItems: 'center',
   },
   submitButtonText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 14,
   },
 });

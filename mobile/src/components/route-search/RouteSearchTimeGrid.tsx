@@ -6,51 +6,81 @@ type PickerType = 'weekday' | 'date' | 'hour' | 'minute';
 export function RouteSearchTimeGrid({
   values,
   onSelect,
+  t,
 }: {
   values: { weekday: string; date: string; hour: string; minute: string };
   onSelect: (type: PickerType) => void;
+  t: (value: string) => string;
 }) {
-  const items: Array<{ type: PickerType; label: string; value: string }> = [
-    { type: 'weekday', label: 'Weekday', value: values.weekday },
-    { type: 'date', label: 'Date', value: values.date },
-    { type: 'hour', label: 'Hour', value: values.hour },
-    { type: 'minute', label: 'Minute', value: values.minute },
-  ];
-
   return (
     <View style={styles.timeGrid}>
-      {items.map((item) => (
-        <Pressable key={item.type} style={styles.timeChip} onPress={() => onSelect(item.type)}>
-          <Text style={styles.timeChipLabel}>{item.label}</Text>
-          <Text style={styles.timeChipValue}>{item.value}</Text>
+      <View style={styles.timeRow}>
+        <Pressable style={styles.timeSelectWide} onPress={() => onSelect('weekday')}>
+          <Text style={styles.timeSelectValue}>{t(values.weekday)}</Text>
         </Pressable>
-      ))}
+        {values.weekday === 'WK-Sun' ? null : (
+          <Pressable style={styles.timeSelectWide} onPress={() => onSelect('date')}>
+            <Text style={styles.timeSelectValue}>{t(values.date)}</Text>
+          </Pressable>
+        )}
+      </View>
+      <View style={styles.timeRow}>
+        <Pressable style={styles.timeSelectNarrow} onPress={() => onSelect('hour')}>
+          <Text style={styles.timeSelectValue}>{values.hour}</Text>
+        </Pressable>
+        <Text style={styles.timeSeparator}>:</Text>
+        <Pressable style={styles.timeSelectNarrow} onPress={() => onSelect('minute')}>
+          <Text style={styles.timeSelectValue}>{values.minute}</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   timeGrid: {
+    gap: 10,
+    paddingTop: 6,
+    paddingBottom: 4,
+  },
+  timeRow: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 10,
   },
-  timeChip: {
-    width: '47%',
-    backgroundColor: '#fff',
-    borderRadius: 5,
-    padding: 12,
-    gap: 4,
+  timeSelectWide: {
+    flex: 1,
+    minHeight: 34,
     borderWidth: 1,
     borderColor: '#630a10',
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: 'transparent',
   },
-  timeChipLabel: {
-    color: '#333',
-    fontSize: 12,
-    textTransform: 'uppercase',
+  timeSelectNarrow: {
+    width: 72,
+    minHeight: 34,
+    borderWidth: 1,
+    borderColor: '#630a10',
+    borderRadius: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: 'transparent',
   },
-  timeChipValue: {
+  timeSelectValue: {
     color: '#111',
-    fontWeight: '800',
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  timeSeparator: {
+    color: '#630a10',
+    fontSize: 20,
+    fontWeight: '700',
   },
 });
