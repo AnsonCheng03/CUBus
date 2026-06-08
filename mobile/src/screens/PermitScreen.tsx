@@ -110,7 +110,7 @@ export function PermitScreen() {
     : Math.min(width * 0.92, height * PERMIT_CARD_RATIO * 0.92);
   const surfaceBodyBackgroundColor = surfaceBodyProgress.interpolate({
     inputRange: [0, 1],
-    outputRange: ['rgba(255,255,255,0.82)', '#fff'],
+    outputRange: ['#faf8f6', '#fff'],
   });
 
   const scrollToPermit = (modeValue: keyof typeof permitBusRoutes) => {
@@ -209,19 +209,19 @@ const styles = StyleSheet.create({
   surfaceSection: {
     flex: 1,
     backgroundColor: '#911f27',
-    paddingTop: 12,
+    marginTop: -14,
   },
   surfaceBody: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 18,
-    paddingBottom: 18,
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    backgroundColor: 'rgba(255,255,255,0.82)',
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 14,
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    backgroundColor: '#faf8f6',
     overflow: 'hidden',
   },
   surfaceBodyMobile: {
-    paddingBottom: MOBILE_BOTTOM_NAV_OVERLAP + 40,
+    paddingBottom: MOBILE_BOTTOM_NAV_OVERLAP + 16,
   },
 });

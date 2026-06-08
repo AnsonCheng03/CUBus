@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   heroSection: {
     paddingHorizontal: 24,
     paddingTop: 18,
-    paddingBottom: 34,
+    paddingBottom: 26,
     backgroundColor: '#911f27',
     gap: 10,
   },

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { PermitFormValue } from '../../types/mobile';
 
 const FIELDS: Array<[string, keyof PermitFormValue, string]> = [
@@ -25,7 +25,12 @@ export function PermitFormSection({
   onCancel: () => void;
 }) {
   return (
-    <View style={styles.formPage}>
+    <ScrollView
+      style={styles.formPage}
+      contentContainerStyle={styles.formPageContent}
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+    >
       <View style={styles.formCard}>
         {FIELDS.map(([key, field, placeholder], index, array) => (
           <View
@@ -37,7 +42,8 @@ export function PermitFormSection({
               value={form[field]}
               onChangeText={(value) => onChangeField(field, value)}
               placeholder={placeholder}
-              placeholderTextColor="#9c8f88"
+              placeholderTextColor="#ab9d95"
+              selectionColor="#911f27"
               style={styles.input}
             />
           </View>
@@ -54,76 +60,86 @@ export function PermitFormSection({
           </Pressable>
         ) : null}
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   formPage: {
     flex: 1,
-    gap: 16,
+  },
+  formPageContent: {
+    paddingTop: 24,
+    paddingBottom: 6,
   },
   formCard: {
     backgroundColor: '#fff',
-    borderRadius: 22,
+    borderRadius: 24,
     overflow: 'hidden',
-    shadowColor: '#4d1c22',
-    shadowOpacity: 0.08,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 3,
+    borderWidth: 1,
+    borderColor: 'rgba(90, 60, 50, 0.08)',
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 12 },
+    elevation: 2,
   },
   inputRow: {
     backgroundColor: '#fff',
-    paddingHorizontal: 18,
-    paddingTop: 14,
-    paddingBottom: 14,
+    paddingHorizontal: 20,
+    paddingVertical: 18,
   },
   inputRowDivider: {
     borderBottomWidth: 1,
-    borderBottomColor: '#efe7e1',
+    borderBottomColor: '#f2ebe6',
   },
   inputLabel: {
-    color: '#7f655a',
+    color: '#6d4d47',
     fontSize: 12,
     fontWeight: '700',
-    letterSpacing: 0.3,
-    marginBottom: 8,
+    letterSpacing: 0.2,
+    marginBottom: 7,
   },
   input: {
-    color: '#111',
+    color: '#26201e',
     fontSize: 18,
-    paddingVertical: 2,
+    fontWeight: '600',
+    lineHeight: 24,
+    paddingVertical: 0,
+    paddingHorizontal: 0,
   },
   buttonColumn: {
-    gap: 10,
-    marginTop: 'auto',
-    paddingTop: 4,
+    gap: 12,
+    marginTop: 24,
   },
   primaryButton: {
-    backgroundColor: '#630a10',
+    backgroundColor: '#911f27',
     borderRadius: 999,
-    paddingVertical: 14,
+    paddingVertical: 16,
     alignItems: 'center',
+    alignSelf: 'center',
+    width: '92%',
     shadowColor: '#630a10',
-    shadowOpacity: 0.18,
-    shadowRadius: 14,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 3,
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 1,
   },
   primaryButtonText: {
     color: '#fff',
     fontWeight: '700',
-    fontSize: 15,
+    fontSize: 16,
   },
   secondaryButton: {
-    backgroundColor: '#efe4dc',
+    backgroundColor: '#f7f1ed',
     borderRadius: 999,
     paddingVertical: 14,
     alignItems: 'center',
+    alignSelf: 'center',
+    width: '92%',
   },
   secondaryButtonText: {
-    color: '#6e5348',
+    color: '#745b52',
     fontWeight: '700',
     fontSize: 15,
   },
