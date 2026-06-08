@@ -1,5 +1,16 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Pressable, RefreshControl, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Animated,
+  Easing,
+  LayoutChangeEvent,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { RouteMapSelection } from '../../../src/shared-core/app/types';
@@ -31,7 +42,12 @@ export function RouteSearchScreen() {
   const { routeResult, routeMap, setRouteMap, fetchError, generate } = useRouteCompute();
   const [refreshing, setRefreshing] = useState(false);
   const [pickerType, setPickerType] = useState<RouteSearchPickerType | null>(null);
+  const [pageHeight, setPageHeight] = useState(0);
+  const [formHeight, setFormHeight] = useState(0);
   const resolveNearestStation = useNearestStation(t, appData.GPS ?? {});
+  const searchLayoutProgress = useRef(
+    new Animated.Value(appTempIsEmpty(state.routeSearchStart, state.routeSearchDest) ? 0 : 1),
+  ).current;
 
   const onSubmit = () =>
     generate({
@@ -51,7 +67,8 @@ export function RouteSearchScreen() {
 
   const pickerOptions = useMemo<SelectionOption[]>(() => {
     if (pickerType === 'weekday') return weekdays.map((value) => ({ label: value, value }));
-    if (pickerType === 'date') return state.travelDateOptions.map((value) => ({ label: value, value }));
+    if (pickerType === 'date')
+      return state.travelDateOptions.map((value) => ({ label: value, value }));
     if (pickerType === 'hour') return hours.map((value) => ({ label: value, value }));
     if (pickerType === 'minute') return minutes.map((value) => ({ label: value, value }));
     return [];
@@ -82,24 +99,62 @@ export function RouteSearchScreen() {
   const routeMapSelection: RouteMapSelection | null = routeMap;
   const routeError = routeResult ? ('error' in routeResult ? routeResult : null) : null;
   const routeSuccess = routeResult ? ('sortedResults' in routeResult ? routeResult : null) : null;
+  const isEmptySearch = appTempIsEmpty(state.routeSearchStart, state.routeSearchDest);
+  const dockedTop = (isLargeScreen ? 0 : insets.top) + 15;
+  const searchSectionDockedHeight = Math.max(dockedTop + formHeight + 50, 0);
+  const resultsVisibleHeight = Math.max(pageHeight - searchSectionDockedHeight + 25, 0);
+  const centeredTop = Math.max((pageHeight - formHeight) / 2, 0);
+
+  useEffect(() => {
+    Animated.timing(searchLayoutProgress, {
+      toValue: isEmptySearch ? 0 : 1,
+      duration: 500,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    }).start();
+  }, [isEmptySearch, searchLayoutProgress]);
+
+  const formTranslateY = searchLayoutProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, dockedTop - centeredTop],
+  });
+  const searchSectionHeight = searchLayoutProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [pageHeight, searchSectionDockedHeight],
+  });
+  const resultsTranslateY = searchLayoutProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [28, 0],
+  });
+  const resultsHeight = searchLayoutProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, resultsVisibleHeight],
+  });
+
+  const onPageLayout = (event: LayoutChangeEvent) => {
+    setPageHeight(event.nativeEvent.layout.height);
+  };
+
+  const onFormLayout = (event: LayoutChangeEvent) => {
+    const nextHeight = event.nativeEvent.layout.height;
+    setFormHeight((current) => (Math.abs(current - nextHeight) < 1 ? current : nextHeight));
+  };
 
   return (
     <ScreenContainer
       title={t('title_routesearch')}
       subtitle={t('meta_desc_routesearch')}
       showHeader={false}
+      scrollable={false}
       contentPadding={0}
       contentGap={0}
       contentStyle={[
         styles.pageContent,
-        !isLargeScreen && { paddingBottom: 24 + MOBILE_BOTTOM_NAV_OVERLAP },
+        !isLargeScreen && { paddingBottom: 0 },
       ]}
       scrollStyle={styles.scroll}
       safeAreaBackgroundColor="#911f27"
       safeAreaEdges={[]}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#0f766e" />
-      }
     >
       <RouteMapModal routeMap={routeMapSelection} onClose={() => setRouteMap(null)} />
       <SelectionModal
@@ -115,53 +170,97 @@ export function RouteSearchScreen() {
         }}
       />
 
-      <View style={[styles.redHeader, { paddingTop: (isLargeScreen ? 0 : insets.top) + 15 }]}>
-        <View style={styles.redHeaderBackdrop} />
-        <RouteSearchFormCard
-          startValue={state.routeSearchStart}
-          destValue={state.routeSearchDest}
-          options={state.translatedBuildings}
-          onChangeStart={state.setRouteSearchStart}
-          onChangeDest={state.setRouteSearchDest}
-          onUseNearbyStart={() => {
-            applyNearestTo('start').catch(() => {});
-          }}
-          onUseNearbyDest={() => {
-            applyNearestTo('dest').catch(() => {});
-          }}
-          departNow={state.departNow}
-          onToggleDepartNow={state.setDepartNow}
-          timeValues={{
-            weekday: state.selectWeekday,
-            date: state.selectDate,
-            hour: state.selectHour,
-            minute: state.selectMinute,
-          }}
-          onSelectTimeField={setPickerType}
-          t={t}
-        />
-      </View>
+      <View style={styles.pageFrame} onLayout={onPageLayout}>
+        <Animated.View
+          pointerEvents="box-none"
+          style={[
+            styles.searchSection,
+            {
+              height: searchSectionHeight,
+            },
+          ]}
+        >
+          <Animated.View
+            onLayout={onFormLayout}
+            style={[
+              styles.formAnimatedShell,
+              {
+                top: centeredTop,
+                transform: [{ translateY: formTranslateY }],
+              },
+            ]}
+          >
+            <RouteSearchFormCard
+              startValue={state.routeSearchStart}
+              destValue={state.routeSearchDest}
+              options={state.translatedBuildings}
+              onChangeStart={state.setRouteSearchStart}
+              onChangeDest={state.setRouteSearchDest}
+              onUseNearbyStart={() => {
+                applyNearestTo('start').catch(() => {});
+              }}
+              onUseNearbyDest={() => {
+                applyNearestTo('dest').catch(() => {});
+              }}
+              departNow={state.departNow}
+              onToggleDepartNow={state.setDepartNow}
+              timeValues={{
+                weekday: state.selectWeekday,
+                date: state.selectDate,
+                hour: state.selectHour,
+                minute: state.selectMinute,
+              }}
+              onSelectTimeField={setPickerType}
+              t={t}
+            />
+          </Animated.View>
+        </Animated.View>
 
-      <View style={styles.resultsSection}>
-        <Pressable style={styles.submitButton} onPress={onSubmit}>
-          <Text style={styles.submitButtonText}>{t('Btn-Adv')}</Text>
-        </Pressable>
+        <Animated.View
+          style={[
+            styles.resultsSection,
+            {
+              height: resultsHeight,
+              transform: [{ translateY: resultsTranslateY }],
+            },
+          ]}
+        >
+          <ScrollView
+            pointerEvents={isEmptySearch ? 'none' : 'auto'}
+            style={styles.resultsScroll}
+            contentContainerStyle={[
+              styles.resultsSectionContent,
+              !isLargeScreen && { paddingBottom: 24 + MOBILE_BOTTOM_NAV_OVERLAP },
+            ]}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#0f766e" />
+            }
+          >
+            <Pressable style={styles.submitButton} onPress={onSubmit}>
+              <Text style={styles.submitButtonText}>{t('Btn-Adv')}</Text>
+            </Pressable>
 
-        <RouteSearchResultsList
-          results={routeSuccess?.sortedResults}
-          routeError={routeError?.error}
-          routeMessage={routeError?.message}
-          fetchError={fetchError}
-          networkError={networkError.realtime}
-          sameStation={routeSuccess?.samestation ?? false}
-          onSelect={(result) => {
-            setRouteMap(createRouteSearchRouteMapSelection(result, appData.token));
-          }}
-          t={t}
-        />
+            <RouteSearchResultsList
+              results={routeSuccess?.sortedResults}
+              routeError={routeError?.error}
+              routeMessage={routeError?.message}
+              fetchError={fetchError}
+              networkError={networkError.realtime}
+              sameStation={routeSuccess?.samestation ?? false}
+              onSelect={(result) => {
+                setRouteMap(createRouteSearchRouteMapSelection(result, appData.token));
+              }}
+              t={t}
+            />
+          </ScrollView>
+        </Animated.View>
       </View>
     </ScreenContainer>
   );
+}
+
+function appTempIsEmpty(start: string, dest: string) {
+  return start.trim() === '' && dest.trim() === '';
 }
 
 const styles = StyleSheet.create({
@@ -169,24 +268,34 @@ const styles = StyleSheet.create({
     backgroundColor: '#911f27',
   },
   pageContent: {
-    paddingBottom: 24,
-    backgroundColor: '#fff',
-  },
-  redHeader: {
-    position: 'relative',
-    paddingHorizontal: '3%',
-    paddingBottom: 50,
-  },
-  redHeaderBackdrop: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 35,
+    flex: 1,
     backgroundColor: '#911f27',
+  },
+  pageFrame: {
+    flex: 1,
+  },
+  searchSection: {
+    position: 'relative',
+    backgroundColor: '#911f27',
+    overflow: 'hidden',
+  },
+  formAnimatedShell: {
+    position: 'absolute',
+    left: '3%',
+    right: '3%',
   },
   resultsSection: {
     marginTop: -25,
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    backgroundColor: '#faf8f6',
+    overflow: 'hidden',
+  },
+  resultsScroll: {
+    flex: 1,
+  },
+  resultsSectionContent: {
+    paddingTop: 18,
     paddingBottom: 16,
   },
   submitButton: {
