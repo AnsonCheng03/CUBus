@@ -40,6 +40,7 @@ export function RealtimeScreen() {
     selectedStation,
     currentCoords,
     t,
+    i18n.language,
   );
 
   const refreshResults = async (stationName = selectedStation, shouldLog = false) => {

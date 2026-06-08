@@ -8,6 +8,7 @@ import { SettingsRow, SettingsSection } from '../components/settings/SettingsSec
 import { useAppState } from '../providers/AppProvider';
 import { i18next } from '../lib/i18n';
 import { NAV_RESPONSIVE_BREAKPOINT } from '../lib/layout';
+import { mobileQueryClient, mobileQueryKeys } from '../query/client';
 import type { WebsiteLink } from '../types/mobile';
 
 export function SettingsScreen() {
@@ -57,6 +58,9 @@ export function SettingsScreen() {
               const next = i18next.language.includes('en') ? 'zh' : 'en';
               i18next.changeLanguage(next).then(() => {
                 clearTemporaryState();
+                mobileQueryClient.invalidateQueries({ queryKey: mobileQueryKeys.bootstrap });
+                mobileQueryClient.invalidateQueries({ queryKey: mobileQueryKeys.realtime });
+                mobileQueryClient.invalidateQueries({ queryKey: mobileQueryKeys.deltaSync });
               });
             }}
           />

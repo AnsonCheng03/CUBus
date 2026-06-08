@@ -20,6 +20,7 @@ export function useRealtimeStationOptions(
   selectedStation: string,
   currentCoords: Coordinates | null,
   t: TFunction,
+  language: string,
 ): RealtimeStationViewModel {
   return useMemo(() => {
     const busStops = Object.values((appData.bus ?? {}) as BusData).flatMap(
@@ -79,5 +80,5 @@ export function useRealtimeStationOptions(
       importantStations,
       groupedNearbyStops: gpsData[selectedStation]?.Grouped ?? [],
     };
-  }, [appData.GPS, appData.bus, currentCoords, selectedStation, t]);
+  }, [appData.GPS, appData.bus, currentCoords, language, selectedStation, t]);
 }

@@ -28,7 +28,7 @@ function buildTravelDateOptions(busData: BusData) {
 }
 
 export function useRouteSearchState() {
-  const { t } = useTranslation('global');
+  const { t, i18n } = useTranslation('global');
   const { appData, appTempData, setSearchStation } = useAppState();
 
   const busData = appData.bus ?? {};
@@ -39,7 +39,7 @@ export function useRouteSearchState() {
       translatedBuildings: buildTranslatedBuildings(busData as BusData, stationData, t),
       travelDateOptions: buildTravelDateOptions(busData as BusData),
     };
-  }, [busData, stationData, t]);
+  }, [busData, i18n.language, stationData, t]);
 
   const searchStation = appTempData.searchStation ?? {};
 
