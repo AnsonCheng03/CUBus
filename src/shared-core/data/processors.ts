@@ -57,5 +57,26 @@ export function pickFromResponseOrLocal(
   response: ServerResponse,
   localFallback: unknown,
 ) {
+  if (table === 'translation') {
+    const serverTranslation = response.translation;
+    const localTranslation = localFallback as ServerResponse['translation'] | undefined;
+
+    if (!serverTranslation) {
+      return localFallback;
+    }
+
+    return {
+      ...serverTranslation,
+      en: {
+        ...(serverTranslation.en ?? {}),
+        ...(localTranslation?.en ?? {}),
+      },
+      zh: {
+        ...(serverTranslation.zh ?? {}),
+        ...(localTranslation?.zh ?? {}),
+      },
+    };
+  }
+
   return table in response ? response[table] : localFallback;
 }

@@ -78,6 +78,7 @@
     "meta_desc_realtime": "Provide real-time school bus arrival information, and get the location of the school bus through reports from other students.",
     "meta_desc_routesearch": "Carry out building-to-building searches and point-to-point school bus routing.",
     "meta_desc_settings": "Manage language, search, bus map, and app information",
+    "settings_change_language": "Change Language",
     "modal-map-button": "Bus Arrived",
     "modal-map-desc": "Help improving data",
     "modal-map-title": "Route",
@@ -444,6 +445,7 @@
     "meta_desc_realtime": "提供校巴實時到站資訊，並可透過其他學生回報得知校巴位置。Provide real-time school bus arrival information, and get the location of the school bus through reports from other students.",
     "meta_desc_routesearch": "進行校巴點對點路線、建築物對建築物搜尋。 ",
     "meta_desc_settings": "管理語言、搜尋、校巴地圖與應用程式資料",
+    "settings_change_language": "轉換語言",
     "modal-map-button": "我上咗車",
     "modal-map-desc": "協助改善報站時間",
     "modal-map-title": "路線",
@@ -732,5 +734,3 @@
     "WK-Wed": "星期三"
   }
 }
-    "settings_change_language": "Change Language",
-    "settings_change_language": "轉換語言",
