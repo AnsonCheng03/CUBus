@@ -125,6 +125,10 @@ export function RealtimeScreen() {
     refreshResults(selectedStation).catch(() => {});
   }, [realtimeData]);
 
+  useEffect(() => {
+    refreshResults(selectedStation).catch(() => {});
+  }, [i18n.language]);
+
   const onRefresh = async () => {
     setRefreshing(true);
     await refreshRealtime();
