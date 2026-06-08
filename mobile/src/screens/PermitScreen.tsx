@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
+  Animated,
+  Easing,
   Modal,
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -60,10 +62,20 @@ export function PermitScreen() {
   const [selectedBusMode, setSelectedBusMode] =
     useState<keyof typeof permitBusRoutes>('meet_class_bus');
   const carouselRef = useRef<ScrollView | null>(null);
+  const surfaceBodyProgress = useRef(new Animated.Value(saved.name ? 1 : 0)).current;
 
   useEffect(() => {
     setForm(saved);
   }, [saved]);
+
+  useEffect(() => {
+    Animated.timing(surfaceBodyProgress, {
+      toValue: mode === 'view' ? 1 : 0,
+      duration: 240,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    }).start();
+  }, [mode, surfaceBodyProgress]);
 
   const desc = i18n.language.includes('en')
     ? 'The bus pass provided on this app is a creative work intended solely for entertainment purposes and is not an official document issued, endorsed, or authorized by The Chinese University of Hong Kong or any of its affiliated departments.'
@@ -99,6 +111,10 @@ export function PermitScreen() {
   const fullscreenCardWidth = isPortrait
     ? Math.min(height * 0.92, width * PERMIT_CARD_RATIO * 0.92)
     : Math.min(width * 0.92, height * PERMIT_CARD_RATIO * 0.92);
+  const surfaceBodyBackgroundColor = surfaceBodyProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['rgba(255,255,255,0.82)', '#fff'],
+  });
 
   const scrollToPermit = (mode: keyof typeof permitBusRoutes) => {
     const index = PERMIT_VARIANTS.findIndex((item) => item.mode === mode);
@@ -131,8 +147,14 @@ export function PermitScreen() {
         </View>
 
         <View style={styles.surfaceSection}>
-          {mode === 'edit' ? (
-            <View style={[styles.surfaceBody, !isLargeScreen && styles.surfaceBodyMobile]}>
+          <Animated.View
+            style={[
+              styles.surfaceBody,
+              !isLargeScreen && styles.surfaceBodyMobile,
+              { backgroundColor: surfaceBodyBackgroundColor },
+            ]}
+          >
+            {mode === 'edit' ? (
               <View style={styles.formPage}>
                 <View style={styles.formCard}>
                   {[
@@ -182,15 +204,7 @@ export function PermitScreen() {
                   ) : null}
                 </View>
               </View>
-            </View>
-          ) : (
-            <View
-              style={[
-                styles.surfaceBody,
-                !isLargeScreen && styles.surfaceBodyMobile,
-                { backgroundColor: '#fff' },
-              ]}
-            >
+            ) : (
               <View style={styles.viewPage}>
                 <View style={styles.passStageCard}>
                   <View style={styles.passStageMeta}>
@@ -285,8 +299,8 @@ export function PermitScreen() {
                   </Pressable>
                 </View>
               </View>
-            </View>
-          )}
+            )}
+          </Animated.View>
         </View>
       </View>
 
@@ -384,7 +398,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   surfaceBodyMobile: {
-    paddingBottom: MOBILE_BOTTOM_NAV_OVERLAP + 18,
+    paddingBottom: MOBILE_BOTTOM_NAV_OVERLAP + 40,
   },
   formPage: {
     flex: 1,
