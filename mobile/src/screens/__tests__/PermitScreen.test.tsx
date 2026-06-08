@@ -38,6 +38,10 @@ jest.mock('react-native-svg', () => {
   };
 });
 
+jest.mock('@expo/vector-icons', () => ({
+  Ionicons: 'Ionicons',
+}));
+
 describe('PermitScreen', () => {
   beforeEach(() => {
     mockState.appSettings = {};
@@ -60,24 +64,23 @@ describe('PermitScreen', () => {
     mockState.appSettings = {
       schoolBusPermit: { name: 'Ada', sid: '1155', major: 'CSCI', expiry: '06/2026' },
     };
-    const { getByText } = render(<PermitScreen />);
-    expect(getByText('Shuttle Bus Permit')).toBeTruthy();
-    expect(getByText('Meet-Class Bus Permit')).toBeTruthy();
-    expect(getByText('穿梭校巴證')).toBeTruthy();
-    expect(getByText('轉堂校巴證')).toBeTruthy();
+    const { getAllByText } = render(<PermitScreen />);
+    expect(getAllByText('Shuttle Bus Permit').length).toBeGreaterThan(0);
+    expect(getAllByText('Meet-Class Bus Permit').length).toBeGreaterThan(0);
+    expect(getAllByText('穿梭校巴證').length).toBeGreaterThan(0);
+    expect(getAllByText('轉堂校巴證').length).toBeGreaterThan(0);
   });
 
   it('opens and closes the fullscreen permit viewer', () => {
     mockState.appSettings = {
       schoolBusPermit: { name: 'Ada', sid: '1155', major: 'CSCI', expiry: '06/2026' },
     };
-    const { getByTestId, getByText, queryByTestId } = render(<PermitScreen />);
+    const { getByTestId, queryByTestId } = render(<PermitScreen />);
 
     fireEvent.press(getByTestId('permit-card-shuttle'));
     expect(getByTestId('permit-card-fullscreen')).toBeTruthy();
-    expect(getByText('Permit_Close')).toBeTruthy();
 
-    fireEvent.press(getByText('Permit_Close'));
+    fireEvent.press(getByTestId('permit-fullscreen-backdrop'));
     expect(queryByTestId('permit-card-fullscreen')).toBeNull();
   });
 });

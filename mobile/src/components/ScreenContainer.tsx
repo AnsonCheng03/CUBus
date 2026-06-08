@@ -24,6 +24,7 @@ export function ScreenContainer({
   scrollStyle,
   safeAreaBackgroundColor = '#f2f2f2',
   safeAreaEdges,
+  scrollable = true,
 }: {
   title: string;
   subtitle?: string;
@@ -37,34 +38,59 @@ export function ScreenContainer({
   scrollStyle?: StyleProp<ViewStyle>;
   safeAreaBackgroundColor?: string;
   safeAreaEdges?: Edge[];
+  scrollable?: boolean;
 }) {
   const { width } = useWindowDimensions();
   const resolvedEdges = safeAreaEdges ?? (width >= NAV_RESPONSIVE_BREAKPOINT ? [] : ['top']);
 
+  const contentNode = (
+    <>
+      {showHeader ? (
+        <View style={[styles.header, { marginBottom: headerSpacing }]}>
+          <Text style={styles.title}>{title}</Text>
+          {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+        </View>
+      ) : null}
+      {children}
+    </>
+  );
+
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: safeAreaBackgroundColor }]} edges={resolvedEdges}>
-      <ScrollView
-        style={scrollStyle}
-        contentContainerStyle={[
-          styles.content,
-          {
-            gap: contentGap,
-            paddingHorizontal: contentPadding,
-            paddingTop: contentPadding,
-            paddingBottom: contentPadding,
-          },
-          contentStyle,
-        ]}
-        refreshControl={refreshControl}
-      >
-        {showHeader ? (
-          <View style={[styles.header, { marginBottom: headerSpacing }]}>
-            <Text style={styles.title}>{title}</Text>
-            {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
-          </View>
-        ) : null}
-        {children}
-      </ScrollView>
+      {scrollable ? (
+        <ScrollView
+          style={scrollStyle}
+          contentContainerStyle={[
+            styles.content,
+            {
+              gap: contentGap,
+              paddingHorizontal: contentPadding,
+              paddingTop: contentPadding,
+              paddingBottom: contentPadding,
+            },
+            contentStyle,
+          ]}
+          refreshControl={refreshControl}
+        >
+          {contentNode}
+        </ScrollView>
+      ) : (
+        <View
+          style={[
+            styles.content,
+            {
+              gap: contentGap,
+              paddingHorizontal: contentPadding,
+              paddingTop: contentPadding,
+              paddingBottom: contentPadding,
+            },
+            contentStyle,
+            scrollStyle,
+          ]}
+        >
+          {contentNode}
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -73,7 +99,9 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
-  content: {},
+  content: {
+    flexGrow: 1,
+  },
   header: {
     gap: 4,
   },
