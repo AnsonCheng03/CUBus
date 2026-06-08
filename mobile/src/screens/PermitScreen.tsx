@@ -20,23 +20,6 @@ import { useAppState } from '../providers/AppProvider';
 import { NAV_RESPONSIVE_BREAKPOINT } from '../lib/layout';
 import type { PermitFormValue } from '../types/mobile';
 
-const PERMIT_VARIANTS: Array<{
-  mode: keyof typeof permitBusRoutes;
-  title: string;
-  subtitle: string;
-}> = [
-  {
-    mode: 'shuttle_bus',
-    title: '穿梭校巴證',
-    subtitle: 'Shuttle Bus Permit',
-  },
-  {
-    mode: 'meet_class_bus',
-    title: '轉堂校巴證',
-    subtitle: 'Meet-Class Bus Permit',
-  },
-];
-
 export function PermitScreen() {
   const { t, i18n } = useTranslation('global');
   const { width, height } = useWindowDimensions();
@@ -75,9 +58,28 @@ export function PermitScreen() {
     }).start();
   }, [mode, surfaceBodyProgress]);
 
-  const desc = i18n.language.includes('en')
-    ? 'The bus pass provided on this app is a creative work intended solely for entertainment purposes and is not an official document issued, endorsed, or authorized by The Chinese University of Hong Kong or any of its affiliated departments.'
-    : '本應用程式所展示的校巴證僅為創作作品，旨在提供趣味性及娛樂用途，並非由香港中文大學或其任何相關部門授權、認可或發行的正式證件。';
+  const desc = t('School_Bus_Permit_Desc');
+  const permitVariants = useMemo<
+    Array<{
+      mode: keyof typeof permitBusRoutes;
+      title: string;
+      subtitle: string;
+    }>
+  >(
+    () => [
+      {
+        mode: 'shuttle_bus',
+        title: t('School_Bus_Permit_Shuttle_Title'),
+        subtitle: t('School_Bus_Permit_Shuttle_Subtitle'),
+      },
+      {
+        mode: 'meet_class_bus',
+        title: t('School_Bus_Permit_MeetClass_Title'),
+        subtitle: t('School_Bus_Permit_MeetClass_Subtitle'),
+      },
+    ],
+    [t],
+  );
 
   const save = () => {
     const trimmed: PermitFormValue = {
@@ -98,9 +100,9 @@ export function PermitScreen() {
 
   const selectedIndex = Math.max(
     0,
-    PERMIT_VARIANTS.findIndex((variant) => variant.mode === selectedBusMode),
+    permitVariants.findIndex((variant) => variant.mode === selectedBusMode),
   );
-  const selectedVariant = PERMIT_VARIANTS[selectedIndex] ?? PERMIT_VARIANTS[0];
+  const selectedVariant = permitVariants[selectedIndex] ?? permitVariants[0];
   const cardStageWidth = Math.min(width - 56, 720);
   const carouselGap = 14;
   const carouselSidePadding = Math.max((width - 32 - cardStageWidth) / 2, 0);
@@ -114,7 +116,7 @@ export function PermitScreen() {
   });
 
   const scrollToPermit = (modeValue: keyof typeof permitBusRoutes) => {
-    const index = PERMIT_VARIANTS.findIndex((item) => item.mode === modeValue);
+    const index = permitVariants.findIndex((item) => item.mode === modeValue);
     if (index < 0) return;
 
     setSelectedBusMode(modeValue);
@@ -172,7 +174,7 @@ export function PermitScreen() {
                 form={form}
                 selectedBusMode={selectedBusMode}
                 selectedVariant={selectedVariant}
-                permitVariants={PERMIT_VARIANTS}
+                permitVariants={permitVariants}
                 cardStageWidth={cardStageWidth}
                 carouselGap={carouselGap}
                 carouselSidePadding={carouselSidePadding}

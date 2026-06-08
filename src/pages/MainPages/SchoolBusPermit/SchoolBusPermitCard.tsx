@@ -141,9 +141,15 @@ const SchoolBusPermitCard: React.FC<{
               </div>
 
               <div className="cardname">
-                <h1>{busMode === 'meet_class_bus' ? '轉堂校巴證' : '穿梭校巴證'}</h1>
+                <h1>
+                  {busMode === 'meet_class_bus'
+                    ? t('School_Bus_Permit_MeetClass_Title')
+                    : t('School_Bus_Permit_Shuttle_Title')}
+                </h1>
                 <h2>
-                  {busMode === 'meet_class_bus' ? 'Meet-Class Bus Permit' : 'Shuttle Bus Permit'}
+                  {busMode === 'meet_class_bus'
+                    ? t('School_Bus_Permit_MeetClass_Subtitle')
+                    : t('School_Bus_Permit_Shuttle_Subtitle')}
                 </h2>
               </div>
 

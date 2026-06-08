@@ -1,5 +1,6 @@
 import React from 'react';
 import { Image, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { cuhkLogo, meetClassBusImage, permitBusRoutes, shuttleBusImage } from '../lib/permit';
 import type { PermitFormValue } from '../types/mobile';
@@ -70,10 +71,17 @@ export function PermitCard({
   testID,
   withShadow = true,
 }: PermitCardProps) {
+  const { t } = useTranslation('global');
   const scale = targetWidth / CARD_WIDTH;
   const targetHeight = targetWidth / CARD_RATIO;
-  const title = busMode === 'meet_class_bus' ? '轉堂校巴證' : '穿梭校巴證';
-  const subtitle = busMode === 'meet_class_bus' ? 'Meet-Class Bus Permit' : 'Shuttle Bus Permit';
+  const title =
+    busMode === 'meet_class_bus'
+      ? t('School_Bus_Permit_MeetClass_Title')
+      : t('School_Bus_Permit_Shuttle_Title');
+  const subtitle =
+    busMode === 'meet_class_bus'
+      ? t('School_Bus_Permit_MeetClass_Subtitle')
+      : t('School_Bus_Permit_Shuttle_Subtitle');
   const busImage = busMode === 'meet_class_bus' ? meetClassBusImage : shuttleBusImage;
   const Wrapper = onPress ? Pressable : View;
 

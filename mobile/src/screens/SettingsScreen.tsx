@@ -35,11 +35,7 @@ export function SettingsScreen() {
   return (
     <ScreenContainer
       title={t('NAV-Settings')}
-      subtitle={
-        t('NAV-Settings') === 'Settings'
-          ? 'Manage language, search, bus map, and app information'
-          : '管理語言、搜尋、校巴地圖與應用程式資料'
-      }
+      subtitle={t('meta_desc_settings')}
       contentPadding={24}
       headerSpacing={18}
       safeAreaBackgroundColor="#f6f2ee"
@@ -53,7 +49,7 @@ export function SettingsScreen() {
       <View style={styles.sectionGroup}>
         <SettingsSection>
           <SettingsRow
-            label={i18next.language.includes('en') ? '轉換語言' : 'Change Language'}
+            label={t('settings_change_language')}
             onPress={() => {
               const next = i18next.language.includes('en') ? 'zh' : 'en';
               i18next.changeLanguage(next).then(() => {

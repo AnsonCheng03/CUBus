@@ -72,7 +72,7 @@ const Settings: React.FC = () => {
         <div className="setting-page">
           <IonList inset>
             <IonItem button onClick={toggleLanguage}>
-              <IonLabel>{i18n.language.includes('en') ? '轉換語言' : 'Change Language'}</IonLabel>
+              <IonLabel>{t('settings_change_language')}</IonLabel>
             </IonItem>
 
             <IonItem lines="full">
