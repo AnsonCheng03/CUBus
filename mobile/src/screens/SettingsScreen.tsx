@@ -34,9 +34,14 @@ export function SettingsScreen() {
   return (
     <ScreenContainer
       title={t('NAV-Settings')}
-      subtitle={t('meta_desc_settings') || 'Preferences and links'}
-      contentPadding={0}
-      headerSpacing={12}
+      subtitle={
+        t('NAV-Settings') === 'Settings'
+          ? 'Manage language, search, bus map, and app information'
+          : '管理語言、搜尋、校巴地圖與應用程式資料'
+      }
+      contentPadding={24}
+      headerSpacing={18}
+      safeAreaBackgroundColor="#f6f2ee"
       contentStyle={[
         styles.pageContent,
         !isLargeScreen && { paddingBottom: 24 + MOBILE_BOTTOM_NAV_OVERLAP },
@@ -57,6 +62,7 @@ export function SettingsScreen() {
           />
           <SettingsRow
             label={t('routeNoWaitTimeT')}
+            description={t('routeNoWaitTimeD')}
             right={
               <Switch
                 value={!!appSettings.searchSortDontIncludeWaitTime}
@@ -66,9 +72,7 @@ export function SettingsScreen() {
                 trackColor={{ true: '#630a10' }}
               />
             }
-            noDivider
           />
-          <Text style={styles.noteText}>{t('routeNoWaitTimeD')}</Text>
           {networkError.batch ? (
             <View style={styles.errorRow}>
               <Text style={styles.errorText}>{t('batch_fetch_err')}</Text>
@@ -119,32 +123,26 @@ export function SettingsScreen() {
 
 const styles = StyleSheet.create({
   pageContent: {
-    paddingTop: 8,
+    paddingTop: 10,
     paddingBottom: 24,
+    backgroundColor: '#f6f2ee',
   },
   sectionGroup: {
-    paddingHorizontal: 16,
-    marginBottom: 14,
-  },
-  noteText: {
-    paddingHorizontal: 16,
-    paddingTop: 0,
-    paddingBottom: 12,
-    color: '#666',
-    fontSize: 13,
-    lineHeight: 18,
+    marginBottom: 18,
   },
   errorRow: {
-    paddingHorizontal: 16,
-    paddingBottom: 12,
+    paddingHorizontal: 18,
+    paddingTop: 2,
+    paddingBottom: 16,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 12,
+    backgroundColor: '#fff',
   },
   errorText: {
     flex: 1,
-    color: '#666',
+    color: '#7a6c66',
     fontSize: 13,
     lineHeight: 18,
   },

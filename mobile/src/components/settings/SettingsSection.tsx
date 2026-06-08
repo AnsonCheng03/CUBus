@@ -7,18 +7,23 @@ export function SettingsSection({ children }: { children: React.ReactNode }) {
 
 export function SettingsRow({
   label,
+  description,
   onPress,
   right,
   noDivider = false,
 }: {
   label: string;
+  description?: string;
   onPress?: () => void;
   right?: React.ReactNode;
   noDivider?: boolean;
 }) {
   const content = (
     <View style={[styles.row, noDivider && styles.rowNoDivider]}>
-      <Text style={styles.rowLabel}>{label}</Text>
+      <View style={styles.rowTextBlock}>
+        <Text style={styles.rowLabel}>{label}</Text>
+        {description ? <Text style={styles.rowDescription}>{description}</Text> : null}
+      </View>
       {right}
     </View>
   );
@@ -29,25 +34,44 @@ export function SettingsRow({
 const styles = StyleSheet.create({
   section: {
     backgroundColor: '#fff',
-    borderRadius: 8,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(90, 60, 50, 0.08)',
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOpacity: 0.04,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 1,
   },
   row: {
-    minHeight: 50,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    minHeight: 56,
+    paddingHorizontal: 18,
+    paddingVertical: 16,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: '#dddddd',
+    borderBottomColor: '#ece7e3',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: 12,
   },
   rowNoDivider: {
     borderBottomWidth: 0,
   },
-  rowLabel: {
+  rowTextBlock: {
     flex: 1,
-    color: '#111',
+    justifyContent: 'center',
+    gap: 4,
+    paddingRight: 8,
+  },
+  rowLabel: {
+    color: '#1d1a19',
     fontSize: 16,
+    fontWeight: '500',
+  },
+  rowDescription: {
+    color: '#7a6c66',
+    fontSize: 12,
+    lineHeight: 17,
   },
 });
