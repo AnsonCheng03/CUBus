@@ -200,7 +200,6 @@ const styles = StyleSheet.create({
   surfaceSection: {
     flex: 1,
     backgroundColor: '#911f27',
-    marginTop: -14,
   },
   surfaceBody: {
     flex: 1,

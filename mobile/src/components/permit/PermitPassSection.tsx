@@ -57,7 +57,6 @@ export function PermitPassSection({
         <View style={styles.passStageMeta}>
           <Text style={styles.passStageLabel}>{t('school_bus_permit_title')}</Text>
           <Text style={styles.passStageTitle}>{selectedVariant.title}</Text>
-          <Text style={styles.passStageSubtitle}>{selectedVariant.subtitle}</Text>
         </View>
 
         <View style={[styles.passViewport, { minHeight: cardStageWidth / PERMIT_CARD_RATIO + 18 }]}>
@@ -71,7 +70,10 @@ export function PermitPassSection({
             snapToInterval={cardStageWidth + carouselGap}
             snapToAlignment="start"
             bounces={false}
-            contentContainerStyle={[styles.passCarouselContent, { paddingHorizontal: carouselSidePadding }]}
+            contentContainerStyle={[
+              styles.passCarouselContent,
+              { paddingHorizontal: carouselSidePadding },
+            ]}
             onScrollEndDrag={(event: NativeSyntheticEvent<NativeScrollEvent>) => {
               const index = Math.round(
                 event.nativeEvent.contentOffset.x / (cardStageWidth + carouselGap),
@@ -145,7 +147,7 @@ const styles = StyleSheet.create({
   viewPageContent: {
     flexGrow: 1,
     gap: 12,
-    paddingBottom: 8,
+    paddingBottom: 24,
   },
   passStageCard: {
     borderRadius: 26,
@@ -169,11 +171,6 @@ const styles = StyleSheet.create({
     color: '#2f1b16',
     fontSize: 24,
     fontWeight: '800',
-  },
-  passStageSubtitle: {
-    color: '#5f473d',
-    fontSize: 14,
-    fontWeight: '600',
   },
   passViewport: {
     alignItems: 'center',

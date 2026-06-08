@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   },
   formPageContent: {
     paddingTop: 24,
-    paddingBottom: 6,
+    paddingBottom: 24,
   },
   formCard: {
     backgroundColor: '#fff',

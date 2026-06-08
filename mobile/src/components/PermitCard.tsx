@@ -1,6 +1,5 @@
 import React from 'react';
 import { Image, ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useTranslation } from 'react-i18next';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 import { cuhkLogo, meetClassBusImage, permitBusRoutes, shuttleBusImage } from '../lib/permit';
 import type { PermitFormValue } from '../types/mobile';
@@ -8,6 +7,9 @@ import type { PermitFormValue } from '../types/mobile';
 const CARD_WIDTH = 560;
 const CARD_HEIGHT = 356;
 const CARD_RATIO = CARD_WIDTH / CARD_HEIGHT;
+const FONT_CARD_SERIF = 'Times New Roman';
+const FONT_CARD_SANS = 'Arial';
+const FONT_CARD_SANS_ALT = 'Helvetica';
 
 type BusMode = keyof typeof permitBusRoutes;
 
@@ -71,17 +73,10 @@ export function PermitCard({
   testID,
   withShadow = true,
 }: PermitCardProps) {
-  const { t } = useTranslation('global');
   const scale = targetWidth / CARD_WIDTH;
   const targetHeight = targetWidth / CARD_RATIO;
-  const title =
-    busMode === 'meet_class_bus'
-      ? t('School_Bus_Permit_MeetClass_Title')
-      : t('School_Bus_Permit_Shuttle_Title');
-  const subtitle =
-    busMode === 'meet_class_bus'
-      ? t('School_Bus_Permit_MeetClass_Subtitle')
-      : t('School_Bus_Permit_Shuttle_Subtitle');
+  const title = busMode === 'meet_class_bus' ? '轉堂校巴證' : '穿梭校巴證';
+  const subtitle = busMode === 'meet_class_bus' ? 'Meet-Class Bus Permit' : 'Shuttle Bus Permit';
   const busImage = busMode === 'meet_class_bus' ? meetClassBusImage : shuttleBusImage;
   const Wrapper = onPress ? Pressable : View;
 
@@ -272,39 +267,39 @@ const styles = StyleSheet.create({
   },
   schoolZh: {
     color: '#fff',
-    fontFamily: 'Arial',
+    fontFamily: FONT_CARD_SANS,
   },
   schoolEn: {
     color: '#fff',
-    fontFamily: 'Times New Roman',
+    fontFamily: FONT_CARD_SERIF,
   },
   hintZh: {
     color: '#fff',
     textAlign: 'center',
-    fontFamily: 'Arial',
+    fontFamily: FONT_CARD_SANS,
     fontWeight: '400',
   },
   hintEn: {
     color: '#fff',
     textAlign: 'center',
-    fontFamily: 'Helvetica',
+    fontFamily: FONT_CARD_SANS_ALT,
     textTransform: 'uppercase',
   },
   cardTitle: {
     color: '#fff',
-    fontFamily: 'Arial',
+    fontFamily: FONT_CARD_SANS,
     textAlign: 'left',
     fontWeight: '700',
   },
   cardSubtitle: {
     color: '#fff',
-    fontFamily: 'Helvetica',
+    fontFamily: FONT_CARD_SANS_ALT,
     textTransform: 'uppercase',
     textAlign: 'left',
   },
   routeDesc: {
     color: 'rgb(236, 240, 241)',
-    fontFamily: 'Arial',
+    fontFamily: FONT_CARD_SANS,
   },
   routeChipLabel: {
     ...StyleSheet.absoluteFillObject,
@@ -314,7 +309,7 @@ const styles = StyleSheet.create({
   routeChipText: {
     color: '#fff',
     fontWeight: '700',
-    fontFamily: 'Helvetica',
+    fontFamily: FONT_CARD_SANS_ALT,
   },
   dataRow: {
     flexDirection: 'row',
@@ -322,11 +317,11 @@ const styles = StyleSheet.create({
   },
   dataLabel: {
     color: '#fff',
-    fontFamily: 'Arial',
+    fontFamily: FONT_CARD_SANS,
   },
   dataValue: {
     flex: 1,
     color: '#fff',
-    fontFamily: 'Arial',
+    fontFamily: FONT_CARD_SANS,
   },
 });
