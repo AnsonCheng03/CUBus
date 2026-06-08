@@ -213,6 +213,6 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   surfaceBodyMobile: {
-    paddingBottom: MOBILE_BOTTOM_NAV_OVERLAP + 16,
+    paddingBottom: MOBILE_BOTTOM_NAV_OVERLAP,
   },
 });
