@@ -65,12 +65,12 @@ export function RouteSearchLocationChooser({
               buttonStyle={styles.inlineSelectorButton}
               inputStyle={styles.inlineSelectorValue}
             />
-          </View>
-          <Pressable style={styles.functionButton} onPress={onUseNearby}>
-            <Ionicons name="navigate-circle-outline" size={26} color="#630a10" />
-          </Pressable>
         </View>
+        <Pressable style={styles.functionButton} onPress={onUseNearby}>
+          <Ionicons name="navigate-circle" size={26} color="#2196f3" />
+        </Pressable>
       </View>
+    </View>
     </View>
   );
 }

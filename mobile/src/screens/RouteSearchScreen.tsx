@@ -17,11 +17,16 @@ import { RouteMapModal } from '../components/RouteMapModal';
 import { RouteSearchFormCard } from '../components/route-search/RouteSearchFormCard';
 import { RouteSearchResultsList } from '../components/route-search/RouteSearchResultsList';
 import { ScreenContainer } from '../components/ScreenContainer';
+import { InlineNoticeRow } from '../components/InlineNoticeRow';
 import { MOBILE_BOTTOM_NAV_OVERLAP } from '../components/CustomNavBar';
-import { useNearestStation, formatTranslatedStationLabel } from '../hooks/useNearestStation';
+import {
+  formatTranslatedStationLabel,
+  resolveNearestStationCodeFromCoordinates,
+} from '../hooks/useNearestStation';
 import { useRouteCompute } from '../hooks/useRouteCompute';
 import { createRouteSearchRouteMapSelection } from '../hooks/useRouteMapSelection';
 import { useRouteSearchState } from '../hooks/useRouteSearchState';
+import { getCurrentCoordinates } from '../lib/location';
 import { NAV_RESPONSIVE_BREAKPOINT } from '../lib/layout';
 import { useAppState } from '../providers/AppProvider';
 
@@ -36,10 +41,12 @@ export function RouteSearchScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [pageHeight, setPageHeight] = useState(0);
   const [formHeight, setFormHeight] = useState(0);
-  const resolveNearestStation = useNearestStation(t, appData.GPS ?? {});
+  const [gpsErrorText, setGpsErrorText] = useState<string | null>(null);
+  const [floatingGpsNoticeText, setFloatingGpsNoticeText] = useState<string | null>(null);
   const searchLayoutProgress = useRef(
     new Animated.Value(appTempIsEmpty(state.routeSearchStart, state.routeSearchDest) ? 0 : 1),
   ).current;
+  const floatingNoticeProgress = useRef(new Animated.Value(0)).current;
 
   const onSubmit = () =>
     generate({
@@ -65,9 +72,31 @@ export function RouteSearchScreen() {
     state.selectMinute,
   ]);
 
+  useEffect(() => {
+    if (gpsErrorText !== t('nearst_error')) {
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      setGpsErrorText((current) => (current === t('nearst_error') ? null : current));
+    }, 5000);
+
+    return () => clearTimeout(timeoutId);
+  }, [gpsErrorText, t]);
+
   const applyNearestTo = async (field: 'start' | 'dest') => {
-    const nearestStation = await resolveNearestStation().catch(() => null);
+    setGpsErrorText(null);
+    const nearestStation = await getCurrentCoordinates(t)
+      .then((coords) => {
+        return resolveNearestStationCodeFromCoordinates(t, appData.GPS ?? {}, coords);
+      })
+      .catch((error: unknown) => {
+        setGpsErrorText(error instanceof Error ? error.message : t('GPS-error'));
+        return null;
+      });
+
     if (!nearestStation) {
+      setGpsErrorText((current) => current ?? t('GPS-error'));
       return;
     }
 
@@ -91,6 +120,7 @@ export function RouteSearchScreen() {
   const routeError = routeResult ? ('error' in routeResult ? routeResult : null) : null;
   const routeSuccess = routeResult ? ('sortedResults' in routeResult ? routeResult : null) : null;
   const isEmptySearch = appTempIsEmpty(state.routeSearchStart, state.routeSearchDest);
+  const shouldShowFloatingGpsNotice = isEmptySearch && !!gpsErrorText;
   const dockedTop = (isLargeScreen ? 0 : insets.top) + 15;
   const searchSectionDockedHeight = Math.max(dockedTop + formHeight + 50, 0);
   const resultsVisibleHeight = Math.max(pageHeight - searchSectionDockedHeight + 25, 0);
@@ -104,6 +134,30 @@ export function RouteSearchScreen() {
       useNativeDriver: false,
     }).start();
   }, [isEmptySearch, searchLayoutProgress]);
+
+  useEffect(() => {
+    if (shouldShowFloatingGpsNotice) {
+      setFloatingGpsNoticeText(gpsErrorText);
+      Animated.timing(floatingNoticeProgress, {
+        toValue: 1,
+        duration: 220,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }).start();
+      return;
+    }
+
+    Animated.timing(floatingNoticeProgress, {
+      toValue: 0,
+      duration: 180,
+      easing: Easing.in(Easing.cubic),
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+      if (finished) {
+        setFloatingGpsNoticeText(null);
+      }
+    });
+  }, [floatingNoticeProgress, gpsErrorText, shouldShowFloatingGpsNotice]);
 
   const formTranslateY = searchLayoutProgress.interpolate({
     inputRange: [0, 1],
@@ -150,6 +204,28 @@ export function RouteSearchScreen() {
       <RouteMapModal routeMap={routeMapSelection} onClose={() => setRouteMap(null)} />
 
       <View style={styles.pageFrame} onLayout={onPageLayout}>
+        {floatingGpsNoticeText ? (
+          <Animated.View
+            pointerEvents="box-none"
+            style={[
+              styles.floatingNoticeShell,
+              {
+                opacity: floatingNoticeProgress,
+                transform: [
+                  {
+                    translateY: floatingNoticeProgress.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [12, 0],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          >
+            <InlineNoticeRow text={floatingGpsNoticeText} variant="alert" />
+          </Animated.View>
+        ) : null}
+
         <Animated.View
           pointerEvents="box-none"
           style={[
@@ -225,6 +301,7 @@ export function RouteSearchScreen() {
               routeError={routeError?.error}
               routeMessage={routeError?.message}
               fetchError={fetchError}
+              gpsErrorText={isEmptySearch ? null : gpsErrorText}
               networkError={networkError.realtime}
               sameStation={routeSuccess?.samestation ?? false}
               onSelect={(result) => {
@@ -253,6 +330,14 @@ const styles = StyleSheet.create({
   },
   pageFrame: {
     flex: 1,
+  },
+  floatingNoticeShell: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 12 + MOBILE_BOTTOM_NAV_OVERLAP,
+    zIndex: 40,
+    elevation: 40,
   },
   searchSection: {
     position: 'relative',

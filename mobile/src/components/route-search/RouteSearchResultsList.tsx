@@ -10,6 +10,7 @@ export function RouteSearchResultsList({
   routeError,
   routeMessage,
   fetchError,
+  gpsErrorText,
   networkError,
   sameStation,
   onSelect,
@@ -19,6 +20,7 @@ export function RouteSearchResultsList({
   routeError?: boolean;
   routeMessage?: string;
   fetchError: boolean;
+  gpsErrorText?: string | null;
   networkError: boolean;
   sameStation: boolean;
   onSelect: (result: RouteSearchResultCard) => void;
@@ -28,6 +30,7 @@ export function RouteSearchResultsList({
     <>
       {networkError ? <InlineNoticeRow text={t('internet_offline')} variant="alert" /> : null}
       {fetchError ? <InlineNoticeRow text={t('fetch-error')} variant="alert" /> : null}
+      {gpsErrorText ? <InlineNoticeRow text={gpsErrorText} variant="alert" /> : null}
       {sameStation ? <InlineNoticeRow text={t('samestation-info')} variant="info" /> : null}
 
       {results ? (

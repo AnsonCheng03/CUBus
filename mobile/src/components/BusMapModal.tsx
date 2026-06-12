@@ -3,7 +3,7 @@ import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'rea
 import { SafeAreaInsetsContext, SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 
-const campusMapImage = require('../../../src/assets/map.jpg');
+const campusMapImage = require('../../../src/assets/schbus_l.png');
 
 export function BusMapModal({ visible, onClose }: { visible: boolean; onClose: () => void }) {
   const { t } = useTranslation('global');
@@ -18,9 +18,12 @@ export function BusMapModal({ visible, onClose }: { visible: boolean; onClose: (
     >
       <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
         <View style={[styles.header, { paddingTop: Math.max(insets.top, 8) }]}>
-          <Text style={styles.title}>{t('bus_map_page')}</Text>
+          <View style={styles.headerCopy}>
+            <Text style={styles.title}>{t('bus_map_page')}</Text>
+            <Text style={styles.subtitle}>{t('modal-map-title')}</Text>
+          </View>
           <Pressable onPress={onClose}>
-            <Text style={styles.close}>Close</Text>
+            <Text style={styles.close}>{t('toast_dismiss')}</Text>
           </Pressable>
         </View>
         <ScrollView
@@ -32,7 +35,9 @@ export function BusMapModal({ visible, onClose }: { visible: boolean; onClose: (
           maximumZoomScale={3}
           minimumZoomScale={1}
         >
-          <Image source={campusMapImage} style={styles.mapImage} resizeMode="contain" />
+          <View style={styles.mapCard}>
+            <Image source={campusMapImage} style={styles.mapImage} resizeMode="contain" />
+          </View>
         </ScrollView>
       </SafeAreaView>
     </Modal>
@@ -42,36 +47,58 @@ export function BusMapModal({ visible, onClose }: { visible: boolean; onClose: (
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f1ed',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingHorizontal: 20,
     paddingBottom: 12,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: '#e5e5e5',
   },
+  headerCopy: {
+    flex: 1,
+    minWidth: 0,
+  },
   title: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: '700',
     color: '#111',
   },
+  subtitle: {
+    marginTop: 2,
+    fontSize: 13,
+    color: '#7a6c66',
+  },
   close: {
-    color: '#666',
+    color: '#630a10',
     fontWeight: '700',
+    paddingTop: 4,
   },
   scroll: {
     flex: 1,
   },
   content: {
-    padding: 0,
+    padding: 16,
+  },
+  mapCard: {
+    borderRadius: 18,
+    overflow: 'hidden',
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#e8dfd8',
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
   },
   mapImage: {
     width: '100%',
-    height: 700,
+    height: 460,
     backgroundColor: '#fff',
   },
 });

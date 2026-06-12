@@ -122,6 +122,18 @@ export function RealtimeScreen() {
   }, []);
 
   useEffect(() => {
+    if (gpsErrorText !== t('nearst_error')) {
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      setGpsErrorText((current) => (current === t('nearst_error') ? null : current));
+    }, 5000);
+
+    return () => clearTimeout(timeoutId);
+  }, [gpsErrorText, t]);
+
+  useEffect(() => {
     refreshResults(selectedStation).catch(() => {});
   }, [realtimeData]);
 
