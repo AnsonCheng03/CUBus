@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Easing,
@@ -15,7 +15,6 @@ import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { RouteMapSelection } from '../../../src/shared-core/app/types';
 import { RouteMapModal } from '../components/RouteMapModal';
-import { SelectionModal, type SelectionOption } from '../components/SelectionModal';
 import { RouteSearchFormCard } from '../components/route-search/RouteSearchFormCard';
 import { RouteSearchResultsList } from '../components/route-search/RouteSearchResultsList';
 import { ScreenContainer } from '../components/ScreenContainer';
@@ -25,12 +24,7 @@ import { useRouteCompute } from '../hooks/useRouteCompute';
 import { createRouteSearchRouteMapSelection } from '../hooks/useRouteMapSelection';
 import { useRouteSearchState } from '../hooks/useRouteSearchState';
 import { NAV_RESPONSIVE_BREAKPOINT } from '../lib/layout';
-import type { RouteSearchPickerType } from '../types/mobile';
 import { useAppState } from '../providers/AppProvider';
-
-const hours = Array.from({ length: 24 }, (_, index) => String(index).padStart(2, '0'));
-const minutes = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'];
-const weekdays = ['WK-Mon', 'WK-Tue', 'WK-Wed', 'WK-Thu', 'WK-Fri', 'WK-Sat', 'WK-Sun'];
 
 export function RouteSearchScreen() {
   const { t } = useTranslation('global');
@@ -41,7 +35,6 @@ export function RouteSearchScreen() {
   const state = useRouteSearchState();
   const { routeResult, routeMap, setRouteMap, fetchError, generate } = useRouteCompute();
   const [refreshing, setRefreshing] = useState(false);
-  const [pickerType, setPickerType] = useState<RouteSearchPickerType | null>(null);
   const [pageHeight, setPageHeight] = useState(0);
   const [formHeight, setFormHeight] = useState(0);
   const resolveNearestStation = useNearestStation(t, appData.GPS ?? {});
@@ -63,16 +56,15 @@ export function RouteSearchScreen() {
   useEffect(() => {
     state.persistTemp();
     onSubmit();
-  }, [state.routeSearchStart, state.routeSearchDest, state.departNow]);
-
-  const pickerOptions = useMemo<SelectionOption[]>(() => {
-    if (pickerType === 'weekday') return weekdays.map((value) => ({ label: value, value }));
-    if (pickerType === 'date')
-      return state.travelDateOptions.map((value) => ({ label: value, value }));
-    if (pickerType === 'hour') return hours.map((value) => ({ label: value, value }));
-    if (pickerType === 'minute') return minutes.map((value) => ({ label: value, value }));
-    return [];
-  }, [pickerType, state.travelDateOptions]);
+  }, [
+    state.routeSearchStart,
+    state.routeSearchDest,
+    state.departNow,
+    state.selectWeekday,
+    state.selectDate,
+    state.selectHour,
+    state.selectMinute,
+  ]);
 
   const applyNearestTo = async (field: 'start' | 'dest') => {
     const nearestStation = await resolveNearestStation().catch(() => null);
@@ -157,18 +149,6 @@ export function RouteSearchScreen() {
       safeAreaEdges={[]}
     >
       <RouteMapModal routeMap={routeMapSelection} onClose={() => setRouteMap(null)} />
-      <SelectionModal
-        title={pickerType ? pickerType.toUpperCase() : ''}
-        visible={pickerType !== null}
-        onClose={() => setPickerType(null)}
-        options={pickerOptions}
-        onSelect={(value) => {
-          if (pickerType === 'weekday') state.setSelectWeekday(value);
-          if (pickerType === 'date') state.setSelectDate(value);
-          if (pickerType === 'hour') state.setSelectHour(value);
-          if (pickerType === 'minute') state.setSelectMinute(value);
-        }}
-      />
 
       <View style={styles.pageFrame} onLayout={onPageLayout}>
         <Animated.View
@@ -211,7 +191,11 @@ export function RouteSearchScreen() {
                 hour: state.selectHour,
                 minute: state.selectMinute,
               }}
-              onSelectTimeField={setPickerType}
+              travelDateOptions={state.travelDateOptions}
+              onChangeWeekday={state.setSelectWeekday}
+              onChangeDate={state.setSelectDate}
+              onChangeHour={state.setSelectHour}
+              onChangeMinute={state.setSelectMinute}
               t={t}
             />
           </Animated.View>
