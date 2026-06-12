@@ -208,6 +208,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     elevation: 5,
     backgroundColor: '#fff',
+    position: 'relative',
   },
   infoBox: {
     position: 'relative',
@@ -216,12 +217,14 @@ const styles = StyleSheet.create({
   },
   routeDotIcon: {
     position: 'absolute',
-    top: '50%',
-    left: 27,
-    marginTop: -9,
+    top: 0,
+    bottom: 0,
+    left: 10,
+    width: 50,
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1,
+    paddingTop: 2,
   },
   locationChooserContainer: {
     minHeight: 0,
