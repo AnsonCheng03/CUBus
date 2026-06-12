@@ -31,16 +31,20 @@ jest.mock('../../components/ScreenContainer', () => ({
   ScreenContainer: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
+jest.mock('../../components/BusMapModal', () => ({
+  BusMapModal: () => null,
+}));
+
 describe('SettingsScreen', () => {
-  it('renders the settings header actions', () => {
-    const { getByText } = render(<SettingsScreen />);
+  it('renders the settings header actions', async () => {
+    const { getByText } = await render(<SettingsScreen />);
     expect(getByText('Delete-Storage')).toBeTruthy();
     expect(getByText('Reload-Data')).toBeTruthy();
   });
 
-  it('shows the language row and bus map entry', () => {
-    const { getByText } = render(<SettingsScreen />);
-    expect(getByText('轉換語言')).toBeTruthy();
+  it('shows the language row and bus map entry', async () => {
+    const { getByText } = await render(<SettingsScreen />);
+    expect(getByText('settings_change_language')).toBeTruthy();
     expect(getByText('bus_map_page')).toBeTruthy();
   });
 });

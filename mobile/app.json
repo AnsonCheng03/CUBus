@@ -10,7 +10,7 @@
     "splash": {
       "image": "../resources/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#d6a16e"
     },
     "web": {
       "bundler": "metro",
@@ -18,14 +18,15 @@
     },
     "plugins": [
       "expo-router",
-      "expo-location"
+      "expo-location",
+      "@sentry/react-native"
     ],
     "experiments": {
       "typedRoutes": true
     },
     "ios": {
       "bundleIdentifier": "com.cubus.app",
-      "deploymentTarget": "15.1",
+      "deploymentTarget": "16.4",
       "infoPlist": {
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Display Nearby Bus Stops",
         "NSLocationAlwaysUsageDescription": "Display Nearby Bus Stops",
@@ -40,7 +41,7 @@
       ],
       "adaptiveIcon": {
         "foregroundImage": "../resources/icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#d6a16e"
       }
     }
   }

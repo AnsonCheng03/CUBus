@@ -1,5 +1,5 @@
-import type { TFunction } from 'i18next';
 import type { BusData } from '../app/types';
+import type { Translate } from '../i18n/translate';
 
 export type RouteCandidate = {
   startStationCode: string;
@@ -23,7 +23,7 @@ function buildRouteCandidate(
   timeline: number[],
   startIndex: number,
   endIndex: number,
-  t: TFunction,
+  t: Translate,
 ): RouteCandidate {
   let startPosition = t(start);
   if (attrLine[startIndex] && attrLine[startIndex] !== 'NULL') {
@@ -66,7 +66,7 @@ function searchDirection(
   line: string[],
   attrline: string[],
   timeline: number[],
-  t: TFunction,
+  t: Translate,
 ) {
   const possibilities: RouteCandidate[] = [];
   const startPositions: number[] = [];
@@ -111,7 +111,7 @@ export function searchRoutes(
   startStation: string[],
   destStation: string[],
   bus: BusData,
-  t: TFunction,
+  t: Translate,
 ) {
   const candidates: RouteCandidate[] = [];
   let sameStation = false;

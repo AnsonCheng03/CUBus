@@ -1,16 +1,16 @@
-import type { TFunction } from 'i18next';
 import type {
   AppSettings,
   BusData,
   RouteSearchResultItem,
   StationTimetable,
 } from '../app/types';
+import type { Translate } from '../i18n/translate';
 import { processAndSortBuses, pickSchedulesForStation } from '../realtime/schedule';
 import { outputDate } from '../utils/tools';
 import type { RouteCandidate } from './search';
 
 type RankRouteCandidatesArgs = {
-  t: TFunction;
+  t: Translate;
   candidates: RouteCandidate[];
   bus: BusData;
   busSchedule: StationTimetable;

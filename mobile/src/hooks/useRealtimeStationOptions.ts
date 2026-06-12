@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
-import type { TFunction } from 'i18next';
 import type { AppData, BusData } from '../../../src/shared-core/app/types';
+import type { Translate } from '../../../src/shared-core/i18n/translate';
 import type { Coordinates } from '../../../src/shared-core/location/nearestStations';
 import { distanceBetweenTwoPlace } from '../../../src/shared-core/location/nearestStations';
 import type { RealtimeStationViewModel } from '../types/mobile';
@@ -19,7 +19,7 @@ export function useRealtimeStationOptions(
   appData: AppData,
   selectedStation: string,
   currentCoords: Coordinates | null,
-  t: TFunction,
+  t: Translate,
   language: string,
 ): RealtimeStationViewModel {
   return useMemo(() => {

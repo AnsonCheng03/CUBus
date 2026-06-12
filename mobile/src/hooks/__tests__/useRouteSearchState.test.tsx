@@ -39,6 +39,7 @@ jest.mock('../../providers/AppProvider', () => ({
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
     t: (key: string) => key,
+    i18n: { language: 'en' },
   }),
 }));
 
@@ -61,16 +62,16 @@ describe('useRouteSearchState', () => {
     mockSetSearchStation.mockClear();
   });
 
-  it('restores the saved temporary route-search state', () => {
-    const { getByText } = render(<Consumer />);
+  it('restores the saved temporary route-search state', async () => {
+    const { getByText } = await render(<Consumer />);
 
     expect(getByText('Saved Start')).toBeTruthy();
     expect(getByText('Saved Dest')).toBeTruthy();
     expect(getByText('WK-Tue')).toBeTruthy();
   });
 
-  it('persists the current route-search values through the typed provider action', () => {
-    const { getByText } = render(<Consumer />);
+  it('persists the current route-search values through the typed provider action', async () => {
+    const { getByText } = await render(<Consumer />);
     fireEvent.press(getByText('persist'));
 
     expect(mockSetSearchStation).toHaveBeenCalledWith({

@@ -1,5 +1,5 @@
-import type { TFunction } from 'i18next';
 import type { BusData, RouteSearchErrorResult, SearchMode, StationMap } from '../app/types';
+import type { Translate } from '../i18n/translate';
 import { outputDate } from '../utils/tools';
 
 type StationResolution =
@@ -45,7 +45,7 @@ export function resolveRouteSearchStations(
   routeSearchStart: string,
   routeSearchDest: string,
   station: StationMap,
-  t: TFunction,
+  t: Translate,
 ): StationResolution {
   const startStation: string[] = [];
   const destStation: string[] = [];
@@ -106,7 +106,7 @@ export function resolveSearchStations(
   routeSearchStart: string,
   routeSearchDest: string,
   station: StationMap,
-  t: TFunction,
+  t: Translate,
 ) {
   if (searchMode === 'building') {
     return resolveRouteSearchStations(routeSearchStart, routeSearchDest, station, t);

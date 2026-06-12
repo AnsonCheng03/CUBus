@@ -41,7 +41,7 @@ export function PermitPassSection({
   cardStageWidth: number;
   carouselGap: number;
   carouselSidePadding: number;
-  carouselRef: React.RefObject<ScrollView>;
+  carouselRef: React.RefObject<ScrollView | null>;
   scrollToPermit: (mode: keyof typeof permitBusRoutes) => void;
   setSelectedBusMode: (mode: keyof typeof permitBusRoutes) => void;
   onOpenFullscreen: (mode: keyof typeof permitBusRoutes) => void;

@@ -26,5 +26,6 @@ npm run build:web
 - Shared business logic is imported from `../src/shared-core`.
 - API base URL defaults to `https://cu-bus.online/api/v1/functions`.
 - Override it with `EXPO_PUBLIC_BASE_URL` when testing against another backend.
-- Optional Sentry setup uses `EXPO_PUBLIC_SENTRY_DSN`.
+- Sentry is enabled by default in `mobile/src/lib/sentry.ts`.
+- Override the DSN with `EXPO_PUBLIC_SENTRY_DSN` if needed.
 - The web target uses Expo Router plus React Native Web, so most `mobile/src` UI can be shared directly across iOS, Android, and browser.

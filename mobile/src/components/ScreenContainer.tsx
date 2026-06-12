@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  type RefreshControlProps,
   ScrollView,
   StyleProp,
   StyleSheet,
@@ -29,7 +30,7 @@ export function ScreenContainer({
   title: string;
   subtitle?: string;
   children: React.ReactNode;
-  refreshControl?: React.ReactElement;
+  refreshControl?: React.ReactElement<RefreshControlProps>;
   contentPadding?: number;
   contentGap?: number;
   headerSpacing?: number;

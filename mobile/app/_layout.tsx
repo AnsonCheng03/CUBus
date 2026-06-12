@@ -3,18 +3,15 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { StyleSheet, View } from 'react-native';
 import { Stack } from 'expo-router';
 import { I18nextProvider } from 'react-i18next';
-import * as Sentry from '@sentry/react-native';
 import { i18next } from '../src/lib/i18n';
 import { AppProvider, useAppState } from '../src/providers/AppProvider';
-import { env } from '../src/lib/config';
 import { NoticeBanner } from '../src/components/NoticeBanner';
 import { mobileQueryClient } from '../src/query/client';
 import { useReactQueryAppFocus } from '../src/query/focusManager';
 import { applyGlobalTypographyDefaults } from '../src/lib/typography';
+import { initSentry } from '../src/lib/sentry';
 
-if (env.sentryDsn) {
-  Sentry.init({ dsn: env.sentryDsn, tracesSampleRate: 1.0 });
-}
+initSentry();
 
 applyGlobalTypographyDefaults();
 

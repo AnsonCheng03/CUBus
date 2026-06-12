@@ -1,10 +1,10 @@
 import * as Location from 'expo-location';
-import type { TFunction } from 'i18next';
 import type { GPSDataMap } from '../../../src/shared-core/app/types';
+import type { Translate } from '../../../src/shared-core/i18n/translate';
 import type { Coordinates } from '../../../src/shared-core/location/nearestStations';
 import { sortGpsStations } from '../../../src/shared-core/location/nearestStations';
 
-export async function getCurrentCoordinates(t: TFunction): Promise<Coordinates> {
+export async function getCurrentCoordinates(t: Translate): Promise<Coordinates> {
   console.log('[gps] requesting current coordinates');
 
   const servicesEnabled = await Location.hasServicesEnabledAsync();
@@ -42,7 +42,7 @@ export async function getCurrentCoordinates(t: TFunction): Promise<Coordinates> 
   return coords;
 }
 
-export async function getNearestStation(t: TFunction, gpsData: GPSDataMap) {
+export async function getNearestStation(t: Translate, gpsData: GPSDataMap) {
   console.log('[gps] starting nearest-station lookup', {
     gpsStationCount: Object.keys(gpsData ?? {}).length,
   });

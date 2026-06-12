@@ -80,7 +80,7 @@ describe('useRouteCompute', () => {
   });
 
   it('logs a route search once for each generate call', async () => {
-    const { getByText } = render(<Consumer />);
+    const { getByText } = await render(<Consumer />);
     fireEvent.press(getByText('generate'));
 
     await waitFor(() =>

@@ -13,8 +13,8 @@ jest.mock('react-i18next', () => ({
 }));
 
 describe('RouteMapModal', () => {
-  it('renders current, completed, and upcoming route stops', () => {
-    const { getByText, queryByText } = render(
+  it('renders current, completed, and upcoming route stops', async () => {
+    const { getByText, queryByText } = await render(
       <RouteMapModal
         routeMap={{
           route: ['MTR', 'Library', 'College'],
@@ -32,8 +32,8 @@ describe('RouteMapModal', () => {
     expect(queryByText('next-station')).toBeNull();
   });
 
-  it('renders correctly when the current station is first', () => {
-    const { getByText } = render(
+  it('renders correctly when the current station is first', async () => {
+    const { getByText } = await render(
       <RouteMapModal
         routeMap={{
           route: ['MTR', 'Library', 'College'],
@@ -49,8 +49,8 @@ describe('RouteMapModal', () => {
     expect(getByText('College')).toBeTruthy();
   });
 
-  it('renders correctly when the current station is last', () => {
-    const { getByText } = render(
+  it('renders correctly when the current station is last', async () => {
+    const { getByText } = await render(
       <RouteMapModal
         routeMap={{
           route: ['MTR', 'Library', 'College'],
@@ -66,8 +66,8 @@ describe('RouteMapModal', () => {
     expect(getByText('College')).toBeTruthy();
   });
 
-  it('renders a one-stop route', () => {
-    const { getByText } = render(
+  it('renders a one-stop route', async () => {
+    const { getByText } = await render(
       <RouteMapModal
         routeMap={{
           route: ['MTR'],

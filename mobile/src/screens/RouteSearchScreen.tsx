@@ -346,7 +346,10 @@ const styles = StyleSheet.create({
     elevation: 20,
   },
   searchSectionBackdrop: {
-    ...StyleSheet.absoluteFillObject,
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    left: 0,
     bottom: 25,
     backgroundColor: '#911f27',
   },

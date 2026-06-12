@@ -1,4 +1,3 @@
-import type { TFunction } from 'i18next';
 import type {
   AppSettings,
   BusData,
@@ -7,6 +6,7 @@ import type {
   StationMap,
   StationTimetable,
 } from '../app/types';
+import type { Translate } from '../i18n/translate';
 import { rankRouteCandidates } from './ranking';
 import { searchRoutes } from './search';
 import { filterBusBySearchWindow, resolveSearchStations } from './validation';
@@ -21,7 +21,7 @@ export type {
 } from '../app/types';
 
 export const calculateRoute = (
-  t: TFunction,
+  t: Translate,
   routeSearchStart: string,
   routeSearchDest: string,
   searchMode: SearchMode,

@@ -1,4 +1,4 @@
-import type { TFunction } from 'i18next';
+import type { Translate } from '../i18n/translate';
 
 interface GPSPoint {
   Lat: string;
@@ -37,7 +37,7 @@ export function distanceBetweenTwoPlace(
   return distance;
 }
 
-export function sortGpsStations(t: TFunction, gpsData: GPSData, coords: Coordinates) {
+export function sortGpsStations(t: Translate, gpsData: GPSData, coords: Coordinates) {
   const updatedGpsData: GPSData = { ...gpsData };
   for (const key in updatedGpsData) {
     updatedGpsData[key].distance = distanceBetweenTwoPlace(

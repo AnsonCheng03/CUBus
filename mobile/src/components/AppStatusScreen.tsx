@@ -1,6 +1,7 @@
 import React from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { ProjectLoadingIndicator } from './ProjectLoadingIndicator';
 
 export function AppStatusScreen({
   title,
@@ -20,9 +21,9 @@ export function AppStatusScreen({
   }>;
 }) {
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <View style={styles.container}>
-        {loading ? <ActivityIndicator size="large" color="#0f766e" /> : null}
+        {loading ? <ProjectLoadingIndicator /> : null}
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.hint}>{hint}</Text>
         {body ? <View style={styles.body}>{body}</View> : null}
@@ -57,23 +58,24 @@ export function AppStatusScreen({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f2f2f2',
+    backgroundColor: '#d6a16e',
   },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'stretch',
-    padding: 20,
+    paddingHorizontal: 24,
+    paddingVertical: 20,
     gap: 12,
   },
   title: {
     fontSize: 26,
     fontWeight: '800',
-    color: '#111',
+    color: '#630a10',
     textAlign: 'center',
   },
   hint: {
-    color: '#666',
+    color: 'rgba(99, 10, 16, 0.78)',
     fontSize: 14,
     textAlign: 'center',
     lineHeight: 20,

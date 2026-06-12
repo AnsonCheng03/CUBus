@@ -1,5 +1,5 @@
-import type { TFunction } from 'i18next';
 import type { BusData, RealtimeData, StationTimetable } from '../app/types';
+import type { Translate } from '../i18n/translate';
 import { filterBusesBySchedule, getRealtimeServiceSnapshots, processBusStatus } from './status';
 import { pickSchedulesForStation, processAndSortBuses } from './schedule';
 
@@ -17,7 +17,7 @@ export type {
 export { filterBusesBySchedule, processAndSortBuses, processBusStatus };
 
 export const generateRouteResult = (
-  t: TFunction,
+  t: Translate,
   bus: BusData,
   appData: { 'timetable.json'?: StationTimetable },
   realtimeData: RealtimeData,

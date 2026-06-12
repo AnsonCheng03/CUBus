@@ -1,4 +1,5 @@
 import React from 'react';
+import { act } from 'react';
 import { Pressable, Text } from 'react-native';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { fireEvent, render, waitFor } from '@testing-library/react-native';
@@ -117,7 +118,7 @@ describe('AppProvider', () => {
   });
 
   it('initializes successfully into ready state', async () => {
-    const { getByText } = renderWithQueryProvider(
+    const { getByText } = await renderWithQueryProvider(
       <AppProvider>
         <Consumer />
       </AppProvider>,
@@ -134,7 +135,7 @@ describe('AppProvider', () => {
       refetch: mockBootstrapRefetch,
     });
 
-    const { getByText } = renderWithQueryProvider(
+    const { getByText } = await renderWithQueryProvider(
       <AppProvider>
         <Consumer />
       </AppProvider>,
@@ -152,7 +153,7 @@ describe('AppProvider', () => {
       refetch: mockBootstrapRefetch,
     });
 
-    const { getByText } = renderWithQueryProvider(
+    const { getByText } = await renderWithQueryProvider(
       <AppProvider>
         <Consumer />
       </AppProvider>,
@@ -162,13 +163,15 @@ describe('AppProvider', () => {
   });
 
   it('reset clears storage and query caches before refetching bootstrap', async () => {
-    const { getByText } = renderWithQueryProvider(
+    const { getByText } = await renderWithQueryProvider(
       <AppProvider>
         <Consumer />
       </AppProvider>,
     );
 
-    fireEvent.press(getByText('reset'));
+    await act(async () => {
+      fireEvent.press(getByText('reset'));
+    });
 
     await waitFor(() => expect(mockClearAll).toHaveBeenCalled());
     expect(mockRemoveQueries).toHaveBeenCalledTimes(3);
@@ -176,15 +179,21 @@ describe('AppProvider', () => {
   });
 
   it('retry and refresh actions refetch the expected query owners', async () => {
-    const { getByText } = renderWithQueryProvider(
+    const { getByText } = await renderWithQueryProvider(
       <AppProvider>
         <Consumer />
       </AppProvider>,
     );
 
-    fireEvent.press(getByText('retry'));
-    fireEvent.press(getByText('sync'));
-    fireEvent.press(getByText('refresh'));
+    await act(async () => {
+      fireEvent.press(getByText('retry'));
+    });
+    await act(async () => {
+      fireEvent.press(getByText('sync'));
+    });
+    await act(async () => {
+      fireEvent.press(getByText('refresh'));
+    });
 
     await waitFor(() => expect(mockInvalidateQueries).toHaveBeenCalled());
     expect(mockBootstrapRefetch).toHaveBeenCalled();

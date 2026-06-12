@@ -1,11 +1,11 @@
 import { useCallback } from 'react';
-import type { TFunction } from 'i18next';
 import type { GPSDataMap } from '../../../src/shared-core/app/types';
+import type { Translate } from '../../../src/shared-core/i18n/translate';
 import type { Coordinates } from '../../../src/shared-core/location/nearestStations';
 import { sortGpsStations } from '../../../src/shared-core/location/nearestStations';
 import { getNearestStation } from '../lib/location';
 
-export function formatTranslatedStationLabel(t: TFunction, stationCode: string) {
+export function formatTranslatedStationLabel(t: Translate, stationCode: string) {
   return `${t(stationCode)} (${stationCode.toUpperCase()})`;
 }
 
@@ -31,18 +31,18 @@ function resolveNearestStationResult(
   return candidate;
 }
 
-export async function resolveNearestStationCode(t: TFunction, gpsData: GPSDataMap) {
+export async function resolveNearestStationCode(t: Translate, gpsData: GPSDataMap) {
   return resolveNearestStationResult(await getNearestStation(t, gpsData));
 }
 
 export function resolveNearestStationCodeFromCoordinates(
-  t: TFunction,
+  t: Translate,
   gpsData: GPSDataMap,
   coords: Coordinates,
 ) {
   return resolveNearestStationResult(sortGpsStations(t, gpsData, coords));
 }
 
-export function useNearestStation(t: TFunction, gpsData: GPSDataMap) {
+export function useNearestStation(t: Translate, gpsData: GPSDataMap) {
   return useCallback(async () => resolveNearestStationCode(t, gpsData), [gpsData, t]);
 }

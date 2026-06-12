@@ -1,4 +1,3 @@
-import type { TFunction } from 'i18next';
 import type {
   BusData,
   RealtimeNextStation,
@@ -7,6 +6,7 @@ import type {
   StationTimetable,
   TimetableEntry,
 } from '../app/types';
+import type { Translate } from '../i18n/translate';
 
 function getScheduleTimeValue(entry: TimetableEntry, config: RealtimeRowConfig) {
   return config.scheduleType === 'reported' && typeof entry === 'object'
@@ -60,7 +60,7 @@ function getScheduledTimes(
 }
 
 export function getNextStation(
-  t: TFunction,
+  t: Translate,
   stations: { name: string[]; attr: string[] },
   currentStation: string,
   importantStations?: string[],
@@ -99,7 +99,7 @@ export function getNextStation(
 }
 
 export function processAndSortBuses(
-  t: TFunction,
+  t: Translate,
   outputSchedule: StationTimetable[],
   bus: BusData,
   pref: {
