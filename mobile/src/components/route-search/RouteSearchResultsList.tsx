@@ -2,6 +2,7 @@ import React from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { InlineNoticeRow } from '../InlineNoticeRow';
+import { RouteBusIcon } from '../RouteBusIcon';
 import type { RouteSearchResultCard } from '../../types/mobile';
 
 export function RouteSearchResultsList({
@@ -37,11 +38,7 @@ export function RouteSearchResultsList({
             onPress={() => onSelect(result)}
           >
             <View style={styles.resultBusNoContainer}>
-              <View
-                style={[styles.resultBusNoSquare, { backgroundColor: result.config?.colorCode || '#f3d37c' }]}
-              >
-                <Text style={styles.resultBusNoText}>{result.busNo}</Text>
-              </View>
+              <RouteBusIcon busNo={result.busNo} colorCode={result.config?.colorCode} />
             </View>
 
             <View style={styles.resultDetails}>
@@ -77,17 +74,16 @@ export function RouteSearchResultsList({
             </View>
 
             {result.warning ? (
-              <View style={styles.resultWarningRow}>
-                <Ionicons name="warning-outline" size={16} color="#555" />
-                <Text style={styles.resultWarningText}>{t(result.warning)}</Text>
-              </View>
+              <InlineNoticeRow
+                text={t(result.warning)}
+                variant="alert"
+                style={styles.resultWarningRow}
+              />
             ) : null}
           </Pressable>
         ))
       ) : routeError ? (
-        <View style={styles.resultCard}>
-          <Text style={styles.resultDetailText}>{t(routeMessage ?? '')}</Text>
-        </View>
+        <InlineNoticeRow text={t(routeMessage ?? '')} variant="alert" />
       ) : null}
     </>
   );
@@ -116,18 +112,6 @@ const styles = StyleSheet.create({
     width: 60,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  resultBusNoSquare: {
-    width: 42,
-    height: 30,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: 2,
-  },
-  resultBusNoText: {
-    color: '#fff',
-    fontSize: 12,
-    fontWeight: '700',
   },
   resultDetails: {
     flex: 1,
@@ -179,12 +163,7 @@ const styles = StyleSheet.create({
   },
   resultWarningRow: {
     width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  resultWarningText: {
-    color: '#555',
-    fontSize: 12,
+    marginHorizontal: 0,
+    marginTop: 2,
   },
 });

@@ -1,8 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { FloatingSelectorPopup } from '../FloatingSelectorPopup';
-import type { SelectionOption } from '../SelectionModal';
 import type { RouteSearchPickerValues } from '../../types/mobile';
 import { RouteSearchDepartureTimePopup } from './RouteSearchDepartureTimePopup';
 import { RouteSearchStationFields } from './RouteSearchStationFields';
@@ -42,15 +40,7 @@ export function RouteSearchFormCard({
   onChangeMinute: (value: string) => void;
   t: (value: string) => string;
 }) {
-  const [departModeOpen, setDepartModeOpen] = useState(false);
   const [departTimeOpen, setDepartTimeOpen] = useState(false);
-  const departModeOptions = useMemo<SelectionOption[]>(
-    () => [
-      { label: t('info-deptnow'), value: 'now' },
-      { label: t('select-depart-time'), value: 'scheduled' },
-    ],
-    [t],
-  );
   const departTimeText = departNow
     ? t('info-deptnow')
     : `${t(timeValues.weekday)} ${timeValues.weekday === 'WK-Sun' ? '' : t(timeValues.date)} ${timeValues.hour}:${timeValues.minute}`.trim();
@@ -62,52 +52,24 @@ export function RouteSearchFormCard({
           <Ionicons name="time-outline" size={22} color="#fff" />
         </View>
         <View style={styles.departureModeShell}>
-          <Pressable
-            style={styles.departureMode}
-            onPress={() => {
-              if (departModeOpen) {
-                setDepartModeOpen(false);
-                return;
-              }
-              setDepartTimeOpen(false);
-              setDepartModeOpen(true);
-            }}
-          >
+          <Pressable style={styles.departureMode} onPress={() => setDepartTimeOpen(true)}>
             <Text style={styles.departureModeText}>{departTimeText}</Text>
             <Ionicons name="chevron-down" size={18} color="#fff" />
           </Pressable>
 
-          <View pointerEvents="box-none" style={styles.popupOverlay}>
-            <FloatingSelectorPopup
-              open={departModeOpen}
-              height={108}
-              options={departModeOptions}
-              onSelect={(value) => {
-                setDepartModeOpen(false);
-                if (value === 'now') {
-                  onToggleDepartNow(true);
-                  setDepartTimeOpen(false);
-                  return;
-                }
-                onToggleDepartNow(false);
-                setDepartTimeOpen(true);
-              }}
-            />
-          </View>
-
-          <View pointerEvents="box-none" style={styles.popupOverlay}>
-            <RouteSearchDepartureTimePopup
-              open={departTimeOpen}
-              values={timeValues}
-              travelDateOptions={travelDateOptions}
-              onClose={() => setDepartTimeOpen(false)}
-              onChangeWeekday={onChangeWeekday}
-              onChangeDate={onChangeDate}
-              onChangeHour={onChangeHour}
-              onChangeMinute={onChangeMinute}
-              t={t}
-            />
-          </View>
+          <RouteSearchDepartureTimePopup
+            open={departTimeOpen}
+            departNow={departNow}
+            values={timeValues}
+            travelDateOptions={travelDateOptions}
+            onClose={() => setDepartTimeOpen(false)}
+            onChangeDepartNow={onToggleDepartNow}
+            onChangeWeekday={onChangeWeekday}
+            onChangeDate={onChangeDate}
+            onChangeHour={onChangeHour}
+            onChangeMinute={onChangeMinute}
+            t={t}
+          />
         </View>
       </View>
 
@@ -150,17 +112,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    minHeight: 44,
+    gap: 12,
   },
   departureModeText: {
     color: '#fff',
     fontSize: 20,
+    flex: 1,
+    minWidth: 0,
     paddingVertical: 8,
-  },
-  popupOverlay: {
-    position: 'absolute',
-    top: '100%',
-    left: -50,
-    right: 0,
-    marginTop: -8,
   },
 });

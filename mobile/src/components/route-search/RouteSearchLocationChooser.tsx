@@ -37,7 +37,12 @@ export function RouteSearchLocationChooser({
         <View style={styles.locationIconCell}>
           <Ionicons name={locationIconName} size={24} color="#630a10" />
         </View>
-        <View style={[styles.locationInputContainer, !showTopBorder && styles.locationInputContainerFirst]}>
+        <View
+          style={[
+            styles.locationInputContainer,
+            !showTopBorder && styles.locationInputContainerFirst,
+          ]}
+        >
           <View style={[styles.locationInput, open && styles.locationInputActive]}>
             <FloatingStationSelector
               value={value}
@@ -94,7 +99,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     minWidth: 0,
-    paddingVertical: 5,
     borderTopWidth: 1,
     borderTopColor: '#630a10',
   },

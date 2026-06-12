@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 
 const alertIcon = require('../../../src/assets/alert.png');
 const infoIcon = require('../../../src/assets/info.png');
@@ -9,16 +9,18 @@ export function InlineNoticeRow({
   text,
   variant = 'alert',
   children,
+  style,
 }: {
   text?: string;
   variant?: 'alert' | 'info' | 'critical';
   children?: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
 }) {
   const iconSource =
     variant === 'info' ? infoIcon : variant === 'critical' ? criticalIcon : alertIcon;
 
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, style]}>
       <Image source={iconSource} style={styles.icon} resizeMode="contain" />
       <View style={styles.content}>{children ?? <Text style={styles.text}>{text}</Text>}</View>
     </View>

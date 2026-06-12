@@ -3,7 +3,6 @@ import {
   Animated,
   Easing,
   LayoutChangeEvent,
-  Pressable,
   RefreshControl,
   ScrollView,
   StyleSheet,
@@ -221,10 +220,6 @@ export function RouteSearchScreen() {
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#0f766e" />
             }
           >
-            <Pressable style={styles.submitButton} onPress={onSubmit}>
-              <Text style={styles.submitButtonText}>{t('Btn-Adv')}</Text>
-            </Pressable>
-
             <RouteSearchResultsList
               results={routeSuccess?.sortedResults}
               routeError={routeError?.error}
@@ -292,18 +287,5 @@ const styles = StyleSheet.create({
   resultsSectionContent: {
     paddingTop: 18,
     paddingBottom: 16,
-  },
-  submitButton: {
-    backgroundColor: '#630a10',
-    width: '75%',
-    alignSelf: 'center',
-    borderRadius: 5,
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    alignItems: 'center',
-  },
-  submitButtonText: {
-    color: '#fff',
-    fontSize: 14,
   },
 });
