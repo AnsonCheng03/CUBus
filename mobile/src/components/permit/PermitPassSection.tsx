@@ -55,7 +55,6 @@ export function PermitPassSection({
     >
       <View style={styles.passStageCard}>
         <View style={styles.passStageMeta}>
-          <Text style={styles.passStageLabel}>{t('school_bus_permit_title')}</Text>
           <Text style={styles.passStageTitle}>{selectedVariant.title}</Text>
         </View>
 
@@ -69,7 +68,7 @@ export function PermitPassSection({
             pagingEnabled={false}
             snapToInterval={cardStageWidth + carouselGap}
             snapToAlignment="start"
-            bounces={false}
+            bounces={true}
             contentContainerStyle={[
               styles.passCarouselContent,
               { paddingHorizontal: carouselSidePadding },
@@ -188,7 +187,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     gap: 8,
-    paddingTop: 2,
   },
   passDot: {
     width: 8,
