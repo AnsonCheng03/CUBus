@@ -38,7 +38,7 @@ export function RouteSearchResultsList({
             onPress={() => onSelect(result)}
           >
             <View style={styles.resultBusNoContainer}>
-              <RouteBusIcon busNo={result.busNo} colorCode={result.config?.colorCode} />
+              <RouteBusIcon busNo={result.busNo} colorCode={result.config?.colorCode} width={66} />
             </View>
 
             <View style={styles.resultDetails}>
