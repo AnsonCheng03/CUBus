@@ -180,6 +180,7 @@ export function RouteSearchScreen() {
             },
           ]}
         >
+          <View pointerEvents="none" style={styles.searchSectionBackdrop} />
           <Animated.View
             onLayout={onFormLayout}
             style={[
@@ -276,13 +277,21 @@ const styles = StyleSheet.create({
   },
   searchSection: {
     position: 'relative',
+    overflow: 'visible',
+    zIndex: 20,
+    elevation: 20,
+  },
+  searchSectionBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+    bottom: 25,
     backgroundColor: '#911f27',
-    overflow: 'hidden',
   },
   formAnimatedShell: {
     position: 'absolute',
     left: '3%',
     right: '3%',
+    zIndex: 30,
+    elevation: 30,
   },
   resultsSection: {
     marginTop: -25,
@@ -290,6 +299,8 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 32,
     backgroundColor: '#faf8f6',
     overflow: 'hidden',
+    zIndex: 10,
+    elevation: 10,
   },
   resultsScroll: {
     flex: 1,
