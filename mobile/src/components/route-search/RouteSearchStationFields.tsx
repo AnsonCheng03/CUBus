@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, View } from 'react-native';
 import type { SelectionOption } from '../SelectionModal';
@@ -24,13 +24,22 @@ export function RouteSearchStationFields({
   t: (value: string) => string;
 }) {
   const [openField, setOpenField] = useState<'start' | 'dest' | null>(null);
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const stationOptions = useMemo<SelectionOption[]>(
     () => options.map((option) => ({ label: option, value: option })),
     [options],
   );
 
+  const clearPendingClose = () => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
+  };
+
   const closeFieldWithDelay = (field: 'start' | 'dest') => {
-    setTimeout(() => {
+    clearPendingClose();
+    closeTimeoutRef.current = setTimeout(() => {
       setOpenField((current) => (current === field ? null : current));
     }, 120);
   };
@@ -50,10 +59,17 @@ export function RouteSearchStationFields({
           locationIconName="locate-outline"
           showTopBorder={false}
           onChangeText={onChangeStart}
-          onFocus={() => setOpenField('start')}
+          onFocus={() => {
+            clearPendingClose();
+            setOpenField('start');
+          }}
           onBlur={() => closeFieldWithDelay('start')}
-          onToggle={() => setOpenField((current) => (current === 'start' ? null : 'start'))}
+          onToggle={() => {
+            clearPendingClose();
+            setOpenField((current) => (current === 'start' ? null : 'start'));
+          }}
           onSelect={(value) => {
+            clearPendingClose();
             onChangeStart(value);
             setOpenField(null);
           }}
@@ -67,10 +83,17 @@ export function RouteSearchStationFields({
           placeholder={t('input-text-reminder')}
           locationIconName="location-outline"
           onChangeText={onChangeDest}
-          onFocus={() => setOpenField('dest')}
+          onFocus={() => {
+            clearPendingClose();
+            setOpenField('dest');
+          }}
           onBlur={() => closeFieldWithDelay('dest')}
-          onToggle={() => setOpenField((current) => (current === 'dest' ? null : 'dest'))}
+          onToggle={() => {
+            clearPendingClose();
+            setOpenField((current) => (current === 'dest' ? null : 'dest'));
+          }}
           onSelect={(value) => {
+            clearPendingClose();
             onChangeDest(value);
             setOpenField(null);
           }}

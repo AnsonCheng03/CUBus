@@ -185,6 +185,9 @@ export function FloatingStationSelector({
               onBlur={onBlur}
               placeholder={placeholder}
               placeholderTextColor="#7b8d87"
+              autoCorrect={false}
+              autoComplete="off"
+              spellCheck={false}
               style={[styles.selectorInput, inputStyle]}
             />
             {showChevron ? (
