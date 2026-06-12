@@ -44,6 +44,18 @@ export function RouteSearchStationFields({
     }, 120);
   };
 
+  const handleStartChange = (value: string) => {
+    clearPendingClose();
+    onChangeStart(value);
+    setOpenField('start');
+  };
+
+  const handleDestChange = (value: string) => {
+    clearPendingClose();
+    onChangeDest(value);
+    setOpenField('dest');
+  };
+
   return (
     <View style={styles.searchBoxes}>
       <View style={styles.infoBox}>
@@ -58,7 +70,7 @@ export function RouteSearchStationFields({
           placeholder={t('input-text-reminder')}
           locationIconName="locate-outline"
           showTopBorder={false}
-          onChangeText={onChangeStart}
+          onChangeText={handleStartChange}
           onFocus={() => {
             clearPendingClose();
             setOpenField('start');
@@ -82,7 +94,7 @@ export function RouteSearchStationFields({
           options={stationOptions}
           placeholder={t('input-text-reminder')}
           locationIconName="location-outline"
-          onChangeText={onChangeDest}
+          onChangeText={handleDestChange}
           onFocus={() => {
             clearPendingClose();
             setOpenField('dest');
