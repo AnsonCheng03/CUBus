@@ -5,6 +5,8 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
 
 require 'json'
 podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
+minimum_supported_ios_version = '15.0'
+configured_ios_target = podfile_properties['ios.deploymentTarget'] || '16.4'
 
 def ccache_enabled?(podfile_properties)
   # Environment variable takes precedence
@@ -19,7 +21,7 @@ ENV['RCT_USE_RN_DEP'] ||= podfile_properties['ios.buildReactNativeFromSource'] =
 ENV['RCT_USE_PREBUILT_RNCORE'] ||= podfile_properties['ios.buildReactNativeFromSource'] == 'true' ? '0' : '1'
 ENV['RCT_HERMES_V1_ENABLED'] ||= '1' if podfile_properties['expo.useHermesV1'] == 'true'
 ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1' if podfile_properties['EXPO_USE_PRECOMPILED_MODULES'] != 'false'
-platform :ios, podfile_properties['ios.deploymentTarget'] || '16.4'
+platform :ios, configured_ios_target
 
 prepare_react_native_project!
 
@@ -62,5 +64,13 @@ target 'CUBus' do
       :mac_catalyst_enabled => false,
       :ccache_enabled => ccache_enabled?(podfile_properties),
     )
+
+    effective_ios_target = [Gem::Version.new(configured_ios_target), Gem::Version.new(minimum_supported_ios_version)].max.to_s
+
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |build_configuration|
+        build_configuration.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = effective_ios_target
+      end
+    end
   end
 end
