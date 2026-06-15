@@ -5,7 +5,7 @@ import { SafeAreaInsetsContext, SafeAreaView } from 'react-native-safe-area-cont
 import { useTranslation } from 'react-i18next';
 import { WebView } from 'react-native-webview';
 
-const campusMapImage = require('../../../src/assets/schoolbusmap.svg');
+const campusMapImage = require('../assets/schoolbusmap.svg');
 const MAP_WIDTH = 1260;
 const MAP_HEIGHT = 1260 * (595.28 / 841.89);
 const MAP_PADDING = 200;

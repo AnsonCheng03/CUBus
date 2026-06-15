@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 
-const busMoving = require('../../../../src/assets/busMoving.gif');
+const busMoving = require('../../assets/busMoving.gif');
 
 const BUS_WIDTH = 60;
 const BUS_HEIGHT = 32;

@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { KeyValueStore } from '../../../src/shared-core/platform/types';
+import type { KeyValueStore } from '../shared-core/platform/types';
 
 export const asyncStorageStore: KeyValueStore = {
   async get<T = unknown>(key: string): Promise<T | null> {

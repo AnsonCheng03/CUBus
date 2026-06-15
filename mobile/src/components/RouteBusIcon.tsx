@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { G, Path, Rect, Text as SvgText } from 'react-native-svg';
-import { getTextColor } from '../../../src/shared-core/utils/tools';
+import { getTextColor } from '../shared-core/utils/tools';
 import { APP_FONT_FAMILY_SANS, APP_FONT_WEIGHT_BOLD } from '../lib/typography';
 
 const DEFAULT_BUS_ICON_WIDTH = 58;

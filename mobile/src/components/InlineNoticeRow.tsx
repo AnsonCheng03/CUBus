@@ -1,9 +1,9 @@
 import React from 'react';
 import { Image, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 
-const alertIcon = require('../../../src/assets/alert.png');
-const infoIcon = require('../../../src/assets/info.png');
-const criticalIcon = require('../../../src/assets/critical.png');
+const alertIcon = require('../assets/alert.png');
+const infoIcon = require('../assets/info.png');
+const criticalIcon = require('../assets/critical.png');
 
 export function InlineNoticeRow({
   text,

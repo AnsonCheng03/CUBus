@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { BusData, SearchStationTempState } from '../../../src/shared-core/app/types';
-import { capitalizeFirstLetter } from '../../../src/shared-core/utils/tools';
+import type { BusData, SearchStationTempState } from '../shared-core/app/types';
+import { capitalizeFirstLetter } from '../shared-core/utils/tools';
 import { useAppState } from '../providers/AppProvider';
 
 function buildTranslatedBuildings(busData: BusData, stationData: Record<string, string[]>, t: (key: string) => string) {

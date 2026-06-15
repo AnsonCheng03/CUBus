@@ -1,4 +1,4 @@
-import type { AppData } from '../../../../src/shared-core/app/types';
+import type { AppData } from '../../shared-core/app/types';
 
 export const REQUIRED_DATA_KEYS = [
   'timetable.json',

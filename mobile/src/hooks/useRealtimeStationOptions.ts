@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import type { AppData, BusData } from '../../../src/shared-core/app/types';
-import type { Translate } from '../../../src/shared-core/i18n/translate';
-import type { Coordinates } from '../../../src/shared-core/location/nearestStations';
-import { distanceBetweenTwoPlace } from '../../../src/shared-core/location/nearestStations';
+import type { AppData, BusData } from '../shared-core/app/types';
+import type { Translate } from '../shared-core/i18n/translate';
+import type { Coordinates } from '../shared-core/location/nearestStations';
+import { distanceBetweenTwoPlace } from '../shared-core/location/nearestStations';
 import type { RealtimeStationViewModel } from '../types/mobile';
 
 function formatDistance(distanceKm: number) {

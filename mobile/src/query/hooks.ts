@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { AppData, RealtimeData, RealtimeLogPayload, SearchLogPayload } from '../../../src/shared-core/app/types';
+import type { AppData, RealtimeData, RealtimeLogPayload, SearchLogPayload } from '../shared-core/app/types';
 import { mobileApiClient } from '../lib/api';
 import { mobileQueryKeys } from './client';
 import { bootstrapFromStorageAndSeed, type BootstrapState, syncServerDelta } from './dataPipeline';

@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import type { RouteMapSelection } from '../../../src/shared-core/app/types';
+import type { RouteMapSelection } from '../shared-core/app/types';
 import { RouteMapModal } from '../components/RouteMapModal';
 import { RouteSearchFormCard } from '../components/route-search/RouteSearchFormCard';
 import { RouteSearchResultsList } from '../components/route-search/RouteSearchResultsList';

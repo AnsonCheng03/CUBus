@@ -1,4 +1,4 @@
-import { createApiClient } from '../../../src/shared-core/data/createApiClient';
+import { createApiClient } from '../shared-core/data/createApiClient';
 import { env } from './config';
 
 export const mobileApiClient = createApiClient({

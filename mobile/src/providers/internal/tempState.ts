@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import type { AppTempData, SearchStationTempState } from '../../../../src/shared-core/app/types';
+import type { AppTempData, SearchStationTempState } from '../../shared-core/app/types';
 
 export const DEFAULT_APP_TEMP_DATA: AppTempData = {
   realTimeStation: null,

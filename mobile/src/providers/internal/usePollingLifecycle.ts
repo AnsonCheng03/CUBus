@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 import { AppState } from 'react-native';
 import type { MutableRefObject } from 'react';
-import type { AppBootstrapStatus, ModificationDates } from '../../../../src/shared-core/app/types';
-import type { createRepository } from '../../../../src/shared-core/data/repository';
+import type { AppBootstrapStatus, ModificationDates } from '../../shared-core/app/types';
+import type { createRepository } from '../../shared-core/data/repository';
 
 type RepositoryInstance = ReturnType<typeof createRepository>;
 

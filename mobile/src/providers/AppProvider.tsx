@@ -8,7 +8,7 @@ import type {
   NetworkError,
   RealtimeData,
   SearchStationTempState,
-} from '../../../src/shared-core/app/types';
+} from '../shared-core/app/types';
 import { asyncStorageStore } from '../lib/storage';
 import { mobileQueryKeys } from '../query/client';
 import {

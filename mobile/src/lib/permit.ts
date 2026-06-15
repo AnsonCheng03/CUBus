@@ -2,9 +2,9 @@ import type { PermitFormValue } from '../types/mobile';
 
 export const EMPTY_PERMIT: PermitFormValue = { name: '', sid: '', major: '', expiry: '' };
 
-export const shuttleBusImage = require('../../../src/assets/schbus_d.png');
-export const meetClassBusImage = require('../../../src/assets/schbus_l.png');
-export const cuhkLogo = require('../../../src/assets/cuhk_logo.png');
+export const shuttleBusImage = require('../assets/schbus_d.png');
+export const meetClassBusImage = require('../assets/schbus_l.png');
+export const cuhkLogo = require('../assets/cuhk_logo.png');
 
 export const permitBusRoutes = {
   meet_class_bus: {

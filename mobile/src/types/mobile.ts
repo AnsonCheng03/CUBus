@@ -6,7 +6,7 @@ import type {
   RouteSearchResultItem,
   SearchStationTempState,
   WebsiteLink,
-} from '../../../src/shared-core/app/types';
+} from '../shared-core/app/types';
 
 export type { NoticeItem, WebsiteLink, SearchStationTempState };
 export type RealtimeRowData = RealtimeRow;

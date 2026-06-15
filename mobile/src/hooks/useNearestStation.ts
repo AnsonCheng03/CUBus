@@ -1,8 +1,8 @@
 import { useCallback } from 'react';
-import type { GPSDataMap } from '../../../src/shared-core/app/types';
-import type { Translate } from '../../../src/shared-core/i18n/translate';
-import type { Coordinates } from '../../../src/shared-core/location/nearestStations';
-import { sortGpsStations } from '../../../src/shared-core/location/nearestStations';
+import type { GPSDataMap } from '../shared-core/app/types';
+import type { Translate } from '../shared-core/i18n/translate';
+import type { Coordinates } from '../shared-core/location/nearestStations';
+import { sortGpsStations } from '../shared-core/location/nearestStations';
 import { getNearestStation } from '../lib/location';
 
 export function formatTranslatedStationLabel(t: Translate, stationCode: string) {

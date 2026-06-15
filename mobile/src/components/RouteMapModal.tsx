@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 import { SafeAreaInsetsContext, SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import type { RouteMapSelection } from '../../../src/shared-core/app/types';
+import type { RouteMapSelection } from '../shared-core/app/types';
 
 type SheetAnimationMode = 'fade' | 'slide-bottom';
 

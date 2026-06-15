@@ -2,7 +2,7 @@ import type {
   RouteMapSelection,
   RouteSearchResultItem,
   RealtimeRow,
-} from '../../../src/shared-core/app/types';
+} from '../shared-core/app/types';
 
 export function createRealtimeRouteMapSelection(
   row: RealtimeRow,

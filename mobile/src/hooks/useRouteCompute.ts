@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { RouteMapSelection, RouteSearchInput, RouteSearchResult } from '../../../src/shared-core/app/types';
-import { processBusStatus } from '../../../src/shared-core/realtime/getRealTime';
-import { calculateRoute } from '../../../src/shared-core/routing/getRoute';
+import type { RouteMapSelection, RouteSearchInput, RouteSearchResult } from '../shared-core/app/types';
+import { processBusStatus } from '../shared-core/realtime/getRealTime';
+import { calculateRoute } from '../shared-core/routing/getRoute';
 import { useAppState } from '../providers/AppProvider';
 import { useLogSearchMutation } from '../query/hooks';
 

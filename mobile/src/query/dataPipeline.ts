@@ -1,6 +1,6 @@
-import type { AppData, ModificationDates, ServerResponse } from '../../../src/shared-core/app/types';
-import { localSeed, seedDates } from '../../../src/shared-core/data/initData';
-import { normalizeTableName, pickFromResponseOrLocal, processors } from '../../../src/shared-core/data/processors';
+import type { AppData, ModificationDates, ServerResponse } from '../shared-core/app/types';
+import { localSeed, seedDates } from '../shared-core/data/initData';
+import { normalizeTableName, pickFromResponseOrLocal, processors } from '../shared-core/data/processors';
 import { i18next } from '../lib/i18n';
 import { asyncStorageStore } from '../lib/storage';
 
