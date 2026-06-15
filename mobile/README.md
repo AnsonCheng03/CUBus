@@ -21,6 +21,30 @@ npm run android
 npm run build:web
 ```
 
+## Native Release Builds
+
+Local native release builds keep Sentry upload enabled.
+
+Before running any of these commands, export `SENTRY_AUTH_TOKEN` in the same shell:
+
+```bash
+export SENTRY_AUTH_TOKEN=your_token_here
+```
+
+Build commands:
+
+```bash
+npm run mobile:build:apk
+npm run mobile:build:aab
+npm run mobile:build:ios-archive
+npm run mobile:build:ipa
+```
+
+Notes:
+
+- `mobile:build:ios-archive` and `mobile:build:ipa` require Xcode/archive signing to inherit the same shell environment.
+- `mobile:build:ipa` expects `mobile/ios/ExportOptions.plist` to exist.
+
 ## Notes
 
 - Shared business logic is imported from `../src/shared-core`.
