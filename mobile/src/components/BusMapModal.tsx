@@ -4,6 +4,7 @@ import { Asset } from 'expo-asset';
 import { SafeAreaInsetsContext, SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { WebView } from 'react-native-webview';
+import { e2eProps } from '../test-support/e2eProps';
 
 const campusMapImage = require('../assets/schoolbusmap.svg');
 const MAP_WIDTH = 1260;
@@ -118,13 +119,13 @@ export function BusMapModal({ visible, onClose }: { visible: boolean; onClose: (
 
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose} statusBarTranslucent>
-      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+      <SafeAreaView {...e2eProps('bus-map-modal')} style={styles.safeArea} edges={['top', 'bottom']}>
         <View style={[styles.header, { paddingTop: Math.max(insets.top, 8) }]}>
           <View style={styles.headerCopy}>
-            <Text style={styles.title}>{t('bus_map_page')}</Text>
+            <Text {...e2eProps('bus-map-title')} style={styles.title}>{t('bus_map_page')}</Text>
             <Text style={styles.subtitle}>{t('modal-map-title')}</Text>
           </View>
-          <Pressable onPress={onClose}>
+          <Pressable {...e2eProps('bus-map-close')} onPress={onClose}>
             <Text style={styles.close}>{t('toast_dismiss')}</Text>
           </Pressable>
         </View>

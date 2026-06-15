@@ -6,8 +6,8 @@ export const DEFAULT_APP_TEMP_DATA: AppTempData = {
   searchStation: null,
 };
 
-export function useTempState() {
-  const [appTempData, setAppTempData] = useState<AppTempData>(DEFAULT_APP_TEMP_DATA);
+export function useTempState(initialState: AppTempData = DEFAULT_APP_TEMP_DATA) {
+  const [appTempData, setAppTempData] = useState<AppTempData>(initialState);
 
   const setRealtimeStation = useCallback((station: string | null) => {
     setAppTempData((prev) => ({ ...prev, realTimeStation: station }));
@@ -18,8 +18,8 @@ export function useTempState() {
   }, []);
 
   const clearTemporaryState = useCallback(() => {
-    setAppTempData(DEFAULT_APP_TEMP_DATA);
-  }, []);
+    setAppTempData(initialState);
+  }, [initialState]);
 
   return {
     appTempData,

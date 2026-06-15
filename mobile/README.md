@@ -21,6 +21,31 @@ npm run android
 npm run build:web
 ```
 
+## Test Layers
+
+```bash
+npm run test
+npm run test:unit
+npm run test:shared-core
+npm run test:e2e:web
+npm run test:e2e:android
+npm run test:e2e:ios
+```
+
+Notes:
+
+- `test:unit` keeps the current Jest screen/component coverage.
+- `test:shared-core` runs the lightweight Vitest suite for `src/shared-core/**/*.test.ts`.
+- `test:e2e:web` runs Playwright smoke checks against Expo Web.
+- Native E2E uses Appium plus WebdriverIO and expects a built or installed app:
+  - Android env: `E2E_ANDROID_APP_PATH` or installed package `com.cubus.app`
+  - iOS env: `E2E_IOS_APP_PATH` or installed bundle id `com.cubus.app`
+- Native test mode is enabled at build/start time with `EXPO_PUBLIC_E2E_MODE=1`.
+- Optional seeded scenarios:
+  - `EXPO_PUBLIC_E2E_SCENARIO=default`
+  - `EXPO_PUBLIC_E2E_SCENARIO=route-search`
+  - `EXPO_PUBLIC_E2E_SCENARIO=permit-saved`
+
 ## Native Release Builds
 
 Local native release builds keep Sentry upload enabled.

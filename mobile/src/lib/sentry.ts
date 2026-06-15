@@ -4,7 +4,7 @@ import { env } from './config';
 let sentryInitialized = false;
 
 export function initSentry() {
-  if (sentryInitialized || !env.sentryDsn) {
+  if (sentryInitialized || !env.sentryDsn || env.e2eMode) {
     return;
   }
 

@@ -29,6 +29,7 @@ import { useRouteSearchState } from '../hooks/useRouteSearchState';
 import { getCurrentCoordinates } from '../lib/location';
 import { NAV_RESPONSIVE_BREAKPOINT } from '../lib/layout';
 import { useAppState } from '../providers/AppProvider';
+import { e2eProps } from '../test-support/e2eProps';
 
 export function RouteSearchScreen() {
   const { t } = useTranslation('global');
@@ -203,7 +204,7 @@ export function RouteSearchScreen() {
     >
       <RouteMapModal routeMap={routeMapSelection} onClose={() => setRouteMap(null)} />
 
-      <View style={styles.pageFrame} onLayout={onPageLayout}>
+      <View {...e2eProps('route-search-screen')} style={styles.pageFrame} onLayout={onPageLayout}>
         {floatingGpsNoticeText ? (
           <Animated.View
             pointerEvents="box-none"

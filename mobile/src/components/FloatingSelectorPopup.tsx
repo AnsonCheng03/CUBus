@@ -1,17 +1,20 @@
 import React, { useEffect, useRef } from 'react';
 import { Animated, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import type { SelectionOption } from './SelectionModal';
+import { e2eProps } from '../test-support/e2eProps';
 
 export function FloatingSelectorPopup({
   open,
   height,
   options,
   onSelect,
+  testIDPrefix,
 }: {
   open: boolean;
   height: number;
   options: SelectionOption[];
   onSelect: (value: string) => void;
+  testIDPrefix?: string;
 }) {
   const progress = useRef(new Animated.Value(open ? 1 : 0)).current;
 
@@ -25,6 +28,7 @@ export function FloatingSelectorPopup({
 
   return (
     <Animated.View
+      {...e2eProps(testIDPrefix ? `${testIDPrefix}-popup` : undefined)}
       pointerEvents={open ? 'auto' : 'none'}
       style={[
         styles.popup,
@@ -46,6 +50,7 @@ export function FloatingSelectorPopup({
           {options.map((option) => (
             <Pressable
               key={option.value}
+              {...e2eProps(testIDPrefix ? `${testIDPrefix}-option-${option.value}` : undefined)}
               style={styles.popupOption}
               onPress={() => {
                 onSelect(option.value);

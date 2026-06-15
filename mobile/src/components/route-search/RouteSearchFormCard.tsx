@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { RouteSearchPickerValues } from '../../types/mobile';
 import { RouteSearchDepartureTimePopup } from './RouteSearchDepartureTimePopup';
 import { RouteSearchStationFields } from './RouteSearchStationFields';
+import { e2eProps } from '../../test-support/e2eProps';
 
 export function RouteSearchFormCard({
   startValue,
@@ -52,7 +53,11 @@ export function RouteSearchFormCard({
           <Ionicons name="time-outline" size={22} color="#fff" />
         </View>
         <View style={styles.departureModeShell}>
-          <Pressable style={styles.departureMode} onPress={() => setDepartTimeOpen(true)}>
+          <Pressable
+            {...e2eProps('route-search-departure-button')}
+            style={styles.departureMode}
+            onPress={() => setDepartTimeOpen(true)}
+          >
             <Text style={styles.departureModeText}>{departTimeText}</Text>
             <Ionicons name="chevron-down" size={18} color="#fff" />
           </Pressable>

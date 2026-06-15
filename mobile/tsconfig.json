@@ -22,5 +22,9 @@
     "../src/shared-core/**/*.ts",
     "../src/shared-core/**/*.tsx",
     ".expo/types/**/*.ts"
+  ],
+  "exclude": [
+    "e2e",
+    "e2e-web"
   ]
 }

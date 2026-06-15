@@ -84,6 +84,7 @@ export function PermitCard({
     <Wrapper
       onPress={onPress}
       testID={testID}
+      accessibilityLabel={testID}
       style={[
         styles.previewShell,
         withShadow && styles.previewShadow,

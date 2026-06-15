@@ -66,6 +66,7 @@ export function RouteSearchStationFields({
         <RouteSearchLocationChooser
           value={startValue}
           open={openField === 'start'}
+          testIDPrefix="route-search-start"
           options={stationOptions}
           placeholder={t('input-text-reminder')}
           locationIconName="locate-outline"
@@ -91,6 +92,7 @@ export function RouteSearchStationFields({
         <RouteSearchLocationChooser
           value={destValue}
           open={openField === 'dest'}
+          testIDPrefix="route-search-dest"
           options={stationOptions}
           placeholder={t('input-text-reminder')}
           locationIconName="location-outline"

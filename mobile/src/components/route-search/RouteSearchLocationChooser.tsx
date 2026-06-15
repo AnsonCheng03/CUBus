@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { FloatingStationSelector } from '../FloatingStationSelector';
 import type { SelectionOption } from '../SelectionModal';
+import { e2eProps } from '../../test-support/e2eProps';
 
 export function RouteSearchLocationChooser({
   value,
@@ -17,6 +18,7 @@ export function RouteSearchLocationChooser({
   onToggle,
   onSelect,
   onUseNearby,
+  testIDPrefix,
 }: {
   value: string;
   open: boolean;
@@ -30,6 +32,7 @@ export function RouteSearchLocationChooser({
   onToggle: () => void;
   onSelect: (value: string) => void;
   onUseNearby: () => void;
+  testIDPrefix: string;
 }) {
   return (
     <View style={[styles.locationChooserContainer, open && styles.locationChooserContainerActive]}>
@@ -64,13 +67,18 @@ export function RouteSearchLocationChooser({
               iconStyle={styles.inlineSelectorIcon}
               buttonStyle={styles.inlineSelectorButton}
               inputStyle={styles.inlineSelectorValue}
+              testIDPrefix={testIDPrefix}
             />
-        </View>
-        <Pressable style={styles.functionButton} onPress={onUseNearby}>
+          </View>
+          <Pressable
+            {...e2eProps(`${testIDPrefix}-nearby`)}
+            style={styles.functionButton}
+            onPress={onUseNearby}
+          >
           <Ionicons name="navigate-circle" size={26} color="#2196f3" />
-        </Pressable>
+          </Pressable>
+        </View>
       </View>
-    </View>
     </View>
   );
 }

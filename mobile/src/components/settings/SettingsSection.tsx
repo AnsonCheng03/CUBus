@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { e2eProps } from '../../test-support/e2eProps';
 
 export function SettingsSection({ children }: { children: React.ReactNode }) {
   return <View style={styles.section}>{children}</View>;
@@ -11,12 +12,14 @@ export function SettingsRow({
   onPress,
   right,
   noDivider = false,
+  testID,
 }: {
   label: string;
   description?: string;
   onPress?: () => void;
   right?: React.ReactNode;
   noDivider?: boolean;
+  testID?: string;
 }) {
   const content = (
     <View style={[styles.row, noDivider && styles.rowNoDivider]}>
@@ -28,7 +31,13 @@ export function SettingsRow({
     </View>
   );
 
-  return onPress ? <Pressable onPress={onPress}>{content}</Pressable> : content;
+  return onPress ? (
+    <Pressable {...e2eProps(testID)} onPress={onPress}>
+      {content}
+    </Pressable>
+  ) : (
+    content
+  );
 }
 
 const styles = StyleSheet.create({

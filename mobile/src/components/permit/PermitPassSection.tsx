@@ -11,6 +11,7 @@ import {
 import { PermitCard, PERMIT_CARD_RATIO } from '../PermitCard';
 import { permitBusRoutes } from '../../lib/permit';
 import type { PermitFormValue } from '../../types/mobile';
+import { e2eProps } from '../../test-support/e2eProps';
 
 type PermitVariant = {
   mode: keyof typeof permitBusRoutes;
@@ -49,6 +50,7 @@ export function PermitPassSection({
 }) {
   return (
     <ScrollView
+      {...e2eProps('permit-pass-section')}
       style={styles.viewPage}
       contentContainerStyle={styles.viewPageContent}
       showsVerticalScrollIndicator={false}
@@ -122,6 +124,7 @@ export function PermitPassSection({
             return (
               <Pressable
                 key={variant.mode}
+                {...e2eProps(`permit-dot-${variant.mode}`)}
                 style={[styles.passDot, active && styles.passDotActive]}
                 onPress={() => scrollToPermit(variant.mode)}
               />
@@ -131,7 +134,7 @@ export function PermitPassSection({
       </View>
 
       <View style={styles.buttonColumn}>
-        <Pressable style={styles.primaryButton} onPress={onEdit}>
+        <Pressable {...e2eProps('permit-edit-button')} style={styles.primaryButton} onPress={onEdit}>
           <Text style={styles.primaryButtonText}>{t('Permit_Edit')}</Text>
         </Pressable>
       </View>

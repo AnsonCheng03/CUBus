@@ -14,6 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Svg, { Path } from 'react-native-svg';
 import { FloatingSelectorPopup } from './FloatingSelectorPopup';
 import type { SelectionOption } from './SelectionModal';
+import { e2eProps } from '../test-support/e2eProps';
 
 export function FloatingStationSelector({
   value,
@@ -39,6 +40,7 @@ export function FloatingStationSelector({
   buttonStyle,
   valueStyle,
   inputStyle,
+  testIDPrefix,
 }: {
   value: string;
   open: boolean;
@@ -63,6 +65,7 @@ export function FloatingStationSelector({
   buttonStyle?: StyleProp<ViewStyle>;
   valueStyle?: StyleProp<TextStyle>;
   inputStyle?: StyleProp<TextStyle>;
+  testIDPrefix?: string;
 }) {
   const openProgress = useRef(new Animated.Value(open ? 1 : 0)).current;
   const displayValue = value.trim() || placeholder || '';
@@ -179,6 +182,7 @@ export function FloatingStationSelector({
             ]}
           >
             <TextInput
+              {...e2eProps(testIDPrefix ? `${testIDPrefix}-input` : undefined)}
               value={value}
               onChangeText={onChangeText}
               onFocus={onFocus}
@@ -191,7 +195,7 @@ export function FloatingStationSelector({
               style={[styles.selectorInput, inputStyle]}
             />
             {showChevron ? (
-              <Pressable hitSlop={8} onPress={onToggle}>
+              <Pressable {...e2eProps(testIDPrefix ? `${testIDPrefix}-toggle` : undefined)} hitSlop={8} onPress={onToggle}>
                 <Ionicons
                   name={open ? 'chevron-up' : 'chevron-down'}
                   size={16}
@@ -202,7 +206,11 @@ export function FloatingStationSelector({
             ) : null}
           </View>
         ) : (
-          <Pressable style={[styles.selectorButton, buttonStyle]} onPress={onToggle}>
+          <Pressable
+            {...e2eProps(testIDPrefix ? `${testIDPrefix}-button` : undefined)}
+            style={[styles.selectorButton, buttonStyle]}
+            onPress={onToggle}
+          >
             <Text
               style={[
                 styles.selectorValue,
@@ -224,7 +232,12 @@ export function FloatingStationSelector({
           </Pressable>
         )}
         {showLocateButton && onLocate ? (
-          <Pressable hitSlop={8} style={styles.gpsButton} onPress={onLocate}>
+          <Pressable
+            {...e2eProps(testIDPrefix ? `${testIDPrefix}-gps` : undefined)}
+            hitSlop={8}
+            style={styles.gpsButton}
+            onPress={onLocate}
+          >
             <Ionicons name="navigate-circle" size={26} color="#2196f3" />
           </Pressable>
         ) : null}
@@ -235,6 +248,7 @@ export function FloatingStationSelector({
           height={popupHeight}
           options={filteredOptions}
           onSelect={onSelect}
+          testIDPrefix={testIDPrefix}
         />
       </View>
     </View>

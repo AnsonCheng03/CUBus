@@ -19,6 +19,7 @@ import {
 } from '../query/hooks';
 import { findMissingRequiredData } from './internal/requiredData';
 import { DEFAULT_APP_TEMP_DATA, useTempState } from './internal/tempState';
+import { e2eConfig } from '../test-support/e2eConfig';
 
 type AppStateContextValue = {
   appData: AppData;
@@ -46,9 +47,11 @@ const AppStateContext = createContext<AppStateContextValue>(null);
 export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const queryClient = useQueryClient();
   const [hint, setHint] = useState('Initializing');
-  const [appSettings, setAppSettings] = useState<AppSettings>({});
+  const [appSettings, setAppSettings] = useState<AppSettings>(e2eConfig.appSettings ?? {});
 
-  const { appTempData, setSearchStation, setRealtimeStation, clearTemporaryState } = useTempState();
+  const { appTempData, setSearchStation, setRealtimeStation, clearTemporaryState } = useTempState(
+    e2eConfig.enabled ? e2eConfig.appTempData ?? DEFAULT_APP_TEMP_DATA : DEFAULT_APP_TEMP_DATA,
+  );
 
   const bootstrapQuery = useBootstrapDataQuery();
   const appData = bootstrapQuery.data?.appData ?? {};
@@ -62,9 +65,9 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
         ? 'corrupted'
         : 'ready';
 
-  const deltaSyncEnabled = useDelayedActivation(bootStatus === 'ready', 1200);
-  const realtimeQuery = useRealtimeDataQuery(bootStatus === 'ready');
-  const realtimeData = realtimeQuery.data ?? {};
+  const deltaSyncEnabled = useDelayedActivation(bootStatus === 'ready' && !e2eConfig.enabled, 1200);
+  const realtimeQuery = useRealtimeDataQuery(bootStatus === 'ready' && !e2eConfig.enabled);
+  const realtimeData = realtimeQuery.data ?? (e2eConfig.enabled ? e2eConfig.realtimeData : {});
   const deltaSyncQuery = useDeltaSyncQuery(deltaSyncEnabled && bootStatus === 'ready');
 
   const networkError = useMemo<NetworkError>(
@@ -76,6 +79,10 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
   );
 
   useEffect(() => {
+    if (e2eConfig.enabled) {
+      return;
+    }
+
     asyncStorageStore.get<AppSettings>('appSettings').then((savedSettings) => {
       if (savedSettings) {
         setAppSettings(savedSettings);
@@ -103,6 +110,10 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
   }, [bootStatus, deltaSyncQuery.fetchStatus]);
 
   useEffect(() => {
+    if (e2eConfig.enabled) {
+      return;
+    }
+
     if (bootStatus !== 'ready') {
       return;
     }
@@ -128,7 +139,7 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
   const resetApp = useCallback(async () => {
     await asyncStorageStore.clearAll();
     clearTemporaryState();
-    setAppSettings({});
+    setAppSettings(e2eConfig.enabled ? e2eConfig.appSettings ?? {} : {});
     setHint('DownloadFiles-Initializing');
     await queryClient.removeQueries({ queryKey: mobileQueryKeys.bootstrap });
     await queryClient.removeQueries({ queryKey: mobileQueryKeys.realtime });

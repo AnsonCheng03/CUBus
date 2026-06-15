@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import type { PermitFormValue } from '../../types/mobile';
+import { e2eProps } from '../../test-support/e2eProps';
 
 const FIELDS: Array<[string, keyof PermitFormValue, string]> = [
   ['School_Bus_Permit_Name', 'name', 'Vanessa'],
@@ -26,6 +27,7 @@ export function PermitFormSection({
 }) {
   return (
     <ScrollView
+      {...e2eProps('permit-form')}
       style={styles.formPage}
       contentContainerStyle={styles.formPageContent}
       showsVerticalScrollIndicator={false}
@@ -39,6 +41,7 @@ export function PermitFormSection({
           >
             <Text style={styles.inputLabel}>{t(key)}</Text>
             <TextInput
+              {...e2eProps(`permit-input-${field}`)}
               value={form[field]}
               onChangeText={(value) => onChangeField(field, value)}
               maxLength={20}
@@ -52,11 +55,11 @@ export function PermitFormSection({
       </View>
 
       <View style={styles.buttonColumn}>
-        <Pressable style={styles.primaryButton} onPress={onSave}>
+        <Pressable {...e2eProps('permit-save-button')} style={styles.primaryButton} onPress={onSave}>
           <Text style={styles.primaryButtonText}>{t('Permit_Save')}</Text>
         </Pressable>
         {showCancel ? (
-          <Pressable style={styles.secondaryButton} onPress={onCancel}>
+          <Pressable {...e2eProps('permit-cancel-button')} style={styles.secondaryButton} onPress={onCancel}>
             <Text style={styles.secondaryButtonText}>{t('Cancel')}</Text>
           </Pressable>
         ) : null}

@@ -50,6 +50,7 @@ export function SettingsScreen() {
         <SettingsSection>
           <SettingsRow
             label={t('settings_change_language')}
+            testID="settings-change-language"
             onPress={() => {
               const next = i18next.language.includes('en') ? 'zh' : 'en';
               i18next.changeLanguage(next).then(() => {
@@ -65,6 +66,7 @@ export function SettingsScreen() {
             description={t('routeNoWaitTimeD')}
             right={
               <Switch
+                {...{ testID: 'settings-no-wait-switch' }}
                 value={!!appSettings.searchSortDontIncludeWaitTime}
                 onValueChange={(value) =>
                   setAppSettings((prev) => ({ ...prev, searchSortDontIncludeWaitTime: value }))
@@ -81,9 +83,14 @@ export function SettingsScreen() {
               </Pressable>
             </View>
           ) : null}
-          <SettingsRow label={t('Reload-Data')} onPress={() => syncDelta().catch(() => {})} />
+          <SettingsRow
+            label={t('Reload-Data')}
+            testID="settings-reload-data"
+            onPress={() => syncDelta().catch(() => {})}
+          />
           <SettingsRow
             label={t('Delete-Storage')}
+            testID="settings-delete-storage"
             onPress={() => resetApp().catch(() => {})}
             noDivider
           />
@@ -92,7 +99,11 @@ export function SettingsScreen() {
 
       <View style={styles.sectionGroup}>
         <SettingsSection>
-          <SettingsRow label={t('bus_map_page')} onPress={() => setBusMapVisible(true)} />
+          <SettingsRow
+            label={t('bus_map_page')}
+            testID="settings-bus-map"
+            onPress={() => setBusMapVisible(true)}
+          />
           {websiteLinks.map((row, index) => (
             <SettingsRow
               key={`${row[0][langIndex]}-${index}`}
@@ -108,10 +119,12 @@ export function SettingsScreen() {
         <SettingsSection>
           <SettingsRow
             label={t('About-btn')}
+            testID="settings-about"
             onPress={() => Linking.openURL('https://github.com/AnsonCheng03')}
           />
           <SettingsRow
             label={t('Designer-Abt-btn')}
+            testID="settings-designer-about"
             onPress={() => Linking.openURL('https://www.instagram.com/01.0720/')}
             noDivider
           />

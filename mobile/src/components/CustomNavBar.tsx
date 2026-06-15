@@ -5,6 +5,7 @@ import { usePathname, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { APP_BRAND_COLOR, NAV_RESPONSIVE_BREAKPOINT } from '../lib/layout';
+import { e2eProps } from '../test-support/e2eProps';
 
 export const MOBILE_BOTTOM_NAV_HEIGHT = 60;
 export const MOBILE_BOTTOM_NAV_SURFACE_HEIGHT = 75;
@@ -43,7 +44,12 @@ export function CustomNavBar() {
     const active = isActivePath(pathname, item.match);
 
     return (
-      <Pressable key={item.href} style={styles.navItem} onPress={() => router.replace(item.href)}>
+      <Pressable
+        key={item.href}
+        {...e2eProps(`nav-${item.href === '/' ? 'home' : item.href.slice(1)}`)}
+        style={styles.navItem}
+        onPress={() => router.replace(item.href)}
+      >
         <View style={styles.navLink}>
           <Ionicons
             name={item.icon}

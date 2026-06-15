@@ -13,6 +13,7 @@ import {
 import { SafeAreaInsetsContext, SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import type { RouteMapSelection } from '../shared-core/app/types';
+import { e2eProps } from '../test-support/e2eProps';
 
 type SheetAnimationMode = 'fade' | 'slide-bottom';
 
@@ -154,10 +155,11 @@ export function RouteMapModal({
     <Modal visible transparent animationType="none" onRequestClose={onClose} statusBarTranslucent>
       <SafeAreaView style={styles.modalRoot} edges={['top']}>
         <Animated.View style={[styles.overlay, { opacity: backdropOpacity }]}>
-          <Pressable style={styles.backdrop} onPress={onClose} />
+          <Pressable {...e2eProps('route-map-backdrop')} style={styles.backdrop} onPress={onClose} />
         </Animated.View>
         <View style={styles.safeArea}>
           <Animated.View
+            {...e2eProps('route-map-modal')}
             style={[
               styles.sheet,
               sheetAnimatedStyle,
@@ -165,8 +167,8 @@ export function RouteMapModal({
             ]}
           >
             <View style={styles.header}>
-              <Text style={styles.title}>{t('modal-map-title')}</Text>
-              <Pressable onPress={onClose}>
+              <Text {...e2eProps('route-map-title')} style={styles.title}>{t('modal-map-title')}</Text>
+              <Pressable {...e2eProps('route-map-close')} onPress={onClose}>
                 <Text style={styles.close}>{t('toast_dismiss')}</Text>
               </Pressable>
             </View>

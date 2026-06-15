@@ -3,6 +3,7 @@ import { Modal, Pressable, StyleSheet, View } from 'react-native';
 import { PermitCard, PERMIT_CARD_RATIO } from '../PermitCard';
 import { permitBusRoutes } from '../../lib/permit';
 import type { PermitFormValue } from '../../types/mobile';
+import { e2eProps } from '../../test-support/e2eProps';
 
 export function PermitFullscreenModal({
   visibleBusMode,
@@ -26,7 +27,7 @@ export function PermitFullscreenModal({
     >
       <View style={styles.modalOverlay}>
         <Pressable
-          testID="permit-fullscreen-backdrop"
+          {...e2eProps('permit-fullscreen-backdrop')}
           style={styles.modalFullscreenTap}
           onPress={onClose}
         >

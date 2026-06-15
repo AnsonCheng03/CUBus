@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { InlineNoticeRow } from '../InlineNoticeRow';
 import { RouteBusIcon } from '../RouteBusIcon';
 import type { RouteSearchResultCard } from '../../types/mobile';
+import { e2eProps } from '../../test-support/e2eProps';
 
 export function RouteSearchResultsList({
   results,
@@ -37,6 +38,7 @@ export function RouteSearchResultsList({
         results.slice(0, 15).map((result, index) => (
           <Pressable
             key={`${result.busNo}-${result.arrivalTime}-${index}`}
+            {...e2eProps(`route-result-${index}`)}
             style={styles.resultCard}
             onPress={() => onSelect(result)}
           >
