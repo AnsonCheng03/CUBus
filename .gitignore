@@ -58,6 +58,8 @@ ios/**/xcuserdata/
 # Expo / React Native mobile app
 mobile/.expo/
 mobile/.expo-shared/
+mobile/.xcode-objroot/
+mobile/.xcode-symroot/
 mobile/node_modules/
 mobile/dist/
 mobile/web-build/

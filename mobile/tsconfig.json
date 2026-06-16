@@ -1,10 +1,12 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "moduleResolution": "bundler",
     "strict": true,
     "resolveJsonModule": true,
     "types": [
-      "jest"
+      "jest",
+      "node"
     ],
     "paths": {
       "@/*": [
