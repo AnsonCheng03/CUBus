@@ -17,6 +17,7 @@
       "deploymentTarget": "16.4",
       "requireFullScreen": false,
       "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Display Nearby Bus Stops",
         "NSLocationAlwaysUsageDescription": "Display Nearby Bus Stops",
         "NSLocationWhenInUseUsageDescription": "Display Nearby Bus Stops"
