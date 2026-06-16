@@ -12,18 +12,6 @@
       "resizeMode": "contain",
       "backgroundColor": "#d6a16e"
     },
-    "web": {
-      "bundler": "metro",
-      "output": "static"
-    },
-    "plugins": [
-      "expo-router",
-      "expo-location",
-      "@sentry/react-native"
-    ],
-    "experiments": {
-      "typedRoutes": true
-    },
     "ios": {
       "bundleIdentifier": "com.cubus.app",
       "deploymentTarget": "16.4",
@@ -43,6 +31,18 @@
         "foregroundImage": "../resources/icon.png",
         "backgroundColor": "#d6a16e"
       }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-location",
+      "@sentry/react-native"
+    ],
+    "experiments": {
+      "typedRoutes": true
     }
   }
 }

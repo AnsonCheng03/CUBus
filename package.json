@@ -35,6 +35,7 @@
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "format": "prettier -w .",
     "typecheck": "tsc --noEmit",
+    "check:all": "npm run typecheck && npm run mobile:check",
     "gen": "ionic generate",
     "dev:mobile": "ionic capacitor sync && ionic capacitor open",
     "dev:iOS": "ionic capacitor sync && open ios/App/App.xcworkspace",

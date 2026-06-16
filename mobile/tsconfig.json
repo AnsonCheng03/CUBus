@@ -8,10 +8,11 @@
     ],
     "paths": {
       "@/*": [
-        "./src/*"
+        "./src/*",
+        "./*"
       ],
       "@core/*": [
-        "../src/shared-core/*"
+        "./src/shared-core/*"
       ]
     }
   },
@@ -19,8 +20,6 @@
     "**/*.ts",
     "**/*.tsx",
     "expo-env.d.ts",
-    "../src/shared-core/**/*.ts",
-    "../src/shared-core/**/*.tsx",
     ".expo/types/**/*.ts"
   ],
   "exclude": [

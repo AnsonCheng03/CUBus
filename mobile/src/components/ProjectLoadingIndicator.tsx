@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, ImageStyle, StyleSheet, View, ViewStyle } from 'react-native';
 
-const loadingImage = require('../../assets/download.gif');
+const loadingImage = require('../assets/download.gif');
 
 export function ProjectLoadingIndicator({
   size = 105,

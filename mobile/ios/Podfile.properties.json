@@ -3,5 +3,5 @@
   "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
   "ios.deploymentTarget": "16.4",
   "expo.inlineModules.watchedDirectories": "[]",
-  "EXPO_USE_PRECOMPILED_MODULES": "false"
+  "expo.inlineModules.xcodeProjectTargets": "{\"mainTarget\":\"CUBus\",\"targets\":[]}"
 }

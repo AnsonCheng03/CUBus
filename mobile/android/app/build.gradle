@@ -83,25 +83,6 @@ def jscFlavor = 'io.github.react-native-community:jsc-android:2026004.+'
 
 apply from: new File(["node", "--print", "require('path').dirname(require.resolve('@sentry/react-native/package.json'))"].execute().text.trim(), "sentry.gradle")
 
-gradle.taskGraph.whenReady { graph ->
-    def requiresSentryReleaseAuth = graph.allTasks.any { task ->
-        task.project == project && (
-            task.name == "assembleRelease" ||
-            task.name == "bundleRelease" ||
-            task.name == "packageRelease" ||
-            task.name.startsWith("uploadSentry") ||
-            task.name.startsWith("createBundleReleaseJsAndAssets")
-        )
-    }
-
-    if (requiresSentryReleaseAuth && !System.getenv("SENTRY_AUTH_TOKEN")) {
-        throw new GradleException(
-            "SENTRY_AUTH_TOKEN is required for local Android release builds with Sentry upload enabled. " +
-            "Export it before running npm run mobile:build:apk or npm run mobile:build:aab."
-        )
-    }
-}
-
 android {
     ndkVersion rootProject.ext.ndkVersion
 
