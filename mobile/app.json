@@ -41,7 +41,8 @@
     "plugins": [
       "expo-router",
       "expo-location",
-      "@sentry/react-native"
+      "@sentry/react-native",
+      "expo-ios-scene-lifecycle-plugin"
     ],
     "experiments": {
       "typedRoutes": true
