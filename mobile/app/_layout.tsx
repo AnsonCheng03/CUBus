@@ -10,6 +10,7 @@ import { mobileQueryClient } from '../src/query/client';
 import { useReactQueryAppFocus } from '../src/query/focusManager';
 import { applyGlobalTypographyDefaults } from '../src/lib/typography';
 import { initSentry } from '../src/lib/sentry';
+import { AppDownloadPrompt } from '../src/components/AppDownloadPrompt';
 
 initSentry();
 
@@ -23,6 +24,7 @@ function AppFrame() {
     <View style={styles.container}>
       <Stack screenOptions={{ headerShown: false }} />
       <NoticeBanner notice={appData.notice} />
+      <AppDownloadPrompt />
     </View>
   );
 }

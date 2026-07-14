@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { Linking, Pressable, StyleSheet, Switch, Text, View, useWindowDimensions } from 'react-native';
+import {
+  Alert,
+  Linking,
+  Pressable,
+  StyleSheet,
+  Switch,
+  Text,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { BusMapModal } from '../components/BusMapModal';
 import { MOBILE_BOTTOM_NAV_OVERLAP } from '../components/CustomNavBar';
@@ -31,6 +40,21 @@ export function SettingsScreen() {
   const websiteLinks = ((appData.WebsiteLinks as WebsiteLink[]) ?? []).filter(
     (row) => row?.[0]?.[langIndex] && row?.[1],
   );
+
+  const confirmReset = () => {
+    Alert.alert(
+      t('Delete-Storage'),
+      t('confirm_clear', { defaultValue: 'Clear local data?' }),
+      [
+        { text: t('cancel_btntxt'), style: 'cancel' },
+        {
+          text: t('Delete-Storage'),
+          style: 'destructive',
+          onPress: () => resetApp().catch(() => {}),
+        },
+      ],
+    );
+  };
 
   return (
     <ScreenContainer
@@ -91,7 +115,7 @@ export function SettingsScreen() {
           <SettingsRow
             label={t('Delete-Storage')}
             testID="settings-delete-storage"
-            onPress={() => resetApp().catch(() => {})}
+            onPress={confirmReset}
             noDivider
           />
         </SettingsSection>

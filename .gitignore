@@ -70,3 +70,4 @@ mobile/ios/build/
 mobile/ios/DerivedData/
 mobile/ios/**/*.xcuserdata/
 mobile/ios/.xcode.env.local
+.DS_Store

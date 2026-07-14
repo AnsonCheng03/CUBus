@@ -1,7 +1,9 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ProjectLoadingIndicator } from './ProjectLoadingIndicator';
+
+const appIcon = require('../assets/bus.jpg');
 
 export function AppStatusScreen({
   title,
@@ -23,7 +25,12 @@ export function AppStatusScreen({
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <View style={styles.container}>
-        {loading ? <ProjectLoadingIndicator /> : null}
+        {loading ? (
+          <View style={styles.loadingVisuals}>
+            <Image source={appIcon} style={styles.appIcon} resizeMode="cover" />
+            <ProjectLoadingIndicator size={72} />
+          </View>
+        ) : null}
         <Text style={styles.title}>{title}</Text>
         <Text style={styles.hint}>{hint}</Text>
         {body ? <View style={styles.body}>{body}</View> : null}
@@ -73,6 +80,15 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: '#630a10',
     textAlign: 'center',
+  },
+  loadingVisuals: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  appIcon: {
+    width: 112,
+    height: 112,
+    borderRadius: 24,
   },
   hint: {
     color: 'rgba(99, 10, 16, 0.78)',

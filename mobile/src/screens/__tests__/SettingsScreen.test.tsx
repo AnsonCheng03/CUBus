@@ -1,5 +1,7 @@
 import React from 'react';
-import { render } from '@testing-library/react-native';
+import { Alert } from 'react-native';
+import { act } from 'react';
+import { fireEvent, render } from '@testing-library/react-native';
 import { SettingsScreen } from '../SettingsScreen';
 
 const mockState = {
@@ -46,5 +48,25 @@ describe('SettingsScreen', () => {
     const { getByText } = await render(<SettingsScreen />);
     expect(getByText('settings_change_language')).toBeTruthy();
     expect(getByText('bus_map_page')).toBeTruthy();
+  });
+
+  it('confirms before deleting stored data', async () => {
+    const alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
+    mockState.resetApp.mockClear();
+    const { getByTestId } = await render(<SettingsScreen />);
+
+    await act(async () => {
+      fireEvent.press(getByTestId('settings-delete-storage'));
+    });
+
+    expect(mockState.resetApp).not.toHaveBeenCalled();
+    expect(alertSpy).toHaveBeenCalledTimes(1);
+
+    const buttons = alertSpy.mock.calls[0][2];
+    await act(async () => {
+      buttons?.find((button) => button.style === 'destructive')?.onPress?.();
+    });
+    expect(mockState.resetApp).toHaveBeenCalledTimes(1);
+    alertSpy.mockRestore();
   });
 });

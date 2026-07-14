@@ -78,6 +78,14 @@ export function RouteSearchResultsList({
               <Text style={styles.resultWaitLabel}>{t('wait-time-desc')}</Text>
             </View>
 
+            {result.config?.scheduleType === 'reported' ? (
+              <InlineNoticeRow
+                text={`${result.config.scheduleConfig?.count ?? 1} ${t('bus-reported-by-user')}`}
+                variant="info"
+                style={styles.resultWarningRow}
+              />
+            ) : null}
+
             {result.warning ? (
               <InlineNoticeRow
                 text={t(result.warning)}

@@ -84,6 +84,18 @@ export type NoticeItem = {
   pref?: {
     hide?: number;
     link?: string;
+    type?:
+      | 'primary'
+      | 'secondary'
+      | 'tertiary'
+      | 'success'
+      | 'warning'
+      | 'danger'
+      | 'light'
+      | 'medium'
+      | 'dark';
+    dismissible?: boolean;
+    duration?: number;
   };
 };
 

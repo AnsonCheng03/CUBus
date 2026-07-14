@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Linking, Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,18 @@ import type { NoticeItem } from '../types/mobile';
 function stripHtml(input: string) {
   return input.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
 }
+
+const noticeColors = {
+  primary: { backgroundColor: '#dbeafe', borderColor: '#93c5fd', textColor: '#1e3a8a' },
+  secondary: { backgroundColor: '#ede9fe', borderColor: '#c4b5fd', textColor: '#4c1d95' },
+  tertiary: { backgroundColor: '#fae8ff', borderColor: '#e879f9', textColor: '#701a75' },
+  success: { backgroundColor: '#dcfce7', borderColor: '#86efac', textColor: '#166534' },
+  warning: { backgroundColor: '#fff7d6', borderColor: '#e7d79d', textColor: '#5b4a08' },
+  danger: { backgroundColor: '#fee2e2', borderColor: '#fca5a5', textColor: '#991b1b' },
+  light: { backgroundColor: '#fff', borderColor: '#e5e7eb', textColor: '#374151' },
+  medium: { backgroundColor: '#e5e7eb', borderColor: '#9ca3af', textColor: '#374151' },
+  dark: { backgroundColor: '#1f2937', borderColor: '#111827', textColor: '#f9fafb' },
+} as const;
 
 export function NoticeBanner({ notice }: { notice?: NoticeItem[] | null }) {
   const { i18n, t } = useTranslation('global');
@@ -26,9 +38,24 @@ export function NoticeBanner({ notice }: { notice?: NoticeItem[] | null }) {
     return visible[0] ?? null;
   }, [dismissedIds, lang, notice]);
 
+  useEffect(() => {
+    const duration = currentNotice?.pref?.duration ?? 0;
+    if (!currentNotice || duration <= 0) return;
+
+    const timer = setTimeout(() => {
+      setDismissedIds((prev) =>
+        prev.includes(currentNotice.id) ? prev : [...prev, currentNotice.id],
+      );
+    }, duration);
+
+    return () => clearTimeout(timer);
+  }, [currentNotice]);
+
   if (!currentNotice) return null;
   const noticeContent = currentNotice.content?.[lang] ?? '';
   const noticeLink = currentNotice.pref?.link;
+  const dismissible = currentNotice.pref?.dismissible !== false;
+  const palette = noticeColors[currentNotice.pref?.type ?? 'success'];
 
   return (
     <SafeAreaView
@@ -36,17 +63,34 @@ export function NoticeBanner({ notice }: { notice?: NoticeItem[] | null }) {
       edges={['top']}
       style={[styles.overlay, width >= NAV_RESPONSIVE_BREAKPOINT && inTabShell && styles.overlayWithTopNav]}
     >
-      <View style={styles.banner}>
-        <Text style={styles.message}>{stripHtml(noticeContent)}</Text>
+      <View
+        style={[
+          styles.banner,
+          { backgroundColor: palette.backgroundColor, borderColor: palette.borderColor },
+        ]}
+      >
+        <Text style={[styles.message, { color: palette.textColor }]}>
+          {stripHtml(noticeContent)}
+        </Text>
         <View style={styles.actions}>
           {noticeLink ? (
             <Pressable onPress={() => Linking.openURL(noticeLink)}>
               <Text style={styles.link}>{t('toast_more_info')}</Text>
             </Pressable>
           ) : null}
-          <Pressable onPress={() => setDismissedIds((prev) => [...prev, currentNotice.id])}>
-            <Text style={styles.dismiss}>{t('toast_dismiss')}</Text>
-          </Pressable>
+          {dismissible ? (
+            <Pressable
+              onPress={() =>
+                setDismissedIds((prev) =>
+                  prev.includes(currentNotice.id) ? prev : [...prev, currentNotice.id],
+                )
+              }
+            >
+              <Text style={[styles.dismiss, { color: palette.textColor }]}>
+                {t('toast_dismiss')}
+              </Text>
+            </Pressable>
+          ) : null}
         </View>
       </View>
     </SafeAreaView>
@@ -68,19 +112,16 @@ const styles = StyleSheet.create({
     marginTop: 75,
   },
   banner: {
-    backgroundColor: '#fff7d6',
     borderRadius: 12,
     padding: 14,
     gap: 10,
     borderWidth: 1,
-    borderColor: '#e7d79d',
     shadowColor: '#000',
     shadowOpacity: 0.15,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 4 },
   },
   message: {
-    color: '#5b4a08',
     lineHeight: 20,
   },
   actions: {
