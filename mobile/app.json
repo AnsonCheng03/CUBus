@@ -6,6 +6,8 @@
     "version": "1.0.11",
     "orientation": "default",
     "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "jsEngine": "hermes",
     "icon": "../resources/icon.png",
     "splash": {
       "image": "../resources/splash.png",
@@ -25,6 +27,23 @@
     },
     "android": {
       "package": "com.cubus.app",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "https",
+              "host": "cu-bus.online",
+              "pathPrefix": "/open-app"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ],
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION"
@@ -45,7 +64,8 @@
       "expo-ios-scene-lifecycle-plugin"
     ],
     "experiments": {
-      "typedRoutes": true
+      "typedRoutes": true,
+      "reactCompiler": true
     }
   }
 }

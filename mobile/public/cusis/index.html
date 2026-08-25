@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="zh-HK">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>CUSIS Timetable Export | CU Bus</title>
+    <link rel="icon" href="/favicon.png" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main>
+      <h1>CUSIS Timetable Export</h1>
+      <p>輸入學生編號及密碼，下載本學期課堂時間表。資料只會經加密連線傳送，不會被儲存或記錄。</p>
+      <p>Enter your student ID and password to download the current semester as an iCalendar file. Credentials are transmitted over HTTPS and are never stored or logged.</p>
+      <form id="cusis-form">
+        <label>Student ID <input name="SID" inputmode="numeric" autocomplete="username" required /></label>
+        <label>Password <input name="pwd" type="password" autocomplete="current-password" required /></label>
+        <button type="submit">Download timetable</button>
+      </form>
+      <p id="status" role="status" aria-live="polite"></p>
+      <p><a href="/">Back to CU Bus</a></p>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>

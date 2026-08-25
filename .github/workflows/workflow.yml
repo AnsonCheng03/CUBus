@@ -1,4 +1,4 @@
-name: Build and Deploy
+name: Validate and deploy Expo web
 
 on:
   push:
@@ -12,26 +12,29 @@ jobs:
   build-deploy:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [18.x]
-
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v3
+      - name: Use Node.js 24
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 24
           cache: "npm"
+          cache-dependency-path: mobile/package-lock.json
       - name: Install Packages
-        run: npm ci
-      - name: Build
-        run: npm run build
-      #- name: Test
-      #  run: npm test
+        run: npm ci --prefix mobile
+      - name: Typecheck
+        run: npm --prefix mobile run typecheck
+      - name: Unit and shared-core tests
+        run: npm --prefix mobile run test:unit && npm --prefix mobile run test:shared-core
+      - name: Install Playwright
+        run: npx --prefix mobile playwright install --with-deps chromium
+      - name: Web end-to-end tests
+        run: npm --prefix mobile run test:e2e:web
+      - name: Export Expo web
+        run: npm --prefix mobile run build:web
       - name: Deploy🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: gh-pages
-          folder: dist
+          folder: mobile/dist

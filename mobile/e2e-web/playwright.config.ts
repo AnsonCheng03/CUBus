@@ -9,9 +9,9 @@ export default defineConfig({
   },
   webServer: {
     command:
-      'EXPO_PUBLIC_E2E_MODE=1 EXPO_PUBLIC_E2E_SCENARIO=route-search npm run web -- --port 19007 --non-interactive',
+      'CI=1 EXPO_PUBLIC_E2E_MODE=1 EXPO_PUBLIC_E2E_SCENARIO=route-search npm run web -- --port 19007',
     url: 'http://127.0.0.1:19007',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 120_000,
   },
 });

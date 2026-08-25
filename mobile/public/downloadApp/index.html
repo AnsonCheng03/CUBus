@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <title>CU Bus Download</title>
+    <style>
+        /* Basic Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+
+
+        header h1 {
+            font-size: 28px;
+            color: #333;
+        }
+
+        .button,
+        #download-beta {
+
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+
+        .button:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .button:disabled {
+            background-color: #d3d3d3;
+            color: #aaa;
+            cursor: not-allowed;
+        }
+
+        .button.small-text {
+            font-size: 14px;
+        }
+
+        #download-ios {
+            background-color: #007bff;
+        }
+
+        #download-beta {
+            background-color: #28a745;
+        }
+
+        #continue {
+            background-color: #6c757d;
+        }
+
+        .dual-lang {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        footer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        #modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        #modal-content {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .small-text {
+            font-size: 12px;
+            color: #555;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        .modal-close {
+            font-size: 18px;
+            font-weight: bold;
+            color: #888;
+            cursor: pointer;
+            float: right;
+        }
+
+        .downloadApps {
+            background: #fff;
+            box-shadow: 0 5px 3px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            display: grid;
+            grid-template-columns: 1fr;
+            width: 50vw;
+            min-width: 400px;
+            padding: 50px 20px 20px 20px;
+        }
+
+        .downloadAppsContainer {
+            position: relative;
+            margin-top: 20px;
+        }
+
+        .downloadAppsContainer img {
+            position: absolute;
+            width: 80px;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 10px;
+            background-color: #fff;
+        }
+
+        .downloadAppsContainer .downloadApps.beta {
+            display: none;
+        }
+
+        .downloadAppsContainer.beta .downloadApps {
+            display: none;
+        }
+
+        .downloadAppsContainer.beta .downloadApps.beta {
+            display: grid;
+        }
+
+        #switch-mode {
+            background-color: transparent;
+            color: #007bff;
+            padding: 0 20px;
+            flex-direction: row;
+            justify-content: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="dual-lang">
+            <h1>Download the CU Bus App</h1>
+            <h1>下載 CU BUS 應用程式</h1>
+        </div>
+    </header>
+
+    <!-- Download iOS Button -->
+    <div class="downloadAppsContainer">
+        <img src="favicon.png" alt="CU Bus Icon"> <!-- Placeholder for an icon -->
+
+        <div class="downloadApps">
+            <a id="download-ios" class="button dual-lang" href="https://apps.apple.com/us/app/cu-bus/id6736944558">
+                <span>Download for iOS</span>
+                <span>下載 iOS 版</span>
+            </a>
+
+            <!-- Download Android Button (Greyed Out) -->
+            <button id="download-android" class="button dual-lang" onclick="promptAndroidInfo()">
+                <span>Download for Android</span>
+                <span>下載 Android 版</span>
+            </button>
+
+            <button id="switch-mode" class="button dual-lang"
+                onclick="document.querySelector('.downloadAppsContainer').classList.toggle('beta')">
+                <span>Download Beta</span>
+                <span>下載測試版</span>
+            </button>
+        </div>
+
+        <!-- Download Beta for iOS & Android -->
+        <div class="downloadApps beta">
+            <a id="download-beta" class="button small-text dual-lang" href="https://testflight.apple.com/join/MK2s923B">
+                <span>Download Beta (iOS)</span>
+                <span>下載測試版（iOS）</span>
+            </a>
+
+
+
+            <button id="download-beta" class="button dual-lang" onclick="showModal()">
+                <span>Download Beta (Android)</span>
+                <span>下載測試版（Android）</span>
+            </button>
+
+            <button id="switch-mode" class="button dual-lang"
+                onclick="document.querySelector('.downloadAppsContainer').classList.toggle('beta')">
+                <span>Download Regular</span>
+                <span>下載正式版</span>
+            </button>
+
+        </div>
+    </div>
+
+    <!-- Continue to Website -->
+    <!--<a id="continue" class="button dual-lang" href="https://cu-bus.online">-->
+    <!--  <span>Continue to Website</span>-->
+    <!--  <span>繼續到網站</span>-->
+    <!--</a>-->
+
+    <div id="modal">
+        <div id="modal-content">
+            <span class="modal-close" onclick="closeModal()">x</span>
+            <div class="modal-title">Steps for Download 步驟</div>
+
+            <p class="small-text">You have to log in to Google first 必須先登錄谷歌</p>
+            <div class="grid-container">
+                <span>Step 1. </span>
+                <a href="https://groups.google.com/g/cubustest" target="_blank" class="button">Join Group 加入群組</a>
+            </div>
+
+            <div class="grid-container">
+                <span>Step 2. </span>
+                <a href="https://play.google.com/apps/testing/com.cubus.app" target="_blank" class="button">Join Beta
+                    加入測試版</a>
+            </div>
+
+            <div class="grid-container">
+                <span>Step 3. </span>
+                <a href="https://play.google.com/store/apps/details?id=com.cubus.app" target="_blank"
+                    class="button">Download Beta! 下載測試版!</a>
+            </div>
+
+            <p class="small-text">
+                Have a problem? <a
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSch34Fbjehd0It8T_m3uJT9Fz0rr8WI1pm2q7HqaIzUaFShZg/viewform"
+                    target="_blank">Fill this form</a>
+                <br>有問題嗎？<a
+                    href="https://docs.google.com/forms/d/e/1FAIpQLSch34Fbjehd0It8T_m3uJT9Fz0rr8WI1pm2q7HqaIzUaFShZg/viewform"
+                    target="_blank">填寫此表格</a>
+            </p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 CU Bus. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Device detection logic
+        const isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isAndroid = /Android/.test(navigator.userAgent);
+
+        if (isiOS) {
+            document.getElementById('download-ios').href = "https://apps.apple.com/us/app/cu-bus/id6736944558";
+        } else if (isAndroid) {
+            // Uncomment if you wish to enable Android download for detected Android devices
+            // document.getElementById('download-android').disabled = false;
+            // document.getElementById('download-android').classList.add('button');
+        }
+
+        function showModal() {
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        function promptAndroidInfo() {
+            const message = `Google requires a minimum of 20 testers to complete a 14-day closed beta test before launch. You can use the beta version for now.\n\nGoogle規定至少有 20 名測試員連續14日封閉測試先可以上架，所以可以用beta用住先。\n\nWould you like to download the beta version?`;
+
+            if (confirm(message)) {
+                showModal();
+            }
+        }
+    </script>
+</body>
+
+</html>

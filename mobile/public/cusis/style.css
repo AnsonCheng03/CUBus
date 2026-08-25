@@ -1,0 +1,11 @@
+:root { color-scheme: light; font-family: system-ui, -apple-system, sans-serif; }
+body { margin: 0; background: #f6eee6; color: #2b1714; }
+main { box-sizing: border-box; width: min(680px, 100%); margin: 0 auto; padding: 48px 20px; }
+h1 { color: #630a10; }
+form { display: grid; gap: 16px; margin: 32px 0 20px; padding: 24px; background: white; border-radius: 16px; box-shadow: 0 6px 24px #630a1018; }
+label { display: grid; gap: 6px; font-weight: 600; }
+input { padding: 12px; border: 1px solid #9f8b85; border-radius: 8px; font: inherit; }
+button { padding: 13px 18px; border: 0; border-radius: 8px; background: #630a10; color: white; font: inherit; font-weight: 700; cursor: pointer; }
+button:disabled { opacity: .55; cursor: wait; }
+a { color: #630a10; }
+#status { min-height: 24px; font-weight: 600; }

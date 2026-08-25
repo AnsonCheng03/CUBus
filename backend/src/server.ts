@@ -1,15 +1,25 @@
 import { createApp } from './app.js';
+import { resolve } from 'node:path';
 import { loadConfig } from './config.js';
+import { JsonFileStore } from './data/file-store.js';
 import { createDatabasePool } from './db.js';
 import { createLogger } from './logger.js';
 import { MysqlLogRepository } from './repositories/log-repository.js';
+import { MysqlBusRepository } from './repositories/bus-repository.js';
+import { ClientDataService } from './services/client-data-service.js';
+import { CusisService } from './services/cusis-service.js';
 
 const config = loadConfig();
 const logger = createLogger(config.logLevel);
 const pool = createDatabasePool(config.database);
+const files = new JsonFileStore(resolve(config.dataDirectory));
+const busRepository = new MysqlBusRepository(pool, config.database.database);
 const app = createApp({
   allowedOrigins: config.allowedOrigins,
   logRepository: new MysqlLogRepository(pool),
+  clientDataService: new ClientDataService(busRepository, files, config.releaseDate),
+  cusisService: new CusisService(config.cusis),
+  files,
   logger,
 });
 

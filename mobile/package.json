@@ -10,7 +10,7 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "test": "jest",
-    "test:unit": "jest --testPathIgnorePatterns=src/shared-core/__tests__",
+    "test:unit": "jest",
     "test:shared-core": "vitest run --config vitest.shared.config.ts",
     "test:e2e:setup": "appium driver install uiautomator2 && appium driver install xcuitest",
     "test:e2e:android": "tsx e2e/run.android.ts",
@@ -75,7 +75,8 @@
     ],
     "testPathIgnorePatterns": [
       "<rootDir>/e2e/",
-      "<rootDir>/e2e-web/"
+      "<rootDir>/e2e-web/",
+      "<rootDir>/src/shared-core/__tests__/"
     ]
   }
 }

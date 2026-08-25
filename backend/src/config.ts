@@ -11,7 +11,14 @@ const environmentSchema = z.object({
   DB_PASS: z.string(),
   DB_NAME: z.string().min(1),
   DB_CONNECTION_LIMIT: z.coerce.number().int().positive().default(10),
+  DATA_DIR: z.string().min(1).default('./data'),
+  BACKEND_RELEASE_DATE: z.string().default('2026-07-14 00:00:00'),
   ALLOWED_ORIGINS: z.string().default('http://localhost:5173'),
+  CUSIS_ENDPOINT: z.string().url().default('https://campusapps.itsc.cuhk.edu.hk/store/CLASSSCHD/STT.asmx'),
+  CUSIS_AES_KEY: z.string().min(1),
+  CUSIS_AES_IV: z.string().min(1),
+  CUSIS_MAX_FAILURES: z.coerce.number().int().positive().default(6),
+  CUSIS_FAILURE_WINDOW_MS: z.coerce.number().int().positive().default(900_000),
 });
 
 export type AppConfig = ReturnType<typeof loadConfig>;
@@ -37,6 +44,15 @@ export function loadConfig(environment: NodeJS.ProcessEnv = process.env) {
       password: result.data.DB_PASS,
       database: result.data.DB_NAME,
       connectionLimit: result.data.DB_CONNECTION_LIMIT,
+    },
+    dataDirectory: result.data.DATA_DIR,
+    releaseDate: result.data.BACKEND_RELEASE_DATE,
+    cusis: {
+      endpoint: result.data.CUSIS_ENDPOINT,
+      aesKey: result.data.CUSIS_AES_KEY,
+      aesIv: result.data.CUSIS_AES_IV,
+      maxFailures: result.data.CUSIS_MAX_FAILURES,
+      failureWindowMs: result.data.CUSIS_FAILURE_WINDOW_MS,
     },
     allowedOrigins: result.data.ALLOWED_ORIGINS.split(',')
       .map((origin) => origin.trim())

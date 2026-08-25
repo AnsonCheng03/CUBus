@@ -30,14 +30,14 @@ export function createApiClient(options: ApiClientOptions) {
 
   return {
     async fetchRealtime(): Promise<ServerResponse> {
-      const response = await client.get<ServerResponse>(`${baseUrl}/getRealtimeData.php`, {
+      const response = await client.get<ServerResponse>(`${baseUrl}/realtime`, {
         timeout: shortTimeout,
       });
       return response.data;
     },
 
     async fetchServerDates(): Promise<ModificationDates> {
-      const response = await client.get<ModificationDates>(`${baseUrl}/getClientData.php`, {
+      const response = await client.get<ModificationDates>(`${baseUrl}/client-data`, {
         timeout: shortTimeout,
       });
       if (typeof response.data === 'string' || response.status !== 200) {
@@ -48,7 +48,7 @@ export function createApiClient(options: ApiClientOptions) {
 
     async fetchDelta(current: ModificationDates | null): Promise<ServerResponse> {
       const response = await client.post<ServerResponse>(
-        `${baseUrl}/getClientData.php`,
+        `${baseUrl}/client-data`,
         current ?? {},
         { timeout: devMode ? 0 : timeoutMs },
       );
@@ -56,7 +56,7 @@ export function createApiClient(options: ApiClientOptions) {
     },
 
     async logEvent(payload: GenericLogPayload) {
-      await client.post(`${baseUrl}/logData.php`, payload, {
+      await client.post(`${baseUrl}/events`, payload, {
         timeout: devMode ? 0 : timeoutMs,
       });
     },
@@ -64,7 +64,7 @@ export function createApiClient(options: ApiClientOptions) {
     async logSearch(input: SearchLogPayload) {
       if (!input.start || !input.dest) return;
       await client.post(
-        `${baseUrl}/logData.php`,
+        `${baseUrl}/events`,
         {
           type: 'search',
           Start: input.start,
@@ -80,7 +80,7 @@ export function createApiClient(options: ApiClientOptions) {
     async logRealtime(input: RealtimeLogPayload) {
       if (!input.dest) return;
       await client.post(
-        `${baseUrl}/logData.php`,
+        `${baseUrl}/events`,
         {
           type: 'realtime',
           Dest: input.dest,

@@ -13,6 +13,11 @@ export default function Root({ children }: { children: ReactNode }) {
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="theme-color" content="#630a10" />
+        <meta
+          name="description"
+          content="CU Bus provides route search and realtime campus shuttle information for CUHK."
+        />
+        <link rel="icon" href="/favicon.png" />
 
         {/*
           Disable body scrolling on web. This makes ScrollView components work closer to how they do on native.

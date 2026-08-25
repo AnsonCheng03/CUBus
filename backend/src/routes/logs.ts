@@ -22,7 +22,7 @@ const searchSchema = z.object({
 export function createLogsRouter(repository: LogRepository): Router {
   const router = Router();
 
-  router.post('/api/v1/functions/logData.php', async (request, response) => {
+  router.post(['/api/v2/events', '/api/v1/functions/logData.php'], async (request, response) => {
     const type = request.body?.type;
 
     try {
@@ -54,6 +54,7 @@ export function createLogsRouter(repository: LogRepository): Router {
 
       if (type === undefined) return response.type('text').send('Missing type');
 
+      // reportArrival was hidden in every shipped UI and is intentionally retired.
       return response.type('text').send('Invalid type');
     } catch (error) {
       request.log.error({ err: error }, 'Failed to write analytics log');
