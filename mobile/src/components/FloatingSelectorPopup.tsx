@@ -8,12 +8,14 @@ export function FloatingSelectorPopup({
   height,
   options,
   onSelect,
+  onOptionPressIn,
   testIDPrefix,
 }: {
   open: boolean;
   height: number;
   options: SelectionOption[];
   onSelect: (value: string) => void;
+  onOptionPressIn?: () => void;
   testIDPrefix?: string;
 }) {
   const progress = useRef(new Animated.Value(open ? 1 : 0)).current;
@@ -52,6 +54,7 @@ export function FloatingSelectorPopup({
               key={option.value}
               {...e2eProps(testIDPrefix ? `${testIDPrefix}-option-${option.value}` : undefined)}
               style={styles.popupOption}
+              onPressIn={onOptionPressIn}
               onPress={() => {
                 onSelect(option.value);
               }}

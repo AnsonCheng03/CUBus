@@ -10,13 +10,14 @@
     "jsEngine": "hermes",
     "icon": "../resources/icon.png",
     "splash": {
-      "image": "../resources/splash.png",
+      "image": "./src/assets/bus.jpg",
       "resizeMode": "contain",
-      "backgroundColor": "#d6a16e"
+      "backgroundColor": "#ffffff"
     },
     "ios": {
       "bundleIdentifier": "com.cubus.app",
       "deploymentTarget": "16.4",
+      "supportsTablet": true,
       "requireFullScreen": false,
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
@@ -60,7 +61,14 @@
     "plugins": [
       "expo-router",
       "expo-location",
-      "@sentry/react-native",
+      [
+        "@sentry/react-native",
+        {
+          "organization": "ansoncheng",
+          "project": "cu-bus",
+          "url": "https://sentry.io/"
+        }
+      ],
       "expo-ios-scene-lifecycle-plugin"
     ],
     "experiments": {

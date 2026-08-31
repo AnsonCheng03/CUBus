@@ -1,7 +1,0 @@
-{
-  "name": "CU Bus",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "react-vite"
-}

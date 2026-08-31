@@ -9,6 +9,7 @@
     "build:web": "expo export --platform web",
     "android": "expo run:android",
     "ios": "expo run:ios",
+    "mac:catalyst": "pod install --project-directory=ios && xcodebuild -workspace ios/CUBus.xcworkspace -scheme CUBus -configuration Release -destination 'generic/platform=macOS,variant=Mac Catalyst' -archivePath build/CUBus-macCatalyst.xcarchive SUPPORTS_MACCATALYST=YES archive",
     "test": "jest",
     "test:unit": "jest",
     "test:shared-core": "vitest run --config vitest.shared.config.ts",
@@ -18,6 +19,13 @@
     "test:e2e:web": "playwright test --config e2e-web/playwright.config.ts",
     "test:all": "npm run test:unit && npm run test:shared-core && npm run test:e2e:web",
     "typecheck": "tsc --noEmit"
+  },
+  "expo": {
+    "autolinking": {
+      "ios": {
+        "exclude": ["@expo/ui"]
+      }
+    }
   },
   "dependencies": {
     "@expo/metro-runtime": "~56.0.15",

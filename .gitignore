@@ -40,21 +40,6 @@ local.properties
 # App-generated data
 public/api/Data/
 
-# Cypress
-cypress/screenshots/
-cypress/videos/
-
-# Capacitor / Android
-android/.gradle/
-android/local.properties
-android/**/build/
-
-# Capacitor / iOS
-ios/**/Pods/
-ios/**/build/
-ios/**/DerivedData/
-ios/**/xcuserdata/
-
 # Expo / React Native mobile app
 mobile/.expo/
 mobile/.expo-shared/

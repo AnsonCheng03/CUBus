@@ -17,6 +17,7 @@ export function RouteSearchLocationChooser({
   onBlur,
   onToggle,
   onSelect,
+  onPopupPressIn,
   onUseNearby,
   testIDPrefix,
 }: {
@@ -31,6 +32,7 @@ export function RouteSearchLocationChooser({
   onBlur: () => void;
   onToggle: () => void;
   onSelect: (value: string) => void;
+  onPopupPressIn?: () => void;
   onUseNearby: () => void;
   testIDPrefix: string;
 }) {
@@ -60,6 +62,7 @@ export function RouteSearchLocationChooser({
               onBlur={onBlur}
               onToggle={onToggle}
               onSelect={onSelect}
+              onPopupPressIn={onPopupPressIn}
               showLocateButton={false}
               showChevron={false}
               filterOptions

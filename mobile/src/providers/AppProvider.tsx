@@ -21,6 +21,8 @@ import { findMissingRequiredData } from './internal/requiredData';
 import { DEFAULT_APP_TEMP_DATA, useTempState } from './internal/tempState';
 import { e2eConfig } from '../test-support/e2eConfig';
 
+const MIN_BOOT_SCREEN_MS = 900;
+
 type AppStateContextValue = {
   appData: AppData;
   appSettings: AppSettings;
@@ -48,6 +50,7 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
   const queryClient = useQueryClient();
   const [hint, setHint] = useState('Initializing');
   const [appSettings, setAppSettings] = useState<AppSettings>(e2eConfig.appSettings ?? {});
+  const [networkError, setNetworkError] = useState<NetworkError>({ realtime: false, batch: false });
 
   const { appTempData, setSearchStation, setRealtimeStation, clearTemporaryState } = useTempState(
     e2eConfig.enabled ? e2eConfig.appTempData ?? DEFAULT_APP_TEMP_DATA : DEFAULT_APP_TEMP_DATA,
@@ -56,8 +59,9 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
   const bootstrapQuery = useBootstrapDataQuery();
   const appData = bootstrapQuery.data?.appData ?? {};
   const missingData = useMemo(() => findMissingRequiredData(appData), [appData]);
+  const bootstrapReadyForDisplay = useDelayedActivation(!bootstrapQuery.isPending, MIN_BOOT_SCREEN_MS);
 
-  const bootStatus: AppBootstrapStatus = bootstrapQuery.isPending
+  const bootStatus: AppBootstrapStatus = !bootstrapReadyForDisplay
     ? 'initializing'
     : bootstrapQuery.isError
       ? 'recoverable-error'
@@ -70,13 +74,37 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
   const realtimeData = realtimeQuery.data ?? (e2eConfig.enabled ? e2eConfig.realtimeData : {});
   const deltaSyncQuery = useDeltaSyncQuery(deltaSyncEnabled && bootStatus === 'ready');
 
-  const networkError = useMemo<NetworkError>(
-    () => ({
-      realtime: realtimeQuery.isError,
-      batch: deltaSyncQuery.isError || deltaSyncQuery.data?.batchError === true,
-    }),
-    [deltaSyncQuery.data?.batchError, deltaSyncQuery.isError, realtimeQuery.isError],
-  );
+  useEffect(() => {
+    if (realtimeQuery.isError) {
+      setNetworkError((current) =>
+        current.realtime ? current : { ...current, realtime: true },
+      );
+      return;
+    }
+
+    if (!realtimeQuery.isFetching && realtimeQuery.isSuccess) {
+      setNetworkError((current) =>
+        current.realtime ? { ...current, realtime: false } : current,
+      );
+    }
+  }, [realtimeQuery.isError, realtimeQuery.isFetching, realtimeQuery.isSuccess]);
+
+  useEffect(() => {
+    if (deltaSyncQuery.isError || deltaSyncQuery.data?.batchError === true) {
+      setNetworkError((current) => (current.batch ? current : { ...current, batch: true }));
+      return;
+    }
+
+    if (
+      !deltaSyncQuery.isFetching &&
+      deltaSyncQuery.isSuccess &&
+      deltaSyncQuery.data?.batchError === false
+    ) {
+      setNetworkError((current) =>
+        current.batch ? { ...current, batch: false } : current,
+      );
+    }
+  }, [deltaSyncQuery.data?.batchError, deltaSyncQuery.isError, deltaSyncQuery.isFetching, deltaSyncQuery.isSuccess]);
 
   useEffect(() => {
     if (e2eConfig.enabled) {

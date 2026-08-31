@@ -8,6 +8,7 @@ import { generateRouteResult } from '../shared-core/realtime/getRealTime';
 import { RealtimeHeader } from '../components/realtime/RealtimeHeader';
 import { RealtimeResultsList } from '../components/realtime/RealtimeResultsList';
 import { RouteMapModal } from '../components/RouteMapModal';
+import { AppStatusScreen } from '../components/AppStatusScreen';
 import { MOBILE_BOTTOM_NAV_OVERLAP } from '../components/CustomNavBar';
 import { resolveNearestStationCodeFromCoordinates } from '../hooks/useNearestStation';
 import { getCurrentCoordinates } from '../lib/location';
@@ -26,7 +27,9 @@ export function RealtimeScreen() {
     useAppState();
   const logRealtimeMutation = useLogRealtimeMutation();
 
-  const [selectedStation, setSelectedStation] = useState(appTempData.realTimeStation ?? 'MTR');
+  const [selectedStation, setSelectedStation] = useState<string | null>(
+    appTempData.realTimeStation,
+  );
   const [realtimeResult, setRealtimeResult] = useState<RealtimeRow[]>([]);
   const [routeMapVisible, setRouteMapVisible] = useState<RouteMapSelection | null>(null);
   const [fetchError, setFetchError] = useState(false);
@@ -37,13 +40,17 @@ export function RealtimeScreen() {
 
   const { stationOptions, groupedNearbyStops, importantStations } = useRealtimeStationOptions(
     appData,
-    selectedStation,
+    selectedStation ?? '',
     currentCoords,
     t,
     i18n.language,
   );
 
   const refreshResults = async (stationName = selectedStation, shouldLog = false) => {
+    if (!stationName) {
+      return;
+    }
+
     await generateRouteResult(
       t,
       appData.bus ?? {},
@@ -134,12 +141,20 @@ export function RealtimeScreen() {
   }, [gpsErrorText, t]);
 
   useEffect(() => {
+    if (!selectedStation) {
+      return;
+    }
+
     refreshResults(selectedStation).catch(() => {});
-  }, [realtimeData]);
+  }, [realtimeData, selectedStation]);
 
   useEffect(() => {
+    if (!selectedStation) {
+      return;
+    }
+
     refreshResults(selectedStation).catch(() => {});
-  }, [i18n.language]);
+  }, [i18n.language, selectedStation]);
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -167,6 +182,16 @@ export function RealtimeScreen() {
     });
     setRouteMapVisible(selection);
   };
+
+  if (!selectedStation) {
+    return (
+      <AppStatusScreen
+        title="CU Bus"
+        hint={t('DownloadFiles-Initializing', { ns: 'preset' })}
+        loading
+      />
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea} edges={[]}>

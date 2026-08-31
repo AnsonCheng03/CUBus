@@ -41,7 +41,7 @@ export function RouteSearchStationFields({
     clearPendingClose();
     closeTimeoutRef.current = setTimeout(() => {
       setOpenField((current) => (current === field ? null : current));
-    }, 120);
+    }, 300);
   };
 
   const handleStartChange = (value: string) => {
@@ -77,6 +77,7 @@ export function RouteSearchStationFields({
             setOpenField('start');
           }}
           onBlur={() => closeFieldWithDelay('start')}
+          onPopupPressIn={clearPendingClose}
           onToggle={() => {
             clearPendingClose();
             setOpenField((current) => (current === 'start' ? null : 'start'));
@@ -102,6 +103,7 @@ export function RouteSearchStationFields({
             setOpenField('dest');
           }}
           onBlur={() => closeFieldWithDelay('dest')}
+          onPopupPressIn={clearPendingClose}
           onToggle={() => {
             clearPendingClose();
             setOpenField((current) => (current === 'dest' ? null : 'dest'));

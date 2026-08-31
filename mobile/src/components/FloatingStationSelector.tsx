@@ -25,6 +25,7 @@ export function FloatingStationSelector({
   leading,
   onToggle,
   onSelect,
+  onPopupPressIn,
   onLocate,
   editable = false,
   onChangeText,
@@ -50,6 +51,7 @@ export function FloatingStationSelector({
   leading?: React.ReactNode;
   onToggle: () => void;
   onSelect: (value: string) => void;
+  onPopupPressIn?: () => void;
   onLocate?: () => void;
   editable?: boolean;
   onChangeText?: (value: string) => void;
@@ -184,9 +186,11 @@ export function FloatingStationSelector({
             <TextInput
               {...e2eProps(testIDPrefix ? `${testIDPrefix}-input` : undefined)}
               value={value}
+              editable={editable}
               onChangeText={onChangeText}
               onFocus={onFocus}
               onBlur={onBlur}
+              onPressIn={() => onFocus?.()}
               placeholder={placeholder}
               placeholderTextColor="#7b8d87"
               autoCorrect={false}
@@ -248,6 +252,7 @@ export function FloatingStationSelector({
           height={popupHeight}
           options={filteredOptions}
           onSelect={onSelect}
+          onOptionPressIn={onPopupPressIn}
           testIDPrefix={testIDPrefix}
         />
       </View>
@@ -323,5 +328,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     marginTop: -10,
+    zIndex: 40,
+    elevation: 40,
   },
 });
