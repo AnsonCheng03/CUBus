@@ -46,8 +46,8 @@
   },
   {
     "content": [
-      " 如八號颱風警告信號於上課時始告發出，各班須立即停課。<br>轉堂校巴（5, 6A, 6B, 7）將停止服務。  <br>穿梭校巴（1A, 1B, 2, 3, 4, 8, N）將繼續行走一小時。",
-      "If Typhoon Warning Signal No. 8 is issued during class, classes must be suspended immediately.<br>The transfer school bus (5, 6A, 6B, 7) will stop service. <br> The shuttle bus (1A, 1B, 2, 3, 4, 8, N) will be maintained for one hour."
+      " 如八號颱風警告信號於上課時始告發出，各班須立即停課。<br>轉堂校巴（5, 6A, 6B, 7）將停止服務。  <br>穿梭校巴（1, 2, 2S, 3, 4, 8, N）將繼續行走一小時。",
+      "If Typhoon Warning Signal No. 8 is issued during class, classes must be suspended immediately.<br>The transfer school bus (5, 6A, 6B, 7) will stop service. <br> The shuttle bus (1, 2, 2S, 3, 4, 8, N) will be maintained for one hour."
     ],
     "id": 5,
     "pref": {
@@ -68,6 +68,21 @@
     "pref": {
       "type": "",
       "hide": 1,
+      "link": "",
+      "dismissible": 1,
+      "saveDismiss": 0,
+      "duration": 0
+    }
+  },
+  {
+    "content": [
+      "校巴服務最新安排（2026年9月1日起生效）：1A線改為1線；1B線取消；新增2S線；2線取消每小時00及30分班次，15及45分班次維持不變；7線班次及服務時間調整；8線改由康本園開出；H線取消停靠十苑站。",
+      "Campus bus service updates (effective 1 September 2026): Route 1A is renamed Route 1; Route 1B is cancelled; Route 2S is added; Route 2 cancels the :00 and :30 departures while :15 and :45 remain; Route 7 schedule and service hours are adjusted; Route 8 starts from Yasumoto International Academic Park; Route H no longer stops at Residence No. 10."
+    ],
+    "id": 7,
+    "pref": {
+      "type": "warning",
+      "hide": 0,
       "link": "",
       "dismissible": 1,
       "saveDismiss": 0,
