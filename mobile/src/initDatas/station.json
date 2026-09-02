@@ -186,6 +186,7 @@
   "MTRP": [
     "MTRP",
     "YIA",
+    "YIAE",
     "YCT",
     "WMY",
     "UG",
@@ -251,6 +252,7 @@
   ],
   "YIA": [
     "YIA",
+    "YIAE",
     "YCT",
     "WMY",
     "UG",
@@ -318,6 +320,7 @@
   ],
   "MTR": [
     "YIA",
+    "YIAE",
     "YCT",
     "WMY",
     "UG",
@@ -576,6 +579,7 @@
     "HSB",
     "CCHC",
     "YIA",
+    "YIAE",
     "YCT",
     "WMY",
     "TS",
