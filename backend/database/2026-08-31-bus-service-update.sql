@@ -1,6 +1,6 @@
 -- CU Bus service update effective 2026-09-01.
 -- Source: mobile/src/initDatas/Route.json and notice.json.
--- Apply this migration to the database from u386506412_cuBusApp.sql.
+-- Apply this migration to the database from initial.sql.
 -- Back up the database before applying it.
 
 SET NAMES utf8mb4;

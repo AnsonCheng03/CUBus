@@ -1,12 +1,18 @@
 {
-  "RESI34": [
+  "WYS": [
     "WYST",
+    "WYS",
     "RESI34",
     "WYSSD",
     "WYSH",
+    "CKYR",
     "523CAN",
     "UCSUM",
-    "UCOM"
+    "UCOM",
+    "LDSYB",
+    "YS1",
+    "YS2",
+    "YS3"
   ],
   "SHAWC": [
     "WYSSD",
@@ -20,10 +26,12 @@
     "SeeYouShaw",
     "SCTT",
     "SCSH",
-    "SCLT",
     "HMG",
     "523CAN",
-    "WYST"
+    "WYST",
+    "MSHALL",
+    "S4",
+    "S6"
   ],
   "CCHH": [
     "WSTH",
@@ -42,7 +50,8 @@
     "UCSY",
     "UCREL",
     "UCC",
-    "UCASR"
+    "UCASR",
+    "CKYR"
   ],
   "UC": [
     "WCSB",
@@ -72,25 +81,39 @@
     "JOYFULINN",
     "CCSAB",
     "UCSR",
-    "CCHH"
+    "CCHH",
+    "CKYR",
+    "LDSYB",
+    "U2",
+    "U11a"
   ],
   "UCSR": [
     "UCSR",
-    "UCHSH"
+    "UCHSH",
+    "IH1",
+    "IH2"
   ],
-  "FKHB": [
+  "KHB": [
     "SWH",
-    "FKHB",
+    "KHB",
     "LSKBSC",
     "LSK",
     "LDS",
+    "LDSYB",
     "KKB",
     "ENTRANCEW",
-    "ENTRANCE"
+    "ENTRANCE",
+    "CKYR"
   ],
   "RESI15": [
     "RESI15",
-    "RESI10"
+    "RESI10",
+    "R11",
+    "R12",
+    "R13",
+    "R14",
+    "R16",
+    "R17"
   ],
   "RESI10": [
     "RESI10"
@@ -100,11 +123,11 @@
     "NAC",
     "NAXH",
     "NAWT",
-    "NATT",
+    "NA TT",
     "NAStaffCan",
     "NASC",
     "NAPH",
-    "NALIB",
+    "CML",
     "NAHCC",
     "NAH",
     "NAGTH",
@@ -117,21 +140,33 @@
     "NACAN",
     "NAA",
     "MMW",
-    "UCBH"
+    "UCBH",
+    "MYT",
+    "TKPH",
+    "SCE"
   ],
-  "CWCC": [
+  "CWC": [
     "JCPHC",
-    "CWCC",
+    "CWC",
     "JCPH3",
     "CWH",
-    "CWCAN"
+    "CWCAN",
+    "PGH3 MPH",
+    "CW1",
+    "FYW",
+    "DMCB"
   ],
   "JCPH": [
     "JCPH",
     "NAPH",
     "NAGTH",
     "NADLH",
-    "NACHH"
+    "NACHH",
+    "PGH1",
+    "PGH2",
+    "PGH4",
+    "PGH5",
+    "PGH6"
   ],
   "AREA39": [
     "IBSB",
@@ -145,13 +180,12 @@
   "CCEN": [
     "CCEN",
     "JCPHC",
-    "JCPH3"
+    "JCPH3",
+    "PGH3 MPH"
   ],
   "MTRP": [
-    "MTR",
     "MTRP",
-    "UNIMTR",
-    "YIAE",
+    "YIA",
     "YCT",
     "WMY",
     "UG",
@@ -181,7 +215,7 @@
     "ENTRANCE",
     "ELB",
     "CYT",
-    "CUMTR",
+    "MTR",
     "CMS",
     "CKB",
     "CCYLT",
@@ -189,7 +223,6 @@
     "CCWL",
     "CCWCT",
     "CCTEA",
-    "CCTB",
     "CCT",
     "CCStaffCan",
     "CCPP",
@@ -209,13 +242,15 @@
     "BEA",
     "ARC",
     "AIT",
-    "YIAP"
+    "LKC",
+    "CK TSE",
+    "PSC MPH",
+    "C12",
+    "C13",
+    "C14"
   ],
-  "YIAP": [
-    "MTR",
-    "YIAP",
-    "UNIMTR",
-    "YIAE",
+  "YIA": [
+    "YIA",
     "YCT",
     "WMY",
     "UG",
@@ -246,7 +281,7 @@
     "ENTRANCE",
     "ELB",
     "CYT",
-    "CUMTR",
+    "MTR",
     "CMS",
     "CKB",
     "CCYLT",
@@ -254,7 +289,6 @@
     "CCWL",
     "CCWCT",
     "CCTEA",
-    "CCTB",
     "CCT",
     "CCStaffCan",
     "CCPP",
@@ -273,13 +307,17 @@
     "C330",
     "BEA",
     "ARC",
-    "AIT"
+    "AIT",
+    "KSC",
+    "LKC",
+    "CK TSE",
+    "PSC MPH",
+    "C12",
+    "C13",
+    "C14"
   ],
   "MTR": [
-    "UNIMTR",
-    "MTR",
-    "YIAP",
-    "YIAE",
+    "YIA",
     "YCT",
     "WMY",
     "UG",
@@ -310,7 +348,7 @@
     "ENTRANCE",
     "ELB",
     "CYT",
-    "CUMTR",
+    "MTR",
     "CMS",
     "CKB",
     "CCYLT",
@@ -318,7 +356,6 @@
     "CCWL",
     "CCWCT",
     "CCTEA",
-    "CCTB",
     "CCT",
     "CCStaffCan",
     "CCPP",
@@ -337,12 +374,18 @@
     "C330",
     "BEA",
     "ARC",
-    "AIT"
+    "AIT",
+    "LKC",
+    "CK TSE",
+    "PSC MPH",
+    "C12",
+    "C13",
+    "C14"
   ],
-  "SPORTC": [
-    "YIAP",
-    "SPORTC",
-    "UGYM",
+  "USC": [
+    "YIA",
+    "USC",
+    "UG",
     "SHLQW",
     "SHHTH",
     "SHHOCAN",
@@ -356,9 +399,8 @@
     "MCO",
     "CCPMHL",
     "CCPMHH",
-    "WTY",
+    "TYW LT",
     "UHS",
-    "UG",
     "TC",
     "SHB",
     "KSB",
@@ -373,17 +415,26 @@
     "AB1",
     "PSC",
     "Paper&Coffee",
-    "CCHLT"
+    "CCHLT",
+    "LFYB",
+    "KSC",
+    "SCE",
+    "PSC MPH",
+    "USC TT",
+    "MC1",
+    "MC2",
+    "IH3",
+    "IH4",
+    "IH5"
   ],
   "SHHC": [
-    "YIAP",
+    "YIA",
     "SHHC",
-    "WTY",
+    "TYW LT",
     "UHS",
-    "UGYM",
     "UG",
     "TC",
-    "SPORTC",
+    "USC",
     "SHLQW",
     "SHHTH",
     "SHHOCAN",
@@ -405,14 +456,26 @@
     "CCPMHH",
     "CCHLT",
     "CCHC",
+    "LFYB",
+    "KSC",
+    "MYT",
+    "TKPH",
     "AB1",
     "CCWCT",
     "CCMSH",
     "CCMHT",
-    "CCLSP"
+    "CCLSP",
+    "SCE",
+    "PSC MPH",
+    "USC TT",
+    "MC1",
+    "MC2",
+    "IH3",
+    "IH4",
+    "IH5"
   ],
   "SRR": [
-    "WTY",
+    "TYW LT",
     "SRR",
     "WCS",
     "UNIMALL",
@@ -423,9 +486,8 @@
     "SP",
     "SOVC",
     "SHB",
-    "SHAWHALL",
     "SCIM",
-    "SCIC",
+    "SC",
     "MMW",
     "MEDCAN",
     "LSKBSC",
@@ -453,12 +515,15 @@
     "AMEW",
     "AB1",
     "HSB",
-    "CCTB",
-    "CCT"
+    "CCT",
+    "LFYB",
+    "MYT",
+    "TKPH",
+    "SCE"
   ],
-  "SCIC": [
-    "WTY",
-    "SCIC",
+  "SC": [
+    "TYW LT",
+    "SC",
     "UHS",
     "SHB",
     "ERB",
@@ -472,7 +537,6 @@
     "TKPB",
     "SP",
     "SOVC",
-    "SHAWHALL",
     "SCIM",
     "MMW",
     "MEDCAN",
@@ -497,8 +561,12 @@
     "BFCSC",
     "BFC",
     "AMEW",
-    "CCTB",
-    "CCT"
+    "CCT",
+    "LFYB",
+    "KSC",
+    "MYT",
+    "TKPH",
+    "SCE"
   ],
   "CCTEA": [
     "UG",
@@ -507,8 +575,7 @@
     "KSB",
     "HSB",
     "CCHC",
-    "YIAP",
-    "YIAE",
+    "YIA",
     "YCT",
     "WMY",
     "TS",
@@ -535,14 +602,13 @@
     "ENTRANCE",
     "ELB",
     "CYT",
-    "CUMTR",
+    "MTR",
     "CMS",
     "CKB",
     "CCYLT",
     "CCWLT",
     "CCWL",
     "CCWCT",
-    "CCTB",
     "CCT",
     "CCStaffCan",
     "CCPP",
@@ -561,10 +627,18 @@
     "BEA",
     "ARC",
     "AIT",
-    "AB1"
+    "AB1",
+    "LFYB",
+    "KSC",
+    "LKC",
+    "CK TSE",
+    "PSC MPH",
+    "C12",
+    "C13",
+    "C14"
   ],
   "UADM": [
-    "WTY",
+    "TYW LT",
     "UADM",
     "WCS",
     "UNIMALL",
@@ -574,9 +648,8 @@
     "SP",
     "SOVC",
     "SHB",
-    "SHAWHALL",
     "SCIM",
-    "SCIC",
+    "SC",
     "MMW",
     "MEDCAN",
     "LSKBSC",
@@ -595,7 +668,6 @@
     "ENGB",
     "CoffeeCon",
     "CHS",
-    "CCTB",
     "CCT",
     "CBEC",
     "CAMPCS",
@@ -605,6 +677,7 @@
     "BFCSC",
     "BFC",
     "AMEW",
-    "AB1"
+    "AB1",
+    "LDSYB"
   ]
 }

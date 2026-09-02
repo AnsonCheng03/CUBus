@@ -24,12 +24,12 @@
     "Lng": "114.208292",
     "ImportantStation": null
   },
-  "CWCC": {
+  "CWC": {
     "Lat": "22.425613",
     "Lng": "114.206182",
     "ImportantStation": "1"
   },
-  "FKHB": {
+  "KHB": {
     "Lat": "22.419521",
     "Lng": "114.203216",
     "ImportantStation": null
@@ -38,11 +38,6 @@
     "Lat": "22.420322",
     "Lng": "114.211979",
     "ImportantStation": "1"
-  },
-  "MTR": {
-    "Lat": "22.414523",
-    "Lng": "114.210223",
-    "ImportantStation": "0"
   },
   "MTRP": {
     "Lat": "22.413901",
@@ -64,24 +59,29 @@
     "Lng": "114.206562",
     "ImportantStation": null
   },
+  "WYS": {
+    "Lat": "22.421094",
+    "Lng": "114.203502",
+    "ImportantStation": null
+  },
   "RESI34": {
     "Lat": "22.421094",
     "Lng": "114.203502",
     "ImportantStation": null
   },
-  "SCIC": {
+  "SC": {
     "Lat": "22.419870",
     "Lng": "114.207269",
     "ImportantStation": "1"
   },
+  "SCE": {
+    "Lat": "22.419190",
+    "Lng": "114.208800",
+    "ImportantStation": null
+  },
   "SHAWC": {
     "Lat": "22.422502",
     "Lng": "114.201280",
-    "ImportantStation": "1"
-  },
-  "SHAWHALL": {
-    "Lat": "22.419883",
-    "Lng": "114.206907",
     "ImportantStation": "1"
   },
   "SHHC": {
@@ -89,7 +89,7 @@
     "Lng": "114.209900",
     "ImportantStation": "1"
   },
-  "SPORTC": {
+  "USC": {
     "Lat": "22.417801",
     "Lng": "114.210582",
     "ImportantStation": null
@@ -109,7 +109,7 @@
     "Lng": "114.205133",
     "ImportantStation": null
   },
-  "YIAP": {
+  "YIA": {
     "Lat": "22.415880",
     "Lng": "114.210859",
     "ImportantStation": null
@@ -274,11 +274,6 @@
     "Lng": "114.206325",
     "ImportantStation": null
   },
-  "CCTB": {
-    "Lat": "22.417346",
-    "Lng": "114.206325",
-    "ImportantStation": null
-  },
   "CCWCT": {
     "Lat": "22.417361",
     "Lng": "114.211646",
@@ -309,6 +304,11 @@
     "Lng": "114.207398",
     "ImportantStation": null
   },
+  "CKYR": {
+    "Lat": "22.420510",
+    "Lng": "114.204000",
+    "ImportantStation": null
+  },
   "CMS": {
     "Lat": "22.415606",
     "Lng": "114.207253",
@@ -319,10 +319,10 @@
     "Lng": "114.205566",
     "ImportantStation": null
   },
-  "CUMTR": {
-    "Lat": "22.413570",
-    "Lng": "114.210100",
-    "ImportantStation": null
+  "MTR": {
+    "Lat": "22.414523",
+    "Lng": "114.210223",
+    "ImportantStation": "1"
   },
   "CWCAN": {
     "Lat": "22.425003",
@@ -464,6 +464,11 @@
     "Lng": "114.206008",
     "ImportantStation": null
   },
+  "KSC": {
+    "Lat": "22.417350",
+    "Lng": "114.208680",
+    "ImportantStation": null
+  },
   "KKB": {
     "Lat": "22.420009",
     "Lng": "114.202782",
@@ -477,6 +482,16 @@
   "LDS": {
     "Lat": "22.419380",
     "Lng": "114.203793",
+    "ImportantStation": null
+  },
+  "LDSYB": {
+    "Lat": "22.419730",
+    "Lng": "114.204770",
+    "ImportantStation": null
+  },
+  "LKC": {
+    "Lat": "22.415588",
+    "Lng": "114.207210",
     "ImportantStation": null
   },
   "LGS": {
@@ -534,6 +549,11 @@
     "Lng": "114.207011",
     "ImportantStation": null
   },
+  "LFYB": {
+    "Lat": "22.417870",
+    "Lng": "114.208350",
+    "ImportantStation": null
+  },
   "MCO": {
     "Lat": "22.419030",
     "Lng": "114.210431",
@@ -562,6 +582,16 @@
   "MSH": {
     "Lat": "22.419033",
     "Lng": "114.210278",
+    "ImportantStation": null
+  },
+  "MSHALL": {
+    "Lat": "22.423710",
+    "Lng": "114.201730",
+    "ImportantStation": null
+  },
+  "MYT": {
+    "Lat": "22.420300",
+    "Lng": "114.208400",
     "ImportantStation": null
   },
   "NAA": {
@@ -619,7 +649,7 @@
     "Lng": "114.208556",
     "ImportantStation": null
   },
-  "NALIB": {
+  "CML": {
     "Lat": "22.421430",
     "Lng": "114.208527",
     "ImportantStation": null
@@ -639,7 +669,7 @@
     "Lng": "114.209337",
     "ImportantStation": null
   },
-  "NATT": {
+  "NA TT": {
     "Lat": "22.420959",
     "Lng": "114.209208",
     "ImportantStation": null
@@ -684,7 +714,7 @@
     "Lng": "114.207929",
     "ImportantStation": null
   },
-  "SCLT": {
+  "SWC LT": {
     "Lat": "22.422338",
     "Lng": "114.201634",
     "ImportantStation": null
@@ -759,11 +789,6 @@
     "Lng": "114.205397",
     "ImportantStation": null
   },
-  "SWC LT": {
-    "Lat": "22.422338",
-    "Lng": "114.201634",
-    "ImportantStation": null
-  },
   "SWH": {
     "Lat": "22.419521",
     "Lng": "114.203216",
@@ -787,6 +812,11 @@
   "TKPB": {
     "Lat": "22.419484",
     "Lng": "114.204555",
+    "ImportantStation": null
+  },
+  "TKPH": {
+    "Lat": "22.420300",
+    "Lng": "114.208400",
     "ImportantStation": null
   },
   "TS": {
@@ -909,11 +939,6 @@
     "Lng": "114.211051",
     "ImportantStation": null
   },
-  "UGYM": {
-    "Lat": "22.418529",
-    "Lng": "114.211051",
-    "ImportantStation": null
-  },
   "UHS": {
     "Lat": "22.419308",
     "Lng": "114.210142",
@@ -927,11 +952,6 @@
   "UNIMALL": {
     "Lat": "22.419457",
     "Lng": "114.206352",
-    "ImportantStation": null
-  },
-  "UNIMTR": {
-    "Lat": "22.413570",
-    "Lng": "114.210100",
     "ImportantStation": null
   },
   "WCS": {
@@ -999,7 +1019,7 @@
     "Lng": "114.204125",
     "ImportantStation": null
   },
-  "WTY": {
+  "TYW LT": {
     "Lat": "22.417969",
     "Lng": "114.207256",
     "ImportantStation": null
@@ -1019,14 +1039,184 @@
     "Lng": "114.202580",
     "ImportantStation": null
   },
+  "CK TSE": {
+    "Lat": "22.416536",
+    "Lng": "114.208664",
+    "ImportantStation": null
+  },
+  "PGH3 MPH": {
+    "Lat": "22.426240",
+    "Lng": "114.205910",
+    "ImportantStation": null
+  },
+  "PSC MPH": {
+    "Lat": "22.417165",
+    "Lng": "114.208800",
+    "ImportantStation": null
+  },
+  "USC TT": {
+    "Lat": "22.417801",
+    "Lng": "114.210582",
+    "ImportantStation": null
+  },
+  "C12": {
+    "Lat": "22.416657",
+    "Lng": "114.209699",
+    "ImportantStation": null
+  },
+  "C13": {
+    "Lat": "22.415631",
+    "Lng": "114.210568",
+    "ImportantStation": null
+  },
+  "C14": {
+    "Lat": "22.415363",
+    "Lng": "114.210367",
+    "ImportantStation": null
+  },
+  "U2": {
+    "Lat": "22.420905",
+    "Lng": "114.204804",
+    "ImportantStation": null
+  },
+  "U11a": {
+    "Lat": "22.421629",
+    "Lng": "114.204941",
+    "ImportantStation": null
+  },
+  "S4": {
+    "Lat": "22.422891",
+    "Lng": "114.201915",
+    "ImportantStation": null
+  },
+  "S6": {
+    "Lat": "22.423248",
+    "Lng": "114.201223",
+    "ImportantStation": null
+  },
+  "MC1": {
+    "Lat": "22.419033",
+    "Lng": "114.210278",
+    "ImportantStation": null
+  },
+  "MC2": {
+    "Lat": "22.418829",
+    "Lng": "114.210289",
+    "ImportantStation": null
+  },
+  "CW1": {
+    "Lat": "22.425613",
+    "Lng": "114.206182",
+    "ImportantStation": null
+  },
+  "FYW": {
+    "Lat": "22.425613",
+    "Lng": "114.206182",
+    "ImportantStation": null
+  },
+  "DMCB": {
+    "Lat": "22.425613",
+    "Lng": "114.206182",
+    "ImportantStation": null
+  },
+  "YS1": {
+    "Lat": "22.421094",
+    "Lng": "114.203502",
+    "ImportantStation": null
+  },
+  "YS2": {
+    "Lat": "22.421094",
+    "Lng": "114.203502",
+    "ImportantStation": null
+  },
+  "YS3": {
+    "Lat": "22.422117",
+    "Lng": "114.202580",
+    "ImportantStation": null
+  },
+  "PGH1": {
+    "Lat": "22.420322",
+    "Lng": "114.211979",
+    "ImportantStation": null
+  },
+  "PGH2": {
+    "Lat": "22.420074",
+    "Lng": "114.210614",
+    "ImportantStation": null
+  },
+  "PGH4": {
+    "Lat": "22.423803",
+    "Lng": "114.204917",
+    "ImportantStation": null
+  },
+  "PGH5": {
+    "Lat": "22.424286",
+    "Lng": "114.205032",
+    "ImportantStation": null
+  },
+  "PGH6": {
+    "Lat": "22.424435",
+    "Lng": "114.204713",
+    "ImportantStation": null
+  },
+  "IH1": {
+    "Lat": "22.423193",
+    "Lng": "114.204351",
+    "ImportantStation": null
+  },
+  "IH2": {
+    "Lat": "22.423639",
+    "Lng": "114.204461",
+    "ImportantStation": null
+  },
+  "IH3": {
+    "Lat": "22.419985",
+    "Lng": "114.210107",
+    "ImportantStation": null
+  },
+  "IH4": {
+    "Lat": "22.419985",
+    "Lng": "114.210107",
+    "ImportantStation": null
+  },
+  "IH5": {
+    "Lat": "22.419985",
+    "Lng": "114.210107",
+    "ImportantStation": null
+  },
+  "R11": {
+    "Lat": "22.424309",
+    "Lng": "114.208306",
+    "ImportantStation": null
+  },
+  "R12": {
+    "Lat": "22.424475",
+    "Lng": "114.207006",
+    "ImportantStation": null
+  },
+  "R13": {
+    "Lat": "22.424438",
+    "Lng": "114.207387",
+    "ImportantStation": null
+  },
+  "R14": {
+    "Lat": "22.423957",
+    "Lng": "114.207176",
+    "ImportantStation": null
+  },
+  "R16": {
+    "Lat": "22.423726",
+    "Lng": "114.207985",
+    "ImportantStation": null
+  },
+  "R17": {
+    "Lat": "22.423436",
+    "Lng": "114.208347",
+    "ImportantStation": null
+  },
   "YCT": {
     "Lat": "22.416801",
     "Lng": "114.206368",
-    "ImportantStation": null
-  },
-  "YIAE": {
-    "Lat": "22.415880",
-    "Lng": "114.210859",
     "ImportantStation": null
   },
   "SRR": {

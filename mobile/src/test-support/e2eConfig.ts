@@ -38,7 +38,7 @@ function getScenarioTempData(currentScenario: E2EScenario): AppTempData {
     return {
       realTimeStation: null,
       searchStation: {
-        routeSearchStart: 'MTR (MTR)',
+        routeSearchStart: 'University Station (MTR)',
         routeSearchDest: 'NAC (NAC)',
         departNow: true,
         selectWeekday: 'WK-Mon',
