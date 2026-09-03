@@ -36,6 +36,42 @@ describe('NoticeBanner', () => {
     expect(queryByText('toast_dismiss')).toBeNull();
   });
 
+  it('does not render notices marked as hidden by legacy or backend values', async () => {
+    const { getByText, queryByText } = await render(
+      <NoticeBanner
+        notice={[
+          { id: 1, content: ['中文', 'Numeric hidden'], pref: { hide: 1 } },
+          { id: 2, content: ['中文', 'Boolean hidden'], pref: { hide: true } },
+          { id: 3, content: ['中文', 'PHP string hidden'], pref: { hide: '1' } },
+          { id: 4, content: ['中文', 'Backend string hidden'], pref: { hide: 'true' } },
+          { id: 5, content: ['中文', 'Visible notice'], pref: { hide: 0 } },
+        ]}
+      />,
+    );
+
+    expect(queryByText('Numeric hidden')).toBeNull();
+    expect(queryByText('Boolean hidden')).toBeNull();
+    expect(queryByText('PHP string hidden')).toBeNull();
+    expect(queryByText('Backend string hidden')).toBeNull();
+    expect(getByText('Visible notice')).toBeTruthy();
+  });
+
+  it('renders escaped and actual newlines as line breaks', async () => {
+    const { getByText } = await render(
+      <NoticeBanner
+        notice={[
+          {
+            id: 1,
+            content: ['中文', 'First\\nSecond\nThird'],
+            pref: {},
+          },
+        ]}
+      />,
+    );
+
+    expect(getByText('First\nSecond\nThird')).toBeTruthy();
+  });
+
   it('auto-dismisses a notice after its configured duration', async () => {
     jest.useFakeTimers();
     const { getByText, queryByText } = await render(

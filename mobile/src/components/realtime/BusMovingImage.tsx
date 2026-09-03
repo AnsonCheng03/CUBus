@@ -16,18 +16,15 @@ const BUS_HEIGHT = 32;
 const MOVE_DURATION_MS = 3200;
 const EDGE_PAUSE_MS = 500;
 const RELEASE_PAUSE_MS = 1000;
-const FLIP_DELAY_MS = 500;
 
 export function BusMovingImage() {
   const translateX = useRef(new Animated.Value(0)).current;
   const animationRef = useRef<Animated.CompositeAnimation | null>(null);
   const releaseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const flipTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const resumeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const currentXRef = useRef(0);
   const facingRef = useRef<1 | -1>(1);
   const dragStartXRef = useRef(0);
-  const dragStartFacingRef = useRef<1 | -1>(1);
   const draggingRef = useRef(false);
   const [trackWidth, setTrackWidth] = useState(0);
   const [facing, setFacing] = useState<1 | -1>(1);
@@ -48,10 +45,6 @@ export function BusMovingImage() {
     if (releaseTimeoutRef.current) {
       clearTimeout(releaseTimeoutRef.current);
       releaseTimeoutRef.current = null;
-    }
-    if (flipTimeoutRef.current) {
-      clearTimeout(flipTimeoutRef.current);
-      flipTimeoutRef.current = null;
     }
     if (resumeTimeoutRef.current) {
       clearTimeout(resumeTimeoutRef.current);
@@ -136,7 +129,6 @@ export function BusMovingImage() {
           stopMotion();
           draggingRef.current = true;
           dragStartXRef.current = currentXRef.current;
-          dragStartFacingRef.current = facingRef.current;
         },
         onPanResponderMove: (_, gestureState) => {
           const nextX = Math.min(
@@ -144,31 +136,20 @@ export function BusMovingImage() {
             travelDistance,
           );
 
+          currentXRef.current = nextX;
           translateX.setValue(nextX);
 
           if (gestureState.dx > 2) {
-            updateFacing(-1);
-          } else if (gestureState.dx < -2) {
             updateFacing(1);
+          } else if (gestureState.dx < -2) {
+            updateFacing(-1);
           }
         },
         onPanResponderRelease: () => {
           draggingRef.current = false;
 
           releaseTimeoutRef.current = setTimeout(() => {
-            const resetFacing = () => {
-              scheduleAutoMove();
-            };
-
-            if (facingRef.current !== dragStartFacingRef.current) {
-              flipTimeoutRef.current = setTimeout(() => {
-                updateFacing(dragStartFacingRef.current);
-                resumeTimeoutRef.current = setTimeout(resetFacing, FLIP_DELAY_MS);
-              }, FLIP_DELAY_MS);
-              return;
-            }
-
-            resetFacing();
+            scheduleAutoMove();
           }, RELEASE_PAUSE_MS);
         },
         onPanResponderTerminate: () => {
@@ -189,13 +170,15 @@ export function BusMovingImage() {
       <Animated.View
         {...panResponder.panHandlers}
         style={[
-          styles.busWrapper,
+          styles.busTrack,
           {
-            transform: [{ translateX }, { scaleX: facing }],
+            transform: [{ translateX }],
           },
         ]}
       >
-        <Image source={busMoving} style={styles.busImage} resizeMode="contain" />
+        <View style={[styles.busWrapper, { transform: [{ scaleX: facing }] }]}>
+          <Image source={busMoving} style={styles.busImage} resizeMode="contain" />
+        </View>
       </Animated.View>
     </View>
   );
@@ -208,6 +191,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   busWrapper: {
+    width: BUS_WIDTH,
+    height: BUS_HEIGHT,
+  },
+  busTrack: {
     width: BUS_WIDTH,
     height: BUS_HEIGHT,
   },

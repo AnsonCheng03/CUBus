@@ -1,0 +1,13 @@
+{
+  "images" : [
+    {
+      "filename" : "SplashScreenLogo.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    }
+  ],
+  "info" : {
+    "author" : "expo",
+    "version" : 1
+  }
+}

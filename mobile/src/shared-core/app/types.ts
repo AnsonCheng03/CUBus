@@ -7,6 +7,7 @@ export type PermitData = {
   sid: string | null;
   major: string | null;
   expiry: string | null;
+  busMode?: 'shuttle_bus' | 'meet_class_bus';
 };
 
 export type SearchStationTempState = {
@@ -82,7 +83,7 @@ export type NoticeItem = {
   id: number;
   content?: string[];
   pref?: {
-    hide?: number;
+    hide?: boolean | number | string;
     link?: string;
     type?:
       | 'primary'

@@ -45,6 +45,15 @@ jest.mock('../../components/permit/PermitFullscreenModal', () => {
   };
 });
 
+jest.mock('../../components/permit/PermitGenerationModal', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+
+  return {
+    PermitGenerationView: () => <View testID="permit-generation-view" />,
+  };
+});
+
 jest.mock('react-native-svg', () => {
   const React = require('react');
   const { View } = require('react-native');
@@ -101,6 +110,39 @@ describe('PermitScreen', () => {
       fireEvent.press(getByText('Permit_Save'));
     });
     expect(mockSetAppSettings).not.toHaveBeenCalled();
+  });
+
+  it('opens the generation stage with the default shuttle permit', async () => {
+    const { getByTestId, getByText, queryByTestId } = await render(<PermitScreen />);
+
+    expect(queryByTestId('permit-type-meet_class_bus')).toBeNull();
+    await act(async () => {
+      fireEvent.changeText(getByTestId('permit-input-name'), 'Ada');
+    });
+    await act(async () => {
+      fireEvent.changeText(getByTestId('permit-input-sid'), '1155');
+    });
+    await act(async () => {
+      fireEvent.changeText(getByTestId('permit-input-major'), 'CSCI');
+    });
+    await act(async () => {
+      fireEvent.changeText(getByTestId('permit-input-expiry'), '06/2026');
+    });
+    await act(async () => {
+      fireEvent.press(getByText('Permit_Save'));
+    });
+
+    await waitFor(() => expect(mockSetAppSettings).toHaveBeenCalledTimes(1));
+    expect(mockSetAppSettings.mock.calls[0][0]({})).toEqual({
+      schoolBusPermit: {
+        name: 'Ada',
+        sid: '1155',
+        major: 'CSCI',
+        expiry: '06/2026',
+        busMode: 'shuttle_bus',
+      },
+    });
+    expect(getByTestId('permit-generation-view')).toBeTruthy();
   });
 
   it('renders both permit variants when saved data exists', async () => {

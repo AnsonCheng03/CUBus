@@ -11,6 +11,19 @@ export function initSentry() {
   Sentry.init({
     dsn: env.sentryDsn,
     tracesSampleRate: 1.0,
+    integrations: [
+      Sentry.feedbackIntegration({
+        showBranding: false,
+        showName: false,
+        showEmail: false,
+        enableScreenshot: false,
+        enableTakeScreenshot: false,
+        formTitle: 'Report a problem',
+        messageLabel: 'Description',
+        submitButtonLabel: 'Send report',
+        successMessageText: 'Thank you for your report!',
+      }),
+    ],
   });
 
   sentryInitialized = true;
@@ -38,6 +51,10 @@ export function recordNetworkRequestMetric(endpoint: string, method: string) {
       method,
     },
   });
+}
+
+export function showFeedbackWidget() {
+  Sentry.showFeedbackWidget();
 }
 
 export { Sentry };

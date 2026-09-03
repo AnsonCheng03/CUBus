@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   NativeScrollEvent,
   NativeSyntheticEvent,
@@ -48,6 +48,16 @@ export function PermitPassSection({
   onOpenFullscreen: (mode: keyof typeof permitBusRoutes) => void;
   onEdit: () => void;
 }) {
+  useEffect(() => {
+    const index = permitVariants.findIndex((variant) => variant.mode === selectedBusMode);
+    if (index > 0) {
+      carouselRef.current?.scrollTo({
+        x: index * (cardStageWidth + carouselGap),
+        animated: false,
+      });
+    }
+  }, [cardStageWidth, carouselGap, carouselRef, permitVariants, selectedBusMode]);
+
   return (
     <ScrollView
       {...e2eProps('permit-pass-section')}

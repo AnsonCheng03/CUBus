@@ -20,6 +20,7 @@ import {
 import { findMissingRequiredData } from './internal/requiredData';
 import { DEFAULT_APP_TEMP_DATA, useTempState } from './internal/tempState';
 import { e2eConfig } from '../test-support/e2eConfig';
+import { preloadStartupVisuals } from '../lib/startupVisuals';
 
 const MIN_BOOT_SCREEN_MS = 900;
 
@@ -49,6 +50,7 @@ const AppStateContext = createContext<AppStateContextValue>(null);
 export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => {
   const queryClient = useQueryClient();
   const [hint, setHint] = useState('Initializing');
+  const [startupVisualsReady, setStartupVisualsReady] = useState(false);
   const [appSettings, setAppSettings] = useState<AppSettings>(e2eConfig.appSettings ?? {});
   const [networkError, setNetworkError] = useState<NetworkError>({ realtime: false, batch: false });
 
@@ -61,7 +63,25 @@ export const AppProvider: React.FC<React.PropsWithChildren> = ({ children }) => 
   const missingData = useMemo(() => findMissingRequiredData(appData), [appData]);
   const bootstrapReadyForDisplay = useDelayedActivation(!bootstrapQuery.isPending, MIN_BOOT_SCREEN_MS);
 
-  const bootStatus: AppBootstrapStatus = !bootstrapReadyForDisplay
+  useEffect(() => {
+    let mounted = true;
+
+    preloadStartupVisuals()
+      .catch((error: unknown) => {
+        console.warn('[startup] visual preload failed; continuing with bundled assets', error);
+      })
+      .finally(() => {
+        if (mounted) {
+          setStartupVisualsReady(true);
+        }
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const bootStatus: AppBootstrapStatus = !startupVisualsReady || !bootstrapReadyForDisplay
     ? 'initializing'
     : bootstrapQuery.isError
       ? 'recoverable-error'

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 type StorePlatform = 'ios' | 'android' | 'desktop';
 
-const appIcon = require('../../assets/images/icon.png');
+const appIcon = require('../../../resources/icon.png');
 const APP_STORE_URL = 'https://apps.apple.com/us/app/cu-bus/id6736944558';
 const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.cubus.app';
 const DISMISS_KEY = 'dismissAppStorePrompt';

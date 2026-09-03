@@ -28,7 +28,7 @@ export function RealtimeScreen() {
   const logRealtimeMutation = useLogRealtimeMutation();
 
   const [selectedStation, setSelectedStation] = useState<string | null>(
-    appTempData.realTimeStation,
+    appTempData.realTimeStation ?? 'MTR',
   );
   const [realtimeResult, setRealtimeResult] = useState<RealtimeRow[]>([]);
   const [routeMapVisible, setRouteMapVisible] = useState<RouteMapSelection | null>(null);

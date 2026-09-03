@@ -35,4 +35,5 @@ export type PermitFormValue = {
   sid: string;
   major: string;
   expiry: string;
+  busMode?: 'shuttle_bus' | 'meet_class_bus';
 };

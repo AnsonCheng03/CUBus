@@ -18,6 +18,7 @@ import { useAppState } from '../providers/AppProvider';
 import { i18next } from '../lib/i18n';
 import { NAV_RESPONSIVE_BREAKPOINT } from '../lib/layout';
 import { mobileQueryClient, mobileQueryKeys } from '../query/client';
+import { showFeedbackWidget } from '../lib/sentry';
 import type { WebsiteLink } from '../types/mobile';
 
 export function SettingsScreen() {
@@ -38,7 +39,11 @@ export function SettingsScreen() {
   const langIndex = i18next.language.includes('en') ? 0 : 1;
 
   const websiteLinks = ((appData.WebsiteLinks as WebsiteLink[]) ?? []).filter(
-    (row) => row?.[0]?.[langIndex] && row?.[1],
+    (row) =>
+      row?.[0]?.[langIndex] &&
+      row?.[1] &&
+      row[0][0] !== 'Report a problem' &&
+      row[0][1] !== '回報問題',
   );
 
   const confirmReset = () => {
@@ -133,6 +138,11 @@ export function SettingsScreen() {
             label={t('bus_map_page')}
             testID="settings-bus-map"
             onPress={() => setBusMapVisible(true)}
+          />
+          <SettingsRow
+            label={t('report_problem')}
+            testID="settings-report-problem"
+            onPress={showFeedbackWidget}
           />
           {websiteLinks.map((row, index) => (
             <SettingsRow

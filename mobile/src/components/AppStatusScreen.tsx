@@ -34,6 +34,7 @@ export function AppStatusScreen({
   }>;
 }) {
   const jumpProgress = useRef(new Animated.Value(0)).current;
+  const loadingBarProgress = useRef(new Animated.Value(0)).current;
   const loadingOpacity = useRef(new Animated.Value(1)).current;
   const { width, height } = useWindowDimensions();
 
@@ -64,6 +65,25 @@ export function AppStatusScreen({
   }, [jumpProgress, loading]);
 
   useEffect(() => {
+    if (!loading) {
+      return;
+    }
+
+    loadingBarProgress.setValue(0);
+    const animation = Animated.loop(
+      Animated.timing(loadingBarProgress, {
+        toValue: 1,
+        duration: 1200,
+        easing: Easing.inOut(Easing.ease),
+        useNativeDriver: true,
+      }),
+    );
+
+    animation.start();
+    return () => animation.stop();
+  }, [loading, loadingBarProgress]);
+
+  useEffect(() => {
     if (loading && !fadeOut) {
       loadingOpacity.setValue(1);
     }
@@ -92,6 +112,8 @@ export function AppStatusScreen({
 
   if (loading) {
     const iconSize = Math.min(136, Math.max(104, Math.min(width, height) * 0.2));
+    const loadingBarWidth = Math.min(220, Math.max(160, width * 0.58));
+    const loadingBarFillWidth = loadingBarWidth * 0.36;
 
     return (
       <Animated.View style={[styles.loadingLayer, { opacity: loadingOpacity }]}>
@@ -115,6 +137,27 @@ export function AppStatusScreen({
               },
             ]}
           />
+          <View
+            testID="loading-progress-track"
+            style={[styles.loadingBarTrack, { width: loadingBarWidth }]}
+          >
+            <Animated.View
+              style={[
+                styles.loadingBarFill,
+                {
+                  width: loadingBarFillWidth,
+                  transform: [
+                    {
+                      translateX: loadingBarProgress.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [-loadingBarFillWidth, loadingBarWidth],
+                      }),
+                    },
+                  ],
+                },
+              ]}
+            />
+          </View>
         </SafeAreaView>
       </Animated.View>
     );
@@ -167,6 +210,18 @@ const styles = StyleSheet.create({
   },
   loadingIcon: {
     marginVertical: 0,
+  },
+  loadingBarTrack: {
+    height: 5,
+    marginTop: 24,
+    overflow: 'hidden',
+    borderRadius: 999,
+    backgroundColor: '#e5e7eb',
+  },
+  loadingBarFill: {
+    height: '100%',
+    borderRadius: 999,
+    backgroundColor: '#0f766e',
   },
   safeArea: {
     flex: 1,

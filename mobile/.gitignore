@@ -40,3 +40,13 @@ default.profraw
 # generated native folders
 /ios
 /android
+
+# Keep the checked-in iOS splash resource used by the native launch screen.
+!/ios/
+!/ios/CUBus/
+ios/CUBus/*
+!/ios/CUBus/Images.xcassets/
+ios/CUBus/Images.xcassets/*
+!/ios/CUBus/Images.xcassets/SplashScreenLogo.imageset/
+!/ios/CUBus/Images.xcassets/SplashScreenLogo.imageset/Contents.json
+!/ios/CUBus/Images.xcassets/SplashScreenLogo.imageset/SplashScreenLogo.png

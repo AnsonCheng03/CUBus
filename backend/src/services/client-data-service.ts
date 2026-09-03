@@ -113,7 +113,7 @@ function mapStations(rows: Record<string, unknown>[]) {
 }
 
 function mapNotices(rows: Record<string, unknown>[], alert: unknown[]) {
-  const notices = rows.map((row) => ({
+  const notices = rows.filter((row) => !isNoticeHidden(row.hide)).map((row) => ({
     content: [row.CHINESE, row.ENGLISH],
     // Prisma returns legacy BIGINT IDs as bigint values. Convert them to the
     // numeric shape used by the existing mobile client before JSON encoding.
@@ -132,6 +132,15 @@ function mapNotices(rows: Record<string, unknown>[], alert: unknown[]) {
     } as any);
   }
   return notices;
+}
+
+function isNoticeHidden(value: unknown) {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'number') return value === 1;
+  if (typeof value === 'string') {
+    return ['1', 'true'].includes(value.trim().toLowerCase());
+  }
+  return false;
 }
 
 function mapGps(rows: Record<string, unknown>[]) {

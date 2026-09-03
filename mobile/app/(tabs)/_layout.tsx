@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
@@ -13,17 +13,11 @@ export default function TabsLayout() {
   const { width } = useWindowDimensions();
   const isLargeScreen = width >= NAV_RESPONSIVE_BREAKPOINT;
   const translatedHint = t(hint, { ns: 'preset', defaultValue: hint });
-  const [bootScreenVisible, setBootScreenVisible] = useState(bootStatus === 'initializing');
-
-  useEffect(() => {
-    if (bootStatus === 'initializing') {
-      setBootScreenVisible(true);
-    }
-  }, [bootStatus]);
-
-  const finishBootScreenFade = useCallback(() => {
-    setBootScreenVisible(false);
-  }, []);
+  const showBootScreen = bootStatus === 'initializing';
+  // Mount the app behind the opaque boot screen so route/layout assets settle
+  // before the loading screen is removed. The navigation is never visible
+  // while booting.
+  const showAppContent = bootStatus === 'initializing' || bootStatus === 'ready';
 
   if (bootStatus === 'recoverable-error') {
     return (
@@ -63,7 +57,7 @@ export default function TabsLayout() {
 
   return (
     <View style={styles.container}>
-      {bootStatus === 'ready' ? (
+      {showAppContent ? (
         <>
           {isLargeScreen ? <CustomNavBar /> : null}
           <View style={styles.content}>
@@ -83,7 +77,7 @@ export default function TabsLayout() {
         </>
       ) : null}
 
-      {bootScreenVisible ? (
+      {showBootScreen ? (
         <View
           pointerEvents={bootStatus === 'initializing' ? 'auto' : 'none'}
           style={styles.bootOverlay}
@@ -92,8 +86,6 @@ export default function TabsLayout() {
             title="CU Bus"
             hint={translatedHint}
             loading
-            fadeOut={bootStatus !== 'initializing'}
-            onFadeOutComplete={finishBootScreenFade}
           />
         </View>
       ) : null}
@@ -117,5 +109,6 @@ const styles = StyleSheet.create({
     left: 0,
     zIndex: 100,
     elevation: 100,
+    backgroundColor: '#fff',
   },
 });

@@ -10,7 +10,7 @@
     "jsEngine": "hermes",
     "icon": "../resources/icon.png",
     "splash": {
-      "image": "./src/assets/bus.jpg",
+      "image": "./src/assets/splash-loading.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },

@@ -145,6 +145,23 @@ describe('backend compatibility routes', () => {
     expect(response.body.notice[0].id).toBe(1);
   });
 
+  it('does not include hidden notices in client-data responses', async () => {
+    const { app } = setup({
+      notices: [
+        { ID: 1n, CHINESE: '隱藏', ENGLISH: 'Hidden', hide: true },
+        { ID: 2n, CHINESE: '隱藏', ENGLISH: 'Hidden string', hide: '1' },
+        { ID: 3n, CHINESE: '顯示', ENGLISH: 'Visible', hide: 0 },
+      ],
+    });
+
+    const response = await request(app).post('/api/v1/functions/getClientData.php').send({});
+
+    expect(response.status).toBe(200);
+    expect(response.body.notice).toEqual([
+      expect.objectContaining({ id: 3, content: ['顯示', 'Visible'] }),
+    ]);
+  });
+
   it('records the first client-data visit with the PHP-compatible app-open event', async () => {
     const { app, repository } = setup();
     const response = await request(app).get('/api/v1/functions/getClientData.php?lang=en');

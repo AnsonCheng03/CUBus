@@ -6,8 +6,24 @@ import { usePathname } from 'expo-router';
 import { NAV_RESPONSIVE_BREAKPOINT } from '../lib/layout';
 import type { NoticeItem } from '../types/mobile';
 
-function stripHtml(input: string) {
-  return input.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+function formatNoticeContent(input: string) {
+  return input
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\\r\\n|\\n|\\r/g, '\n')
+    .replace(/\r\n?/g, '\n')
+    .replace(/[^\S\n]+/g, ' ')
+    .replace(/[ \t]*\n[ \t]*/g, '\n')
+    .trim();
+}
+
+function isNoticeHidden(value: unknown) {
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'number') return value === 1;
+  if (typeof value === 'string') {
+    return ['1', 'true'].includes(value.trim().toLowerCase());
+  }
+  return false;
 }
 
 const noticeColors = {
@@ -32,7 +48,7 @@ export function NoticeBanner({ notice }: { notice?: NoticeItem[] | null }) {
 
   const currentNotice = useMemo(() => {
     const visible = (notice ?? [])
-      .filter((item) => item?.content?.[lang] && item?.pref?.hide !== 1)
+      .filter((item) => item?.content?.[lang] && !isNoticeHidden(item?.pref?.hide))
       .reverse()
       .filter((item) => !dismissedIds.includes(item.id));
     return visible[0] ?? null;
@@ -70,7 +86,7 @@ export function NoticeBanner({ notice }: { notice?: NoticeItem[] | null }) {
         ]}
       >
         <Text style={[styles.message, { color: palette.textColor }]}>
-          {stripHtml(noticeContent)}
+          {formatNoticeContent(noticeContent)}
         </Text>
         <View style={styles.actions}>
           {noticeLink ? (

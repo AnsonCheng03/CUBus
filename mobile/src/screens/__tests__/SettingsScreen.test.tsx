@@ -25,6 +25,14 @@ jest.mock('../../lib/i18n', () => ({
   },
 }));
 
+jest.mock('../../lib/sentry', () => ({
+  showFeedbackWidget: jest.fn(),
+}));
+
+const mockShowFeedbackWidget = jest.mocked(
+  jest.requireMock('../../lib/sentry').showFeedbackWidget,
+);
+
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
@@ -48,6 +56,15 @@ describe('SettingsScreen', () => {
     const { getByText } = await render(<SettingsScreen />);
     expect(getByText('settings_change_language')).toBeTruthy();
     expect(getByText('bus_map_page')).toBeTruthy();
+  });
+
+  it('opens the Sentry feedback widget from the report problem row', async () => {
+    mockShowFeedbackWidget.mockClear();
+    const { getByTestId } = await render(<SettingsScreen />);
+
+    fireEvent.press(getByTestId('settings-report-problem'));
+
+    expect(mockShowFeedbackWidget).toHaveBeenCalledTimes(1);
   });
 
   it('confirms before deleting stored data', async () => {

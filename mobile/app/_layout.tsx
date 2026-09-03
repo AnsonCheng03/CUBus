@@ -9,7 +9,7 @@ import { NoticeBanner } from '../src/components/NoticeBanner';
 import { mobileQueryClient } from '../src/query/client';
 import { useReactQueryAppFocus } from '../src/query/focusManager';
 import { applyGlobalTypographyDefaults } from '../src/lib/typography';
-import { initSentry } from '../src/lib/sentry';
+import { initSentry, Sentry } from '../src/lib/sentry';
 import { AppDownloadPrompt } from '../src/components/AppDownloadPrompt';
 
 initSentry();
@@ -18,18 +18,19 @@ applyGlobalTypographyDefaults();
 
 function AppFrame() {
   useReactQueryAppFocus();
-  const { appData } = useAppState();
+  const { appData, bootStatus } = useAppState();
+  const appReady = bootStatus === 'ready';
 
   return (
     <View style={styles.container}>
       <Stack screenOptions={{ headerShown: false }} />
-      <NoticeBanner notice={appData.notice} />
-      <AppDownloadPrompt />
+      {appReady ? <NoticeBanner notice={appData.notice} /> : null}
+      {appReady ? <AppDownloadPrompt /> : null}
     </View>
   );
 }
 
-export default function RootLayout() {
+function RootLayout() {
   return (
     <I18nextProvider i18n={i18next}>
       <QueryClientProvider client={mobileQueryClient}>
@@ -41,8 +42,11 @@ export default function RootLayout() {
   );
 }
 
+export default Sentry.wrap(RootLayout);
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
   },
 });

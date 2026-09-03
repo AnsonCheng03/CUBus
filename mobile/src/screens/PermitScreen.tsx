@@ -1,10 +1,11 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Easing, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { MOBILE_BOTTOM_NAV_OVERLAP } from '../components/CustomNavBar';
 import { PERMIT_CARD_RATIO } from '../components/PermitCard';
 import { ScreenContainer } from '../components/ScreenContainer';
 import { PermitFormSection } from '../components/permit/PermitFormSection';
+import { PermitGenerationView } from '../components/permit/PermitGenerationModal';
 import { PermitFullscreenModal } from '../components/permit/PermitFullscreenModal';
 import { PermitHero } from '../components/permit/PermitHero';
 import { PermitPassSection } from '../components/permit/PermitPassSection';
@@ -24,22 +25,57 @@ export function PermitScreen() {
       sid: appSettings.schoolBusPermit?.sid ?? '',
       major: appSettings.schoolBusPermit?.major ?? '',
       expiry: appSettings.schoolBusPermit?.expiry ?? '',
+      busMode: appSettings.schoolBusPermit?.busMode ?? 'shuttle_bus',
     }),
     [appSettings.schoolBusPermit],
   );
 
   const [form, setForm] = useState(saved);
-  const [mode, setMode] = useState<'edit' | 'view'>(saved.name ? 'view' : 'edit');
+  const [mode, setMode] = useState<'edit' | 'generating' | 'view'>(
+    saved.name ? 'view' : 'edit',
+  );
   const [fullscreenBusMode, setFullscreenBusMode] = useState<keyof typeof permitBusRoutes | null>(
     null,
   );
   const [selectedBusMode, setSelectedBusMode] =
-    useState<keyof typeof permitBusRoutes>('meet_class_bus');
+    useState<keyof typeof permitBusRoutes>(saved.busMode ?? 'shuttle_bus');
   const carouselRef = useRef<ScrollView>(null);
   const surfaceBodyProgress = useRef(new Animated.Value(saved.name ? 1 : 0)).current;
+  const modeTransition = useRef(new Animated.Value(1)).current;
+
+  const transitionToMode = useCallback(
+    (nextMode: 'edit' | 'generating' | 'view') => {
+      if (mode === nextMode) {
+        return;
+      }
+
+      modeTransition.stopAnimation();
+      Animated.timing(modeTransition, {
+        toValue: 0,
+        duration: 150,
+        easing: Easing.in(Easing.ease),
+        useNativeDriver: true,
+      }).start(({ finished }) => {
+        if (!finished) {
+          return;
+        }
+
+        setMode(nextMode);
+        modeTransition.setValue(0);
+        Animated.timing(modeTransition, {
+          toValue: 1,
+          duration: 260,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }).start();
+      });
+    },
+    [mode, modeTransition],
+  );
 
   useEffect(() => {
     setForm(saved);
+    setSelectedBusMode(saved.busMode ?? 'shuttle_bus');
   }, [saved]);
 
   useEffect(() => {
@@ -75,11 +111,13 @@ export function PermitScreen() {
   );
 
   const save = () => {
+    const defaultBusMode = 'shuttle_bus' as const;
     const trimmed: PermitFormValue = {
       name: form.name.trim(),
       sid: form.sid.trim(),
       major: form.major.trim().toUpperCase(),
       expiry: form.expiry.trim(),
+      busMode: defaultBusMode,
     };
 
     if (!trimmed.name || !trimmed.sid || !trimmed.major || !trimmed.expiry) {
@@ -88,8 +126,13 @@ export function PermitScreen() {
 
     setAppSettings((prev) => ({ ...prev, schoolBusPermit: trimmed }));
     setForm(trimmed);
-    setMode('view');
+    setSelectedBusMode(defaultBusMode);
+    transitionToMode('generating');
   };
+
+  const finishGeneration = useCallback(() => {
+    transitionToMode('view');
+  }, [transitionToMode]);
 
   const selectedIndex = Math.max(
     0,
@@ -107,6 +150,10 @@ export function PermitScreen() {
     inputRange: [0, 1],
     outputRange: ['#faf8f6', '#fff'],
   });
+  const modeTranslateY = modeTransition.interpolate({
+    inputRange: [0, 1],
+    outputRange: [8, 0],
+  });
 
   const scrollToPermit = (modeValue: keyof typeof permitBusRoutes) => {
     const index = permitVariants.findIndex((item) => item.mode === modeValue);
@@ -120,72 +167,92 @@ export function PermitScreen() {
   };
 
   return (
-    <ScreenContainer
-      title={t('NAV-Permit')}
-      showHeader={false}
-      scrollable={false}
-      contentPadding={0}
-      contentGap={0}
-      safeAreaBackgroundColor="#911f27"
-      contentStyle={styles.pageContent}
-    >
-      <View style={styles.pageFrame}>
-        <PermitHero badge={t('school_bus_permit_title')} title={t('NAV-Permit')} subtitle={desc} />
+    <>
+      <ScreenContainer
+        title={t('NAV-Permit')}
+        showHeader={false}
+        scrollable={false}
+        contentPadding={0}
+        contentGap={0}
+        safeAreaBackgroundColor="#911f27"
+        contentStyle={styles.pageContent}
+      >
+        <View style={styles.pageFrame}>
+          <PermitHero badge={t('school_bus_permit_title')} title={t('NAV-Permit')} subtitle={desc} />
 
-        <View style={styles.surfaceSection}>
-          <Animated.View
-            style={[
-              styles.surfaceBody,
-              !isLargeScreen && styles.surfaceBodyMobile,
-              { backgroundColor: surfaceBodyBackgroundColor },
-            ]}
-          >
-            {mode === 'edit' ? (
-              <PermitFormSection
-                form={form}
-                t={t}
-                onChangeField={(field, value) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    [field]: field === 'major' ? value.toUpperCase() : value,
-                  }))
-                }
-                onSave={save}
-                showCancel={Boolean(saved.name)}
-                onCancel={() => {
-                  setForm(saved);
-                  setMode('view');
-                }}
-              />
-            ) : (
-              <PermitPassSection
-                t={t}
-                form={form}
-                selectedBusMode={selectedBusMode}
-                selectedVariant={selectedVariant}
-                permitVariants={permitVariants}
-                cardStageWidth={cardStageWidth}
-                carouselGap={carouselGap}
-                carouselSidePadding={carouselSidePadding}
-                carouselRef={carouselRef}
-                scrollToPermit={scrollToPermit}
-                setSelectedBusMode={setSelectedBusMode}
-                onOpenFullscreen={setFullscreenBusMode}
-                onEdit={() => setMode('edit')}
-              />
-            )}
-          </Animated.View>
+          <View style={styles.surfaceSection}>
+            <Animated.View
+              style={[
+                styles.surfaceBody,
+                !isLargeScreen && styles.surfaceBodyMobile,
+                { backgroundColor: surfaceBodyBackgroundColor },
+              ]}
+            >
+              <Animated.View
+                style={[
+                  styles.modeContent,
+                  {
+                    opacity: modeTransition,
+                    transform: [{ translateY: modeTranslateY }],
+                  },
+                ]}
+              >
+                {mode === 'edit' ? (
+                  <PermitFormSection
+                    form={form}
+                    t={t}
+                    onChangeField={(field, value) =>
+                      setForm((prev) => ({
+                        ...prev,
+                        [field]: field === 'major' ? value.toUpperCase() : value,
+                      }))
+                    }
+                    onSave={save}
+                    showCancel={Boolean(saved.name)}
+                    onCancel={() => {
+                      setForm(saved);
+                      setSelectedBusMode(saved.busMode ?? 'shuttle_bus');
+                      transitionToMode('view');
+                    }}
+                  />
+                ) : mode === 'generating' ? (
+                  <PermitGenerationView
+                    permit={form}
+                    busMode={selectedBusMode}
+                    onComplete={finishGeneration}
+                  />
+                ) : (
+                  <PermitPassSection
+                    t={t}
+                    form={form}
+                    selectedBusMode={selectedBusMode}
+                    selectedVariant={selectedVariant}
+                    permitVariants={permitVariants}
+                    cardStageWidth={cardStageWidth}
+                    carouselGap={carouselGap}
+                    carouselSidePadding={carouselSidePadding}
+                    carouselRef={carouselRef}
+                    scrollToPermit={scrollToPermit}
+                    setSelectedBusMode={setSelectedBusMode}
+                    onOpenFullscreen={setFullscreenBusMode}
+                    onEdit={() => transitionToMode('edit')}
+                  />
+                )}
+              </Animated.View>
+            </Animated.View>
+          </View>
         </View>
-      </View>
 
-      <PermitFullscreenModal
-        visibleBusMode={fullscreenBusMode}
-        permit={form}
-        fullscreenCardWidth={fullscreenCardWidth}
-        isPortrait={isPortrait}
-        onClose={() => setFullscreenBusMode(null)}
-      />
-    </ScreenContainer>
+        <PermitFullscreenModal
+          visibleBusMode={fullscreenBusMode}
+          permit={form}
+          fullscreenCardWidth={fullscreenCardWidth}
+          isPortrait={isPortrait}
+          onClose={() => setFullscreenBusMode(null)}
+        />
+      </ScreenContainer>
+
+    </>
   );
 }
 
@@ -213,5 +280,8 @@ const styles = StyleSheet.create({
   },
   surfaceBodyMobile: {
     paddingBottom: MOBILE_BOTTOM_NAV_OVERLAP,
+  },
+  modeContent: {
+    flex: 1,
   },
 });

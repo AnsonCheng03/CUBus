@@ -3,7 +3,9 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 import type { PermitFormValue } from '../../types/mobile';
 import { e2eProps } from '../../test-support/e2eProps';
 
-const FIELDS: Array<[string, keyof PermitFormValue, string]> = [
+type PermitField = Exclude<keyof PermitFormValue, 'busMode'>;
+
+const FIELDS: Array<[string, PermitField, string]> = [
   ['School_Bus_Permit_Name', 'name', 'Vanessa'],
   ['School_Bus_Permit_SID', 'sid', '1155123456'],
   ['School_Bus_Permit_Major', 'major', 'CSCIN'],
@@ -20,7 +22,7 @@ export function PermitFormSection({
 }: {
   form: PermitFormValue;
   t: (key: string) => string;
-  onChangeField: (field: keyof PermitFormValue, value: string) => void;
+  onChangeField: (field: PermitField, value: string) => void;
   onSave: () => void;
   showCancel: boolean;
   onCancel: () => void;
