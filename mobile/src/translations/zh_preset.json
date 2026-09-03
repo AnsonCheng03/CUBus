@@ -1,4 +1,5 @@
 {
+  "batch_fetch_err": "資料更新失敗",
   "DownloadFiles-Error": "檢查更新時發生錯誤",
   "DownloadFiles-Complete": "資料處理完成",
   "DownloadFiles-Downloading": "檢查更新中",
@@ -8,5 +9,6 @@
   "StoreFile-Complete": "資料處理並儲存完成",
   "StoreFile-Error": "處理資料時發生錯誤",
   "app_data_corrupted": "很抱歉，應用程式資料已損毀",
+  "retry_btn": "重試",
   "reset_app": "重置應用程式"
 }

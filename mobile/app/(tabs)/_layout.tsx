@@ -36,7 +36,7 @@ export default function TabsLayout() {
           </Text>
         }
         actions={[
-          { label: t('retry_btn', { defaultValue: 'Retry' }), onPress: () => retryBoot().catch(() => {}) },
+          { label: t('retry_btn', { ns: 'preset' }), onPress: () => retryBoot().catch(() => {}) },
           { label: t('reset_app', { ns: 'preset' }), onPress: () => resetApp().catch(() => {}), tone: 'secondary' },
         ]}
       />
@@ -55,7 +55,7 @@ export default function TabsLayout() {
         }
         actions={[
           { label: t('reset_app', { ns: 'preset' }), onPress: () => resetApp().catch(() => {}) },
-          { label: t('retry_btn', { defaultValue: 'Retry' }), onPress: () => retryBoot().catch(() => {}), tone: 'secondary' },
+          { label: t('retry_btn', { ns: 'preset' }), onPress: () => retryBoot().catch(() => {}), tone: 'secondary' },
         ]}
       />
     );
@@ -63,7 +63,7 @@ export default function TabsLayout() {
 
   return (
     <View style={styles.container}>
-      {bootStatus === 'ready' && !bootScreenVisible ? (
+      {bootStatus === 'ready' ? (
         <>
           {isLargeScreen ? <CustomNavBar /> : null}
           <View style={styles.content}>

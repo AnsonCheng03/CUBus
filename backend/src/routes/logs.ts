@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { z } from 'zod';
 import type { LogRepository } from '../repositories/log-repository.js';
+import { ReportArrivalError, type ReportArrivalService } from '../services/report-arrival-service.js';
 import { formatHongKongSqlDate } from '../services/hong-kong-time.js';
 
 const realtimeSchema = z.object({
@@ -19,13 +20,39 @@ const searchSchema = z.object({
   Token: z.string().optional(),
 });
 
-export function createLogsRouter(repository: LogRepository): Router {
+const reportArrivalSchema = z.object({
+  type: z.literal('reportArrival'),
+  Details: z.object({
+    busNo: z.string(),
+    stationIndex: z.coerce.number().int(),
+  }),
+  position: z.object({
+    timestamp: z.coerce.number(),
+    coords: z.object({
+      latitude: z.coerce.number(),
+      longitude: z.coerce.number(),
+    }),
+  }),
+});
+
+export function createLogsRouter(
+  repository: LogRepository,
+  reportArrivalService?: ReportArrivalService,
+  tokenValidator?: (token: string) => boolean,
+): Router {
   const router = Router();
 
   router.post(['/api/v2/events', '/api/v1/functions/logData.php'], async (request, response) => {
     const type = request.body?.type;
 
     try {
+      const token = request.body?.Token;
+      if (
+        tokenValidator && token !== undefined && token !== null && token !== ''
+        && !tokenValidator(String(token))
+      ) {
+        return response.type('text').send('Invalid token');
+      }
       if (type === 'realtime') {
         const parsed = realtimeSchema.safeParse(request.body);
         if (!parsed.success) return response.type('text').send('Missing parameters');
@@ -52,11 +79,26 @@ export function createLogsRouter(repository: LogRepository): Router {
         return response.status(200).send();
       }
 
-      if (type === undefined) return response.type('text').send('Missing type');
+      if (type === 'reportArrival' && reportArrivalService) {
+        const parsed = reportArrivalSchema.safeParse(request.body);
+        if (!parsed.success) return response.type('text').send('Missing parameters');
 
-      // reportArrival was hidden in every shipped UI and is intentionally retired.
+        const result = await reportArrivalService.report({
+          busNo: parsed.data.Details.busNo,
+          stationIndex: parsed.data.Details.stationIndex,
+          timestamp: parsed.data.position.timestamp,
+          latitude: parsed.data.position.coords.latitude,
+          longitude: parsed.data.position.coords.longitude,
+        }, request.ip ?? 'unknown');
+        return response.type('text').send(result);
+      }
+
+      if (type === undefined) return response.type('text').send('Missing type');
       return response.type('text').send('Invalid type');
     } catch (error) {
+      if (error instanceof ReportArrivalError) {
+        return response.type('text').send(error.message);
+      }
       request.log.error({ err: error }, 'Failed to write analytics log');
       return response.type('text').send('Failed to log data');
     }

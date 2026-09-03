@@ -30,9 +30,14 @@
     "mobile:typecheck": "npm run --workspace=@cu-bus/mobile typecheck",
     "mobile:check": "npm run mobile:typecheck && npm run mobile:test:ci",
     "backend:dev": "npm run --workspace=@cu-bus/backend dev",
+    "dev:db": "docker compose up -d db",
+    "dev:db:stop": "docker compose stop db",
     "backend:build": "npm run --workspace=@cu-bus/backend build",
     "backend:test": "npm run --workspace=@cu-bus/backend test",
     "backend:typecheck": "npm run --workspace=@cu-bus/backend typecheck",
+    "backend:prisma:validate": "npm run --workspace=@cu-bus/backend prisma:validate",
+    "backend:prisma:generate": "npm run --workspace=@cu-bus/backend prisma:generate",
+    "backend:prisma:pull:print": "npm run --workspace=@cu-bus/backend prisma:pull:print",
     "check:all": "npm run mobile:check && npm run backend:typecheck && npm run backend:test"
   },
   "devDependencies": {

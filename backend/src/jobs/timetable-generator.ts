@@ -1,5 +1,17 @@
+import type { JsonFileStore } from '../data/file-store.js';
+import type { BusRepository } from '../repositories/bus-repository.js';
+
 export type RouteRow = Record<string, unknown>;
 export type Timetable = Record<string, Record<string, string[]>>;
+
+export async function generateTimetableFile(
+  repository: Pick<BusRepository, 'getRoutes'>,
+  files: JsonFileStore,
+): Promise<Timetable> {
+  const timetable = generateTimetable(await repository.getRoutes());
+  await files.writeAtomic('timetable.json', timetable);
+  return timetable;
+}
 
 export function generateTimetable(rows: RouteRow[]): Timetable {
   const routes = new Map<string, { start: string; end: string; period: string; stops: RouteRow[] }>();

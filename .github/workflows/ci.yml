@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          HUSKY: 0
+
+      - name: Validate Prisma schema
+        run: npm run backend:prisma:validate
+
+      - name: Generate Prisma Client
+        run: npm run backend:prisma:generate
+
+      - name: Typecheck backend
+        run: npm run backend:typecheck
+
+      - name: Build backend
+        run: npm run backend:build
+
+      - name: Test backend
+        run: npm run backend:test
+
+  mobile:
+    name: Mobile
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        env:
+          HUSKY: 0
+
+      - name: Typecheck mobile app
+        run: npm run mobile:typecheck
+
+      - name: Test mobile app
+        run: npm run mobile:test:ci
+
+      - name: Test shared core
+        run: npm run mobile:test:shared-core
+
+      - name: Build web export
+        run: npm run mobile:build:web

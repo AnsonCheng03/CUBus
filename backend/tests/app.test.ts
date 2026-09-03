@@ -5,11 +5,14 @@ import { createApp } from '../src/app.js';
 import { JsonFileStore } from '../src/data/file-store.js';
 import type { BusRepository } from '../src/repositories/bus-repository.js';
 import type { LogRepository } from '../src/repositories/log-repository.js';
+import type { ReportArrivalRepository } from '../src/repositories/report-arrival-repository.js';
 import { ClientDataService } from '../src/services/client-data-service.js';
 import { CusisService } from '../src/services/cusis-service.js';
+import { ReportArrivalService } from '../src/services/report-arrival-service.js';
 
-function setup() {
+function setup(options: { notices?: Record<string, unknown>[] } = {}) {
   const repository: LogRepository = {
+    addAppOpen: vi.fn().mockResolvedValue(undefined),
     addRealtime: vi.fn().mockResolvedValue(undefined),
     addSearch: vi.fn().mockResolvedValue(undefined),
   };
@@ -18,14 +21,22 @@ function setup() {
     getRoutes: vi.fn().mockResolvedValue([]),
     getTranslations: vi.fn().mockResolvedValue([]),
     getStations: vi.fn().mockResolvedValue([]),
-    getNotices: vi.fn().mockResolvedValue([]),
+    getNotices: vi.fn().mockResolvedValue(options.notices ?? []),
     getGps: vi.fn().mockResolvedValue([]),
     getWebsites: vi.fn().mockResolvedValue([]),
+  };
+  const reportRepository: ReportArrivalRepository = {
+    getStopCoordinates: vi.fn().mockResolvedValue(null),
+    getStopsFrom: vi.fn().mockResolvedValue([]),
+    insert: vi.fn().mockResolvedValue(undefined),
+    deleteExpiredCalculated: vi.fn().mockResolvedValue(undefined),
+    getAll: vi.fn().mockResolvedValue([]),
   };
   const files = new JsonFileStore('/tmp/cu-bus-backend-tests');
   const app = createApp({
     allowedOrigins: ['http://localhost:5173'],
     logRepository: repository,
+    reportArrivalService: new ReportArrivalService(reportRepository),
     clientDataService: new ClientDataService(busRepository, files, '2026-07-14 00:00:00'),
     cusisService: new CusisService({
       endpoint: 'https://example.test/cusis',
@@ -93,12 +104,56 @@ describe('backend compatibility routes', () => {
     expect(response.text).toBe('Missing parameters');
   });
 
+  it('rejects non-empty log tokens that were not issued by client-data', async () => {
+    const { app } = setup();
+    const response = await request(app)
+      .post('/api/v1/functions/logData.php')
+      .send({ type: 'realtime', Dest: 'MTR', Lang: 'en', Token: 'invalid' });
+
+    expect(response.status).toBe(200);
+    expect(response.text).toBe('Invalid token');
+  });
+
   it('serves canonical and legacy client-data routes', async () => {
     const { app } = setup();
     const canonical = await request(app).get('/api/v2/client-data');
     const legacy = await request(app).get('/api/v1/functions/getClientData.php');
     expect(canonical.body.server).toBe('2026-07-14 00:00:00');
     expect(legacy.body).toEqual(canonical.body);
+  });
+
+  it('serializes legacy BIGINT notice IDs in client-data responses', async () => {
+    const { app } = setup({
+      notices: [
+        {
+          ID: 1n,
+          CHINESE: '測試通告',
+          ENGLISH: 'Test notice',
+          type: 'info',
+          hide: 0,
+          duration: 0,
+          link: '',
+          dismissible: true,
+          saveDismiss: false,
+        },
+      ],
+    });
+
+    const response = await request(app).post('/api/v1/functions/getClientData.php').send({});
+
+    expect(response.status).toBe(200);
+    expect(response.body.notice[0].id).toBe(1);
+  });
+
+  it('records the first client-data visit with the PHP-compatible app-open event', async () => {
+    const { app, repository } = setup();
+    const response = await request(app).get('/api/v1/functions/getClientData.php?lang=en');
+
+    expect(response.status).toBe(200);
+    expect(response.headers['set-cookie']?.[0]).toContain('cu_bus_visit=1');
+    expect(repository.addAppOpen).toHaveBeenCalledWith(
+      expect.objectContaining({ language: 'en', destination: '' }),
+    );
   });
 
   it('keeps the realtime shape and legacy alias', async () => {
@@ -111,20 +166,20 @@ describe('backend compatibility routes', () => {
     }));
   });
 
-  it('retires reportArrival without removing the compatibility URL', async () => {
+  it('keeps the reportArrival compatibility URL', async () => {
     const { app } = setup();
     const response = await request(app)
       .post('/api/v1/functions/logData.php')
       .send({ type: 'reportArrival' });
     expect(response.status).toBe(200);
-    expect(response.text).toBe('Invalid type');
+    expect(response.text).toBe('Missing parameters');
   });
 
-  it('rejects CUSIS GET credentials and invalid POST forms', async () => {
+  it('preserves the legacy CUSIS GET error status and invalid POST forms', async () => {
     const { app } = setup();
-    const getResponse = await request(app).get('/cusis/api.php?SID=1&pwd=secret');
+    const getResponse = await request(app).get('/cusis/api.php');
     const postResponse = await request(app).post('/api/v2/cusis/calendar').field('SID', '1');
-    expect(getResponse.status).toBe(405);
+    expect(getResponse.status).toBe(201);
     expect(postResponse.status).toBe(400);
   });
 

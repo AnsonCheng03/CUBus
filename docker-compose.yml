@@ -1,0 +1,31 @@
+name: cu-bus-local
+
+services:
+  db:
+    image: mariadb:11.8
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: initial
+      MARIADB_USER: cu_bus
+      MARIADB_PASSWORD: cu_bus
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --default-time-zone=+08:00
+    ports:
+      - "3307:3306"
+    volumes:
+      - cu_bus_local_db:/var/lib/mysql
+      # These files run only when the named volume is initialized for the
+      # first time. They are never run on an existing database volume.
+      - ./backend/database/initial.sql:/docker-entrypoint-initdb.d/00-initial.sql:ro
+      - ./backend/database/2026-09-02-S4-notice-text-columns.sql:/docker-entrypoint-initdb.d/10-notice-text-columns.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mariadb-admin ping -h 127.0.0.1 -uroot -p$${MARIADB_ROOT_PASSWORD} --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  cu_bus_local_db:

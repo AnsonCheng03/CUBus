@@ -1,5 +1,9 @@
+import { mkdtemp } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { parseTransportPages } from '../src/jobs/status-scraper.js';
+import { JsonFileStore } from '../src/data/file-store.js';
+import { parseTransportPages, scrapeStatus } from '../src/jobs/status-scraper.js';
 import { generateTimetable } from '../src/jobs/timetable-generator.js';
 
 describe('status scraper', () => {
@@ -10,6 +14,20 @@ describe('status scraper', () => {
     );
     expect(result.status).toEqual({ '1A': 'delayed' });
     expect(result.alert.slice(0, 2)).toEqual(['通告', 'Notice']);
+  });
+
+  it('keeps English status data when the optional Chinese page fails', async () => {
+    const directory = await mkdtemp(join(tmpdir(), 'cu-bus-status-'));
+    const files = new JsonFileStore(directory);
+    const fetcher = async (url: string) => {
+      if (url.endsWith('/tc/')) throw new Error('Chinese page unavailable');
+      return new Response('<div>ROUTE 1A <span class="hr-status hr-status-normal"></span></div>');
+    };
+
+    const result = await scrapeStatus(files, fetcher);
+
+    expect(result.status).toEqual({ '1A': 'normal' });
+    expect(await files.read('Alert.json')).toEqual([]);
   });
 });
 

@@ -37,15 +37,23 @@ export async function scrapeStatus(
 ): Promise<ScrapeResult> {
   let result: ScrapeResult;
   try {
-    const [englishResponse, chineseResponse] = await Promise.all([
-      fetcher('https://www.transport.cuhk.edu.hk/', { signal: AbortSignal.timeout(20_000) }),
-      fetcher('https://www.transport.cuhk.edu.hk/tc/', { signal: AbortSignal.timeout(20_000) }),
-    ]);
-    if (!englishResponse.ok) throw new Error(`Transport page returned ${englishResponse.status}`);
-    result = parseTransportPages(
-      await englishResponse.text(),
-      chineseResponse.ok ? await chineseResponse.text() : '',
+    const englishResponse = await fetcher(
+      'https://www.transport.cuhk.edu.hk/',
+      { signal: AbortSignal.timeout(20_000) },
     );
+    if (!englishResponse.ok) throw new Error(`Transport page returned ${englishResponse.status}`);
+    const englishHtml = await englishResponse.text();
+    let chineseHtml = '';
+    try {
+      const chineseResponse = await fetcher(
+        'https://www.transport.cuhk.edu.hk/tc/',
+        { signal: AbortSignal.timeout(20_000) },
+      );
+      if (chineseResponse.ok) chineseHtml = await chineseResponse.text();
+    } catch {
+      // PHP falls back to the English warning if the Chinese page is unavailable.
+    }
+    result = parseTransportPages(englishHtml, chineseHtml);
   } catch {
     result = { status: { ERROR: 'fetch' }, alert: await files.read<string[]>('Alert.json') };
   }

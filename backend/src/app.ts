@@ -6,6 +6,7 @@ import type { LogRepository } from './repositories/log-repository.js';
 import type { JsonFileStore } from './data/file-store.js';
 import type { ClientDataService } from './services/client-data-service.js';
 import type { CusisService } from './services/cusis-service.js';
+import type { ReportArrivalService } from './services/report-arrival-service.js';
 import { createClientDataRouter } from './routes/client-data.js';
 import { createCusisRouter } from './routes/cusis.js';
 import { createHealthRouter } from './routes/health.js';
@@ -15,6 +16,7 @@ import { createRealtimeRouter } from './routes/realtime.js';
 export type CreateAppOptions = {
   allowedOrigins: string[];
   logRepository: LogRepository;
+  reportArrivalService?: ReportArrivalService;
   clientDataService: ClientDataService;
   cusisService: CusisService;
   files: JsonFileStore;
@@ -40,9 +42,13 @@ export function createApp(options: CreateAppOptions): Express {
   );
   app.use(express.json({ limit: '32kb' }));
   app.use(createHealthRouter());
-  app.use(createClientDataRouter(options.clientDataService));
-  app.use(createRealtimeRouter(options.files));
-  app.use(createLogsRouter(options.logRepository));
+  app.use(createClientDataRouter(options.clientDataService, options.logRepository));
+  app.use(createRealtimeRouter(options.files, options.reportArrivalService));
+  app.use(createLogsRouter(
+    options.logRepository,
+    options.reportArrivalService,
+    options.clientDataService.isIssuedToken.bind(options.clientDataService),
+  ));
   app.use(createCusisRouter(options.cusisService));
   app.use((error: unknown, request: express.Request, response: express.Response, _next: express.NextFunction) => {
     request.log.error({ err: error }, 'Unhandled request error');

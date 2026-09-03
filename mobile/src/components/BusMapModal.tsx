@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Asset } from 'expo-asset';
 import { SafeAreaInsetsContext, SafeAreaView } from 'react-native-safe-area-context';
@@ -48,7 +48,7 @@ function buildSvgHtml(svgText: string) {
       #canvas {
         width: ${MAP_WIDTH}px;
         height: ${MAP_HEIGHT}px;
-        margin: ${MAP_PADDING}px auto;
+        margin: ${MAP_PADDING}px 0 0 ${MAP_PADDING}px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -70,14 +70,27 @@ function buildSvgHtml(svgText: string) {
         var initialY = ${INITIAL_SCROLL_Y};
 
         function applyInitialViewport() {
-          window.scrollTo(initialX, initialY);
+          var scrollRoot = document.scrollingElement || document.documentElement || document.body;
+          var maxX = Math.max(0, scrollRoot.scrollWidth - window.innerWidth);
+          var maxY = Math.max(0, scrollRoot.scrollHeight - window.innerHeight);
+          var x = Math.min(initialX, maxX);
+          var y = Math.min(initialY, maxY);
+
+          window.scrollTo(x, y);
+          scrollRoot.scrollLeft = x;
+          scrollRoot.scrollTop = y;
+        }
+
+        window.__cuBusApplyInitialViewport = applyInitialViewport;
+
+        function scheduleInitialViewport() {
+          requestAnimationFrame(applyInitialViewport);
+          setTimeout(applyInitialViewport, 80);
+          setTimeout(applyInitialViewport, 240);
         }
 
         window.addEventListener('load', function() {
-          requestAnimationFrame(function() {
-            applyInitialViewport();
-            setTimeout(applyInitialViewport, 60);
-          });
+          scheduleInitialViewport();
         });
       })();
     </script>
@@ -89,6 +102,7 @@ export function BusMapModal({ visible, onClose }: { visible: boolean; onClose: (
   const { t } = useTranslation('global');
   const insets = useContext(SafeAreaInsetsContext) ?? { top: 0, bottom: 0, left: 0, right: 0 };
   const [rawMapSvg, setRawMapSvg] = useState<string | null>(null);
+  const webViewRef = useRef<WebView>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -116,9 +130,26 @@ export function BusMapModal({ visible, onClose }: { visible: boolean; onClose: (
   }, []);
 
   const mapHtml = useMemo(() => (rawMapSvg ? buildSvgHtml(rawMapSvg) : null), [rawMapSvg]);
+  const applyInitialViewport = useCallback(() => {
+    webViewRef.current?.injectJavaScript(
+      'if (window.__cuBusApplyInitialViewport) { window.__cuBusApplyInitialViewport(); } true;',
+    );
+  }, []);
+
+  const handleMapReady = useCallback(() => {
+    applyInitialViewport();
+    setTimeout(applyInitialViewport, 120);
+    setTimeout(applyInitialViewport, 320);
+  }, [applyInitialViewport]);
 
   return (
-    <Modal visible={visible} animationType="slide" onRequestClose={onClose} statusBarTranslucent>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      onRequestClose={onClose}
+      onShow={handleMapReady}
+      statusBarTranslucent
+    >
       <SafeAreaView {...e2eProps('bus-map-modal')} style={styles.safeArea} edges={['top', 'bottom']}>
         <View style={[styles.header, { paddingTop: Math.max(insets.top, 8) }]}>
           <View style={styles.headerCopy}>
@@ -135,8 +166,10 @@ export function BusMapModal({ visible, onClose }: { visible: boolean; onClose: (
             {mapHtml ? (
               <WebView
                 key={visible ? 'open' : 'closed'}
+                ref={webViewRef}
                 originWhitelist={['*']}
                 source={{ html: mapHtml }}
+                onLoadEnd={handleMapReady}
                 style={styles.webview}
                 containerStyle={styles.webviewContainer}
                 javaScriptEnabled

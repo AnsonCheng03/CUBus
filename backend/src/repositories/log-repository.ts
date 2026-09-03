@@ -1,4 +1,5 @@
-import type { Pool } from 'mysql2/promise';
+import { PrismaClient } from '@prisma/client';
+import { prismaDateTimeFromHongKong } from '../prisma-date.js';
 
 export type RealtimeLog = {
   time: string;
@@ -12,24 +13,56 @@ export type SearchLog = RealtimeLog & {
 };
 
 export interface LogRepository {
+  addAppOpen(entry: RealtimeLog): Promise<void>;
   addRealtime(entry: RealtimeLog): Promise<void>;
   addSearch(entry: SearchLog): Promise<void>;
 }
 
-export class MysqlLogRepository implements LogRepository {
-  constructor(private readonly pool: Pool) {}
+export class PrismaLogRepository implements LogRepository {
+  constructor(private readonly db: PrismaClient) {}
+
+  async addAppOpen(entry: RealtimeLog): Promise<void> {
+    await this.db.log.create({ data: {
+      time: prismaDateTimeFromHongKong(entry.time),
+      webpage: 'appOpen',
+      start: '',
+      destination: '',
+      mode: '',
+      showAllRoute: 0,
+      departNow: 0,
+      language: entry.language,
+    } });
+  }
 
   async addRealtime(entry: RealtimeLog): Promise<void> {
-    await this.pool.execute(
-      'INSERT INTO `logs` (`Time`, `Webpage`, `Dest`, `Lang`) VALUES (?, \'realtime\', ?, ?)',
-      [entry.time, entry.destination, entry.language],
-    );
+    await this.db.log.create({ data: {
+      time: prismaDateTimeFromHongKong(entry.time),
+      webpage: 'realtime',
+      start: '',
+      destination: entry.destination,
+      mode: '',
+      showAllRoute: 0,
+      departNow: 0,
+      language: entry.language,
+    } });
   }
 
   async addSearch(entry: SearchLog): Promise<void> {
-    await this.pool.execute(
-      'INSERT INTO `logs` (`Time`, `Webpage`, `Start`, `Dest`, `Departnow`, `Lang`) VALUES (?, \'routesearch\', ?, ?, ?, ?)',
-      [entry.time, entry.start, entry.destination, entry.departNow, entry.language],
-    );
+    await this.db.log.create({ data: {
+      time: prismaDateTimeFromHongKong(entry.time),
+      webpage: 'routesearch',
+      start: entry.start,
+      destination: entry.destination,
+      mode: 'building',
+      showAllRoute: 0,
+      departNow: toTinyInt(entry.departNow),
+      language: entry.language,
+    } });
   }
+}
+
+function toTinyInt(value: boolean | string | number): number {
+  if (typeof value === 'boolean') return value ? 1 : 0;
+  if (typeof value === 'number') return value === 0 ? 0 : 1;
+  return value === '0' || value.toLowerCase() === 'false' ? 0 : 1;
 }

@@ -12,16 +12,19 @@
     "start": "node dist/server.js",
     "job:scrape-status": "tsx src/jobs/scrape-cuhk-status.ts",
     "job:generate-timetable": "tsx src/jobs/generate-timetable.ts",
+    "prisma:validate": "node scripts/prisma-cli.mjs validate --schema=prisma/schema.prisma",
+    "prisma:generate": "node scripts/prisma-cli.mjs generate --schema=prisma/schema.prisma",
+    "prisma:pull:print": "node scripts/prisma-cli.mjs db pull --schema=prisma/schema.prisma --print",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
+    "@prisma/client": "6.16.2",
     "cheerio": "^1.1.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.0",
     "express": "^5.1.0",
     "multer": "^2.0.2",
-    "mysql2": "^3.14.0",
     "pino": "^9.7.0",
     "pino-http": "^10.5.0",
     "zod": "^3.25.0"
@@ -32,6 +35,7 @@
     "@types/multer": "^2.0.0",
     "@types/node": "^24.0.0",
     "@types/supertest": "^6.0.3",
+    "prisma": "6.16.2",
     "supertest": "^7.1.1",
     "tsx": "^4.20.0",
     "typescript": "^5.8.0",

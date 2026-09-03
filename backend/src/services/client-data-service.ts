@@ -1,4 +1,3 @@
-import { randomBytes } from 'node:crypto';
 import type { JsonFileStore } from '../data/file-store.js';
 import {
   trackedTables,
@@ -6,6 +5,7 @@ import {
   type BusRepository,
 } from '../repositories/bus-repository.js';
 import { formatHongKongSqlDate } from './hong-kong-time.js';
+import { InMemoryRequestTokenStore, type RequestTokenStore } from './request-token.js';
 
 const dataFiles = ['timetable.json', 'Alert.json'] as const;
 
@@ -14,7 +14,12 @@ export class ClientDataService {
     private readonly repository: BusRepository,
     private readonly files: JsonFileStore,
     private readonly releaseDate: string,
+    private readonly tokenStore: RequestTokenStore = new InMemoryRequestTokenStore(),
   ) {}
+
+  isIssuedToken(token: string) {
+    return this.tokenStore.has(token);
+  }
 
   async getModificationDates() {
     const dates = await this.repository.getModificationDates();
@@ -60,7 +65,7 @@ export class ClientDataService {
     output['timetable.json'] = await this.files.read('timetable.json');
     output.modificationDates = dates;
     output.fetchTime = formatHongKongSqlDate();
-    output.token = randomBytes(32).toString('hex');
+    output.token = this.tokenStore.issue();
     return output;
   }
 }
@@ -110,7 +115,9 @@ function mapStations(rows: Record<string, unknown>[]) {
 function mapNotices(rows: Record<string, unknown>[], alert: unknown[]) {
   const notices = rows.map((row) => ({
     content: [row.CHINESE, row.ENGLISH],
-    id: row.ID,
+    // Prisma returns legacy BIGINT IDs as bigint values. Convert them to the
+    // numeric shape used by the existing mobile client before JSON encoding.
+    id: Number(row.ID),
     pref: {
       type: row.type ?? '', hide: row.hide ?? '', link: row.link ?? '',
       dismissible: row.dismissible ?? '', saveDismiss: row.saveDismiss ?? '',

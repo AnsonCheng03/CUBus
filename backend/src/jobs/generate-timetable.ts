@@ -1,16 +1,15 @@
 import { resolve } from 'node:path';
 import { loadConfig } from '../config.js';
 import { JsonFileStore } from '../data/file-store.js';
-import { createDatabasePool } from '../db.js';
-import { MysqlBusRepository } from '../repositories/bus-repository.js';
-import { generateTimetable } from './timetable-generator.js';
+import { createDatabaseClient } from '../db.js';
+import { PrismaBusRepository } from '../repositories/bus-repository.js';
+import { generateTimetableFile } from './timetable-generator.js';
 
 const config = loadConfig();
-const pool = createDatabasePool(config.database);
+const db = createDatabaseClient(config.database);
 try {
-  const repository = new MysqlBusRepository(pool, config.database.database);
-  const timetable = generateTimetable(await repository.getRoutes());
-  await new JsonFileStore(resolve(config.dataDirectory)).writeAtomic('timetable.json', timetable);
+  const repository = new PrismaBusRepository(db, config.database.database);
+  await generateTimetableFile(repository, new JsonFileStore(resolve(config.dataDirectory)));
 } finally {
-  await pool.end();
+  await db.$disconnect();
 }

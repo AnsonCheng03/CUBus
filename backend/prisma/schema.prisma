@@ -1,0 +1,187 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Gps {
+  location         String           @id @map("Location") @db.VarChar(50)
+  lat              Decimal?         @map("Lat") @db.Decimal(10, 6)
+  lng              Decimal?         @map("Lng") @db.Decimal(10, 6)
+  importantStation String?          @map("ImportantStation") @db.VarChar(10)
+  groupedStations  GroupedStation[]
+  routeStops       RouteStop[]
+  nearestFor       Station[]        @relation("StationNearest")
+  startStopTimes   StopTime[]       @relation("StopTimeStart")
+  endStopTimes     StopTime[]       @relation("StopTimeEnd")
+  translateRoute   TranslateRoute?
+
+  @@map("gps")
+}
+
+model GroupedStation {
+  id      BigInt  @unique(map: "ID") @default(autoincrement()) @map("ID") @db.UnsignedBigInt
+  area    String? @map("Area") @db.VarChar(255)
+  station String? @map("Station") @db.VarChar(50)
+  gps     Gps?    @relation(fields: [station], references: [location], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([station], map: "fk_groupedstation_station")
+  @@index([area], map: "Area")
+  @@map("groupedStation")
+}
+
+model Log {
+  serial       BigInt   @unique(map: "Serial") @default(autoincrement()) @map("Serial") @db.UnsignedBigInt
+  time         DateTime @map("Time") @db.DateTime(0)
+  webpage      String   @map("Webpage") @db.Text
+  start        String   @map("Start") @db.Text
+  destination  String   @map("Dest") @db.Text
+  mode         String   @map("Mode") @db.Text
+  showAllRoute Int      @map("Showallroute") @db.TinyInt
+  departNow    Int      @map("Departnow") @db.TinyInt
+  language     String   @map("Lang") @db.VarChar(4)
+
+  @@map("logs")
+}
+
+model Notice {
+  id          BigInt  @unique(map: "ID") @default(autoincrement()) @map("ID") @db.UnsignedBigInt
+  type        String? @map("Type") @db.VarChar(6)
+  chinese     String? @map("CHINESE") @db.Text
+  english     String? @map("ENGLISH") @db.Text
+  hide        Boolean @db.TinyInt
+  duration    Int
+  link        String  @db.Text
+  dismissible Boolean @default(true) @db.TinyInt
+  saveDismiss Boolean @map("saveDismiss") @db.TinyInt
+
+  @@map("notice")
+}
+
+model Report {
+  serial    BigInt   @unique(map: "Serial") @default(autoincrement()) @map("Serial") @db.UnsignedBigInt
+  time      DateTime @map("Time") @db.DateTime(0)
+  busNumber String   @map("BusNum") @db.Text
+  stopAttr  String   @map("StopAttr") @db.Text
+
+  @@map("report")
+}
+
+model ReportArrival {
+  id                 Int       @id @default(autoincrement()) @map("ID")
+  time               DateTime  @map("Time") @db.DateTime(0)
+  busNo              String    @map("BusNo") @db.VarChar(10)
+  stationName        String    @map("stationName") @db.Text
+  stationIndex       Int       @map("StationIndex")
+  calculatedBaseTime DateTime? @map("calculatedBaseTime") @db.DateTime(0)
+
+  @@map("reportArrival")
+}
+
+model Route {
+  busNo      String      @id @map("BUSNO") @db.VarChar(4)
+  startTime  String      @map("StartTime") @db.Text
+  endTime    String      @map("EndTime") @db.Text
+  period     String      @map("Period") @db.Text
+  days       String      @map("Days") @db.VarChar(10)
+  weekdays   String      @map("Weekdays") @db.Text
+  warning    String      @map("Warning") @db.Text
+  colorCode  String      @default("rgb(254, 250, 183)") @db.Text
+  routeStops RouteStop[]
+
+  @@map("Route")
+}
+
+model RouteStop {
+  routeStopId Int     @id @default(autoincrement()) @map("RouteStopID")
+  busNo       String  @map("BUSNO") @db.VarChar(10)
+  stopOrder   Int     @map("StopOrder")
+  location    String  @map("Location") @db.VarChar(255)
+  direction   String? @map("Direction") @db.VarChar(50)
+  travelTime  Decimal @map("TravelTime") @db.Decimal(10, 6)
+  route       Route   @relation(fields: [busNo], references: [busNo], onDelete: Restrict, onUpdate: Restrict)
+  gps         Gps     @relation(fields: [location], references: [location], onUpdate: Cascade)
+
+  @@index([busNo], map: "BUSNO")
+  @@index([location], map: "Location")
+  @@map("RouteStops")
+}
+
+model Station {
+  id             BigInt             @unique(map: "ID") @default(autoincrement()) @map("ID") @db.UnsignedBigInt
+  buildingCode   String?            @map("建築物") @db.VarChar(12)
+  nearestStation String?            @map("最近之車站") @db.VarChar(50)
+  area           String?            @map("Area") @db.VarChar(255)
+  building       TranslateBuilding? @relation(fields: [buildingCode], references: [code], onDelete: Restrict, onUpdate: Restrict)
+  nearest        Gps?               @relation("StationNearest", fields: [nearestStation], references: [location], onDelete: SetNull, onUpdate: Cascade)
+
+  @@unique([buildingCode, nearestStation], map: "建築物")
+  @@index([nearestStation], map: "fk_station_closest_station")
+  @@index([area], map: "fk_station_area")
+  @@map("station")
+}
+
+model StopTime {
+  timeId         Int     @id @default(autoincrement()) @map("TimeID")
+  startLocation  String  @map("StartLocation") @db.VarChar(255)
+  startDirection String? @map("StartDirection") @db.VarChar(50)
+  endLocation    String  @map("EndLocation") @db.VarChar(255)
+  endDirection   String? @map("EndDirection") @db.VarChar(50)
+  travelTime     Decimal @map("TravelTime") @db.Decimal(10, 6)
+  startGps       Gps     @relation("StopTimeStart", fields: [startLocation], references: [location], onUpdate: Cascade)
+  endGps         Gps     @relation("StopTimeEnd", fields: [endLocation], references: [location], onUpdate: Cascade)
+
+  @@index([startLocation], map: "StartLocation")
+  @@index([endLocation], map: "EndLocation")
+  @@map("StopTime")
+}
+
+model TranslateAttribute {
+  code       String  @id @map("Code") @db.VarChar(7)
+  appendToJs String? @map("Append to js?") @db.VarChar(13)
+  chinese    String? @map("中文") @db.VarChar(4)
+  english    String? @map("ENG") @db.VarChar(16)
+
+  @@map("translateattribute")
+}
+
+model TranslateBuilding {
+  code       String    @id @map("Code") @db.VarChar(12)
+  appendToJs String?   @map("Append to js?") @db.VarChar(13)
+  chinese    String?   @map("中文") @db.VarChar(27)
+  english    String?   @map("ENG") @db.VarChar(75)
+  stations   Station[]
+
+  @@map("translatebuilding")
+}
+
+model TranslateRoute {
+  code       String  @id @map("Code") @db.VarChar(50)
+  appendToJs String? @map("Append to js?") @db.VarChar(13)
+  chinese    String? @map("中文") @db.VarChar(27)
+  english    String? @map("ENG") @db.VarChar(75)
+  gps        Gps     @relation(fields: [code], references: [location], onUpdate: Cascade)
+
+  @@map("translateroute")
+}
+
+model TranslateWebsite {
+  code       String  @id @map("Code") @db.VarChar(23)
+  appendToJs String? @map("Append to js?") @db.VarChar(13)
+  chinese    String? @map("中文") @db.VarChar(153)
+  english    String? @map("ENG") @db.VarChar(125)
+
+  @@map("translatewebsite")
+}
+
+model Website {
+  id      BigInt @unique(map: "ID") @default(autoincrement()) @map("ID") @db.UnsignedBigInt
+  chinese String @map("中文") @db.Text
+  english String @map("英文") @db.Text
+  url     String @map("URL") @db.Text
+
+  @@map("website")
+}

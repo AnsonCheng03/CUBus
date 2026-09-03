@@ -24,6 +24,10 @@ export class CusisService {
   ) {}
 
   async createCalendar(sid: string, password: string, clientKey: string): Promise<string> {
+    return buildCalendar(await this.getTimetable(sid, password, clientKey));
+  }
+
+  async getTimetable(sid: string, password: string, clientKey: string): Promise<TimetableRow[]> {
     this.assertAllowed(clientKey);
     let rows = await this.requestTimetable(sid, password);
     if (!rows) {
@@ -34,7 +38,7 @@ export class CusisService {
       throw new CusisAuthenticationError('Invalid SID or password');
     }
     this.failures.delete(clientKey);
-    return buildCalendar(rows);
+    return rows;
   }
 
   private assertAllowed(key: string) {

@@ -7,7 +7,7 @@ form.addEventListener('submit', async (event) => {
   button.disabled = true;
   status.textContent = 'Preparing your calendar…';
   try {
-    const response = await fetch('/api/v2/cusis/calendar', {
+    const response = await fetch('/cusis/api.php', {
       method: 'POST',
       body: new FormData(form),
       credentials: 'include',

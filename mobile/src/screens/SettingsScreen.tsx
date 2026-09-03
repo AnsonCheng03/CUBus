@@ -21,7 +21,7 @@ import { mobileQueryClient, mobileQueryKeys } from '../query/client';
 import type { WebsiteLink } from '../types/mobile';
 
 export function SettingsScreen() {
-  const { t } = useTranslation('global');
+  const { t } = useTranslation(['global', 'preset']);
   const { width } = useWindowDimensions();
   const isLargeScreen = width >= NAV_RESPONSIVE_BREAKPOINT;
   const {
@@ -101,9 +101,15 @@ export function SettingsScreen() {
           />
           {networkError.batch ? (
             <View style={styles.errorRow}>
-              <Text style={styles.errorText}>{t('batch_fetch_err')}</Text>
-              <Pressable onPress={() => syncDelta().catch(() => {})}>
-                <Text style={styles.retryText}>{t('retry_btn')}</Text>
+              <Text style={styles.errorText}>
+                {t('batch_fetch_err', { ns: 'preset' })}
+              </Text>
+              <Pressable
+                accessibilityRole="button"
+                style={styles.retryButton}
+                onPress={() => syncDelta().catch(() => {})}
+              >
+                <Text style={styles.retryText}>{t('retry_btn', { ns: 'preset' })}</Text>
               </Pressable>
             </View>
           ) : null}
@@ -168,23 +174,30 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   errorRow: {
+    minHeight: 56,
     paddingHorizontal: 18,
-    paddingTop: 2,
-    paddingBottom: 16,
+    paddingVertical: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: 12,
     backgroundColor: '#fff',
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#ece7e3',
   },
   errorText: {
     flex: 1,
     color: '#7a6c66',
-    fontSize: 13,
-    lineHeight: 18,
+    fontSize: 15,
+    lineHeight: 20,
+  },
+  retryButton: {
+    paddingHorizontal: 4,
+    paddingVertical: 8,
   },
   retryText: {
     color: '#630a10',
+    fontSize: 16,
     fontWeight: '700',
   },
 });

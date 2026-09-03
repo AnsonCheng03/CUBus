@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import {
   Animated,
   Easing,
-  ActivityIndicator,
   Pressable,
   StyleSheet,
   Text,
@@ -10,7 +9,6 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { APP_BRAND_COLOR } from '../lib/layout';
 
 const appIcon = require('../assets/bus.jpg');
 
@@ -98,34 +96,25 @@ export function AppStatusScreen({
     return (
       <Animated.View style={[styles.loadingLayer, { opacity: loadingOpacity }]}>
         <SafeAreaView style={styles.loadingSafeArea} edges={['top', 'bottom']}>
-          <View style={styles.loadingContainer}>
-            <View style={styles.loadingCard}>
-              <View style={styles.loadingIconFrame}>
-                <Animated.Image
-                  source={appIcon}
-                  resizeMode="contain"
-                  style={[
-                    styles.loadingIcon,
-                    {
-                      width: iconSize,
-                      height: iconSize,
-                      transform: [
-                        {
-                          translateY: jumpProgress.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: [0, -10],
-                          }),
-                        },
-                      ],
-                    },
-                  ]}
-                />
-              </View>
-              <Text style={styles.loadingTitle}>{title}</Text>
-              <Text style={styles.loadingHint}>{hint}</Text>
-              <ActivityIndicator size="small" color={APP_BRAND_COLOR} style={styles.loadingIndicator} />
-            </View>
-          </View>
+          <Animated.Image
+            source={appIcon}
+            resizeMode="contain"
+            style={[
+              styles.loadingIcon,
+              {
+                width: iconSize,
+                height: iconSize,
+                transform: [
+                  {
+                    translateY: jumpProgress.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0, -10],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          />
         </SafeAreaView>
       </Animated.View>
     );
@@ -168,59 +157,16 @@ export function AppStatusScreen({
 const styles = StyleSheet.create({
   loadingLayer: {
     flex: 1,
+    backgroundColor: '#fff',
   },
   loadingSafeArea: {
     flex: 1,
-    backgroundColor: APP_BRAND_COLOR,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-  },
-  loadingCard: {
-    width: '100%',
-    maxWidth: 420,
-    alignItems: 'center',
     backgroundColor: '#fff',
-    borderRadius: 28,
-    paddingHorizontal: 28,
-    paddingVertical: 36,
-    shadowColor: '#3b0b0f',
-    shadowOpacity: 0.18,
-    shadowRadius: 22,
-    shadowOffset: { width: 0, height: 10 },
-    elevation: 8,
-  },
-  loadingIconFrame: {
-    width: 136,
-    height: 136,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#fffaf3',
-    borderRadius: 34,
-    marginBottom: 22,
   },
   loadingIcon: {
     marginVertical: 0,
-  },
-  loadingTitle: {
-    fontSize: 30,
-    fontWeight: '800',
-    letterSpacing: -0.4,
-    textAlign: 'center',
-    color: APP_BRAND_COLOR,
-  },
-  loadingHint: {
-    marginTop: 8,
-    color: '#7a6c66',
-    fontSize: 15,
-    lineHeight: 22,
-    textAlign: 'center',
-  },
-  loadingIndicator: {
-    marginTop: 24,
   },
   safeArea: {
     flex: 1,
